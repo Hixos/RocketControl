@@ -1,0 +1,9 @@
+prefix=C:/Users/Hixos/Documents/TesiCode/modelica/RocketControl/RocketControl/Resources
+libdir=${prefix}/Library/win64
+includedir=${prefix}/Include
+
+Name: zlib
+Description: zlib compression library
+Version: 1.2.11
+Libs: -L${libdir} -lz
+Cflags: -I${includedir}
