@@ -66,6 +66,14 @@ package World
       T := temperature(r_0);
       speedOfSound := sqrt(1.4*R*T/M);
     end speedOfSound;
+
+    function windSpeed
+      input SI.Position[3] r_0;
+      output SI.Velocity[3] windSpeed;
+    algorithm
+      windSpeed := {-30,0,0};
+
+    end windSpeed;
   equation
   
   annotation(
