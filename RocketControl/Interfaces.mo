@@ -137,6 +137,16 @@ state.v = v;
       mass_in.I[3, 2] = I[6];
     annotation(
         Icon(graphics = {Line(origin = {40, 0}, points = {{40, 60}, {-40, 60}, {-40, -60}, {40, -60}}), Line(origin = {-50, 0}, points = {{-50, 0}, {50, 0}}), Text(origin = {50, 192.667}, extent = {{28, -126.667}, {-28, -88.6667}}, textString = "m"), Text(origin = {50, 70.67}, extent = {{28, -126.67}, {-28, -88.67}}, textString = "I")}));end MassPropertiesDemux;
+
+    model RealToDeflection
+    RocketControl.Interfaces.FinDeflectionOutput finDeflectionOutput annotation(
+        Placement(visible = true, transformation(origin = {98, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Blocks.Interfaces.RealInput u annotation(
+        Placement(visible = true, transformation(origin = {-106, 0}, extent = {{-20, -20}, {20, 20}}, rotation = 0), iconTransformation(origin = {-98, 0}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
+    equation
+finDeflectionOutput.deflection = u;
+    annotation(
+        Icon(graphics = {Polygon(origin = {0, 3}, fillColor = {102, 117, 134}, fillPattern = FillPattern.Solid, points = {{-66, -41}, {52, 55}, {66, 39}, {-54, -55}, {-56, -53}, {-66, -41}}), Line(origin = {64.96, 18.57}, points = {{5.04018, -18.5658}, {-2.95982, 19.4342}, {-4.95982, 13.4342}}, thickness = 0.75), Line(origin = {64, 36}, points = {{-2, 2}, {2, -2}}, thickness = 0.75), Text(origin = {84, 30}, extent = {{-18, 10}, {18, -10}}, textString = "u")}));end RealToDeflection;
   end Debug;
 
   partial model PartialConditionalEnablePort
@@ -155,4 +165,16 @@ state.v = v;
     annotation(
       Icon(graphics = {Text(origin = {-85.999, 138}, lineColor = {128, 128, 128}, extent = {{99.9988, -29}, {135.999, -58}}, textString = "e")}));
   end PartialConditionalEnablePort;
+
+  connector FinDeflectionOutput
+    output SI.Angle deflection (displayUnit = "deg");
+  annotation(
+      Icon(graphics = {Polygon(origin = {20, 0}, fillColor = {0, 170, 0}, fillPattern = FillPattern.Solid, points = {{-80, 100}, {-80, -100}, {80, -50}, {80, 50}, {-80, 100}}, smooth = Smooth.Bezier)}));
+  end FinDeflectionOutput;
+
+  connector FinDeflectionInput
+    input SI.Angle deflection (displayUnit = "deg");
+  annotation(
+      Icon(graphics = {Polygon(origin = {20, 0}, fillColor = {170, 255, 127}, fillPattern = FillPattern.Solid, points = {{-80, 100}, {-80, -100}, {80, -50}, {80, 50}, {-80, 100}}, smooth = Smooth.Bezier)}));
+  end FinDeflectionInput;
 end Interfaces;

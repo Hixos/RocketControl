@@ -71,7 +71,11 @@ package World
       input SI.Position[3] r_0;
       output SI.Velocity[3] windSpeed;
     algorithm
-      windSpeed := {-30,0,0};
+    //if r_0[3] < -1000 then
+    //windSpeed := {0, 30, 0};
+    //else
+      windSpeed := {0,0,0};
+    //  end if;
 
     end windSpeed;
   equation

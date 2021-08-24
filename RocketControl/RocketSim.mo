@@ -13,28 +13,30 @@ model RocketSim
    parameter SI.ModulusOfElasticity d_y = 2*sqrt(c_y*m)*4;
    parameter SI.ModulusOfElasticity d_z = 2*sqrt(c_z*m)*4;
   
-  Modelica.Mechanics.MultiBody.Parts.Body rocket(I_11 = 0.066590312, I_21 = -0.003190759, I_22 = 9.822815884, I_31 = 0.00128563, I_32 = -0.000234088, I_33 = 9.822815884, enforceStates = true, m = 22, r_CM = {0, 0, 0}, sequence_angleStates = {3, 2, 1})  annotation(
-    Placement(visible = true, transformation(origin = {48, 56}, extent = {{-10, -10}, {10, 10}}, rotation = 90)));
-  RocketControl.Components.Motors.M2000R m2000r(start_delay = 1)  annotation(
+  Modelica.Mechanics.MultiBody.Parts.Body rocket(I_11 = 0.066590312, I_21 = -0.003190759, I_22 = 9.822815884, I_31 = 0.00128563, I_32 = -0.000234088, I_33 = 9.822815884, enforceStates = true, m = 22, r_CM = {0, 0, 0}, sequence_angleStates = {3, 2, 1}, w_a(start = {0, 0, 0}))  annotation(
+    Placement(visible = true, transformation(origin = {48, 70}, extent = {{-10, -10}, {10, 10}}, rotation = 90)));
+  RocketControl.Components.Motors.M2000R m2000r(start_delay = 0.5)  annotation(
     Placement(visible = true, transformation(origin = {48, -52}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Mechanics.MultiBody.Parts.FixedTranslation nozzleTranslation(r = {-1.150, 0, 0})  annotation(
     Placement(visible = true, transformation(origin = {48, -8}, extent = {{-10, -10}, {10, 10}}, rotation = 90)));
   inner RocketControl.World.Atmosphere atmosphere annotation(
     Placement(visible = true, transformation(origin = {-90, 90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  inner RocketControl.World.MyWorld world(n = {0, 0, 1})  annotation(
-    Placement(visible = true, transformation(origin = {-90, -90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Mechanics.MultiBody.Sensors.AbsoluteAngles absoluteAngles(sequence = {3, 2, 1})  annotation(
     Placement(visible = true, transformation(origin = {90, 8}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Mechanics.MultiBody.Parts.FixedTranslation lug_bow(r = {0.1, 0, -0.075}) annotation(
+  Modelica.Mechanics.MultiBody.Parts.FixedTranslation lug_bow(r = {-0.02, 0, -0.075}) annotation(
     Placement(visible = true, transformation(origin = {10, 40}, extent = {{-10, -10}, {10, 10}}, rotation = 180)));
   Modelica.Mechanics.MultiBody.Parts.FixedTranslation lug_aft(r = {-0.43, 0, -0.075}) annotation(
     Placement(visible = true, transformation(origin = {10, 4}, extent = {{-10, -10}, {10, 10}}, rotation = 180)));
-  RocketControl.Components.LaunchPad.LaunchRail launchRail(azimuth(displayUnit = "deg") = 25, c_x = c_x, c_y = c_y, c_z = c_z, d_x = d_x, d_y = d_y, d_z = d_z, elevation (displayUnit = "deg") = 85, lug_length = 0.04, r_rel = {0, 0, 0.04}, rail_length = 4) annotation(
-    Placement(visible = true, transformation(origin = {-30, 10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  RocketControl.Components.LaunchPad.LaunchRail launchRail(azimuth(displayUnit = "deg") = 0, c_x = c_x, c_y = c_y, c_z = c_z, d_x = d_x, d_y = d_y, d_z = d_z, elevation (displayUnit = "deg") = 85, lug_length = 0.04, r_rel = {0, 0, 0.04}, rail_length = 4) annotation(
+    Placement(visible = true, transformation(origin = {-40, 10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Mechanics.MultiBody.Parts.Fixed fixed(r = {0, 0, -1.2}) annotation(
     Placement(visible = true, transformation(origin = {-90, 10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Aerodynamics.Aerodynamics aerodynamics annotation(
-    Placement(visible = true, transformation(origin = {90, 40}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  RocketControl.Components.Sensors.IdealAccelerometer idealAccelerometer annotation(
+    Placement(visible = true, transformation(origin = {92, 76}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  inner World.MyWorld world(n = {0, 0, 1}) annotation(
+    Placement(visible = true, transformation(origin = {-90, -90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Aerodynamics.WithoutControl.Aerodynamics aerodynamics annotation(
+    Placement(visible = true, transformation(origin = {94, 48}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
 equation
   when rocket.r_0[3] > 0 and time > 10 then
     terminate("Simulation terminated successfully");
@@ -42,19 +44,23 @@ equation
   connect(m2000r.frame_b, nozzleTranslation.frame_a) annotation(
     Line(points = {{48, -42.2}, {48, -18.2}}, color = {95, 95, 95}));
   connect(nozzleTranslation.frame_b, rocket.frame_a) annotation(
-    Line(points = {{48, 2}, {48, 46}}));
+    Line(points = {{48, 2}, {48, 60}}));
   connect(absoluteAngles.frame_a, rocket.frame_a) annotation(
-    Line(points = {{80, 8}, {48, 8}, {48, 46}}, color = {95, 95, 95}));
+    Line(points = {{80, 8}, {48, 8}, {48, 60}}, color = {95, 95, 95}));
   connect(lug_bow.frame_a, rocket.frame_a) annotation(
-    Line(points = {{20, 40}, {48, 40}, {48, 46}}, color = {95, 95, 95}));
+    Line(points = {{20, 40}, {48, 40}, {48, 60}}, color = {95, 95, 95}));
   connect(lug_aft.frame_a, rocket.frame_a) annotation(
-    Line(points = {{20, 4}, {20, 40}, {48, 40}, {48, 46}}, color = {95, 95, 95}));
+    Line(points = {{20, 4}, {20, 40}, {48, 40}, {48, 60}}, color = {95, 95, 95}));
   connect(launchRail.frame_b_lug_bow, lug_bow.frame_b) annotation(
-    Line(points = {{-20, 16}, {-20, 40}, {0, 40}}, color = {95, 95, 95}));
+    Line(points = {{-30, 16}, {-30, 40}, {0, 40}}, color = {95, 95, 95}));
   connect(launchRail.frame_b_lug_aft, lug_aft.frame_b) annotation(
-    Line(points = {{-20, 4}, {0, 4}}, color = {95, 95, 95}));
+    Line(points = {{-30, 4}, {0, 4}}, color = {95, 95, 95}));
   connect(fixed.frame_b, launchRail.frame_a) annotation(
-    Line(points = {{-80, 10}, {-40, 10}}, color = {95, 95, 95}));
+    Line(points = {{-80, 10}, {-50, 10}}, color = {95, 95, 95}));
+  connect(idealAccelerometer.frame_a, rocket.frame_a) annotation(
+    Line(points = {{82, 76}, {66, 76}, {66, 50}, {48, 50}, {48, 60}}, color = {95, 95, 95}));
   connect(aerodynamics.frame_b, rocket.frame_a) annotation(
-    Line(points = {{80, 40}, {48, 40}, {48, 46}}, color = {95, 95, 95}));
+    Line(points = {{84, 48}, {48, 48}, {48, 60}}, color = {95, 95, 95}));
+annotation(
+    experiment(StartTime = 0, StopTime = 100, Tolerance = 1e-3, Interval = 0.01));
 end RocketSim;
