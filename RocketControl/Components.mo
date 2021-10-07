@@ -7,23 +7,19 @@ package Components
       import Modelica.Mechanics.MultiBody.Frames;
       import Modelica.Math.Vectors;
       outer World.Atmosphere atmosphere;
-      Modelica.Blocks.Interfaces.RealOutput aoa(final quantity="Angle",
-        final unit="rad",
-        displayUnit="deg") annotation(
+      Modelica.Blocks.Interfaces.RealOutput aoa(final quantity = "Angle", final unit = "rad", displayUnit = "deg") annotation(
         Placement(visible = true, transformation(origin = {102, 70}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {100, 50}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
       SI.Velocity v_b[3] "Velocity relative to wind in body frame (body frame)";
       SI.Velocity v_w[3] "Wind speed at current position";
       SI.Velocity v_norm;
       parameter SI.Velocity v_small = 1e-1 "Prevent division by zero when velocity is too small";
-      Modelica.Blocks.Interfaces.RealOutput sideslip(final quantity="Angle",
-        final unit="rad",
-        displayUnit="deg") annotation(
+      Modelica.Blocks.Interfaces.RealOutput sideslip(final quantity = "Angle", final unit = "rad", displayUnit = "deg") annotation(
         Placement(visible = true, transformation(origin = {100, -50}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {100, -50}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
     equation
       v_w = atmosphere.windSpeed(frame_a.r_0);
       v_b = Frames.resolve2(frame_a.R, der(frame_a.r_0) - v_w);
       v_norm = Vectors.norm(v_b);
-  if abs(v_b[1]) > v_small then
+      if abs(v_b[1]) > v_small then
 //aoa = atan(sqrt(v_b[3]^2 + v_b[2]^2)/v_b[1]);
         aoa = atan(v_b[3] / v_b[1]);
 //aoa = atan2(v_b[3], v_b[1]);
@@ -32,7 +28,7 @@ package Components
       else
         aoa = 0;
       end if;
-  if abs(v_b[1]) > v_small then
+      if abs(v_b[1]) > v_small then
         sideslip = atan(v_b[2] / v_b[1]);
 //sideslip = asin(v_b[2] / v_norm);
       elseif abs(v_b[2]) > v_small then
@@ -141,63 +137,50 @@ package Components
 
     model RealGyroscope "Implementation of a real gyroscope, affected by startup random bias, bias instability (Rate Random Walk) and Normal Noise (Angle Random Walk)"
       import Modelica.Units.Conversions.from_deg;
-      parameter SI.Frequency samplingRate;
-      parameter SI.AngularVelocity bias[3];
-      parameter SI.Duration noiseSamplePeriod "Noise sample period";
-      parameter SI.AngularVelocity sigmaARW;
-      parameter SI.AngularAcceleration sigmaRRW;
       extends Modelica.Mechanics.MultiBody.Sensors.Internal.PartialAbsoluteSensor;
-      Modelica.Mechanics.MultiBody.Sensors.AbsoluteAngularVelocity absoluteAngularVelocity annotation(
-        Placement(visible = true, transformation(origin = {-70, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-      Modelica.Blocks.Interfaces.RealOutput w_meas[3] annotation(
+      parameter Integer samplePeriodMs(min = 0) "Sample period in milliseconds";
+      parameter SI.AngularVelocity bias[3] "Measurement bias for each axis";
+      parameter SI.AngularVelocity rate_max "Angular velocity measurement upper limit";
+      parameter SI.AngularVelocity rate_min = -rate_max "Angular velocity measurement lower limit";
+      parameter Integer bits(min = 1) = 8 "Resolution in bits";
+      parameter Integer fixedLocalSeed[3] = {10, 100, 1000} "Local seed for each of the accelerometer axes";
+      parameter SI.AngularVelocity sigmaARW "Angular random walk standard deviation";
+      parameter SI.AngularAcceleration sigmaRRW "Rate random walk standard deviation";
+      Modelica.Blocks.Interfaces.RealOutput w_meas[3](each final quantity = "AngularVelocity", each final unit = "deg/s") annotation(
         Placement(visible = true, transformation(origin = {106, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {102, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-      RocketControl.Components.Noise.NormalNoiseAndRandomWalk noiseX(samplePeriod = noiseSamplePeriod, sigmaNoise = sigmaARW, sigmaRW = sigmaRRW) annotation(
-        Placement(visible = true, transformation(origin = {-10, 90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-      Modelica.Blocks.Math.MultiSum multiSumX(nu = 3) annotation(
-        Placement(visible = true, transformation(origin = {64, 60}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
-      Modelica.Blocks.Sources.Constant biasX(k = bias[1]) annotation(
-        Placement(visible = true, transformation(origin = {30, 90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-      RocketControl.Components.Noise.NormalNoiseAndRandomWalk noiseY(samplePeriod = noiseSamplePeriod, sigmaNoise = sigmaARW, sigmaRW = sigmaRRW) annotation(
-        Placement(visible = true, transformation(origin = {-10, 30}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-      Modelica.Blocks.Sources.Constant biasY(k = bias[2]) annotation(
-        Placement(visible = true, transformation(origin = {30, 30}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-      Modelica.Blocks.Math.MultiSum multiSum(nu = 3) annotation(
-        Placement(visible = true, transformation(origin = {64, 0}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
-      Modelica.Blocks.Sources.Constant biasZ(k = bias[3]) annotation(
-        Placement(visible = true, transformation(origin = {30, -30}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-      RocketControl.Components.Noise.NormalNoiseAndRandomWalk noiseZ(samplePeriod = noiseSamplePeriod, sigmaNoise = sigmaARW, sigmaRW = sigmaRRW) annotation(
-        Placement(visible = true, transformation(origin = {-10, -30}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-      Modelica.Blocks.Math.MultiSum multiSum1(nu = 3) annotation(
-        Placement(visible = true, transformation(origin = {64, -60}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
+      RocketControl.Components.Sensors.Internal.SampleClockedWithADeffects sampleX(redeclare RocketControl.Components.Sensors.Internal.Noise.ClockedSensorNoise noise(sigmaNoise = sigmaARW, sigmaRW = sigmaRRW, useAutomaticLocalSeed = false, fixedLocalSeed = fixedLocalSeed[1]), bias = bias[1], biased = true, bits = bits, limited = true, noisy = true, quantized = true, yMax = rate_max, yMin = rate_min) annotation(
+        Placement(visible = true, transformation(origin = {0, 40}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
+      RocketControl.Components.Sensors.Internal.SampleClockedWithADeffects sampleY(redeclare RocketControl.Components.Sensors.Internal.Noise.ClockedSensorNoise noise(sigmaNoise = sigmaARW, sigmaRW = sigmaRRW, useAutomaticLocalSeed = false, fixedLocalSeed = fixedLocalSeed[2]), bias = bias[1], biased = true, bits = bits, limited = true, noisy = true, quantized = true, yMax = rate_max, yMin = rate_min) annotation(
+        Placement(visible = true, transformation(origin = {0, 0}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
+      RocketControl.Components.Sensors.Internal.SampleClockedWithADeffects sampleZ(redeclare RocketControl.Components.Sensors.Internal.Noise.ClockedSensorNoise noise(sigmaNoise = sigmaARW, sigmaRW = sigmaRRW, useAutomaticLocalSeed = false, fixedLocalSeed = fixedLocalSeed[3]), bias = bias[1], biased = true, bits = bits, limited = true, noisy = true, quantized = true, yMax = rate_max, yMin = rate_min) annotation(
+        Placement(visible = true, transformation(origin = {0, -40}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
+      Modelica.Clocked.ClockSignals.Clocks.PeriodicExactClock periodicClock1(factor = samplePeriodMs) annotation(
+        Placement(visible = true, transformation(origin = {-60, -80}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
+      RocketControl.Components.Sensors.IdealGyroscope idealGyroscope annotation(
+        Placement(visible = true, transformation(origin = {-60, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
     equation
-      connect(frame_a, absoluteAngularVelocity.frame_a) annotation(
-        Line(points = {{-100, 0}, {-80, 0}}));
-      connect(biasX.y, multiSumX.u[1]) annotation(
-        Line(points = {{42, 90}, {48, 90}, {48, 60}, {58, 60}}, color = {0, 0, 127}));
-      connect(noiseX.y, multiSumX.u[2]) annotation(
-        Line(points = {{2, 90}, {12, 90}, {12, 60}, {58, 60}}, color = {0, 0, 127}));
-      connect(noiseY.y, multiSum.u[2]) annotation(
-        Line(points = {{1, 30}, {11, 30}, {11, 0}, {57, 0}}, color = {0, 0, 127}));
-      connect(biasY.y, multiSum.u[1]) annotation(
-        Line(points = {{41, 30}, {47, 30}, {47, 0}, {57, 0}}, color = {0, 0, 127}));
-      connect(biasZ.y, multiSum1.u[1]) annotation(
-        Line(points = {{41, -30}, {47, -30}, {47, -60}, {58, -60}}, color = {0, 0, 127}));
-      connect(noiseZ.y, multiSum1.u[2]) annotation(
-        Line(points = {{1, -30}, {11, -30}, {11, -60}, {58, -60}}, color = {0, 0, 127}));
-      connect(multiSumX.y, w_meas[1]) annotation(
-        Line(points = {{72, 60}, {80, 60}, {80, 0}, {106, 0}}, color = {0, 0, 127}));
-      connect(multiSum.y, w_meas[2]) annotation(
-        Line(points = {{72, 0}, {106, 0}}, color = {0, 0, 127}));
-      connect(multiSum1.y, w_meas[3]) annotation(
-        Line(points = {{72, -60}, {80, -60}, {80, 0}, {106, 0}}, color = {0, 0, 127}));
-      connect(absoluteAngularVelocity.w[1], multiSumX.u[3]) annotation(
-        Line(points = {{-58, 0}, {-40, 0}, {-40, 60}, {58, 60}}, color = {0, 0, 127}));
-      connect(absoluteAngularVelocity.w[2], multiSum.u[3]) annotation(
-        Line(points = {{-58, 0}, {58, 0}}, color = {0, 0, 127}));
-      connect(absoluteAngularVelocity.w[3], multiSum1.u[3]) annotation(
-        Line(points = {{-58, 0}, {-40, 0}, {-40, -60}, {58, -60}}, color = {0, 0, 127}));
+      connect(sampleX.y, w_meas[1]) annotation(
+        Line(points = {{6, 40}, {40, 40}, {40, 0}, {106, 0}}, color = {0, 0, 127}));
+      connect(w_meas[2], sampleY.y) annotation(
+        Line(points = {{106, 0}, {6, 0}}, color = {0, 0, 127}));
+      connect(sampleZ.y, w_meas[3]) annotation(
+        Line(points = {{6, -40}, {40, -40}, {40, 0}, {106, 0}}, color = {0, 0, 127}));
+      connect(periodicClock1.y, sampleZ.clock) annotation(
+        Line(points = {{-54, -80}, {0, -80}, {0, -48}}, color = {175, 175, 175}));
+      connect(periodicClock1.y, sampleY.clock) annotation(
+        Line(points = {{-54, -80}, {0, -80}, {0, -8}}, color = {175, 175, 175}));
+      connect(periodicClock1.y, sampleX.clock) annotation(
+        Line(points = {{-54, -80}, {0, -80}, {0, 32}}, color = {175, 175, 175}));
+      connect(frame_a, idealGyroscope.frame_a) annotation(
+        Line(points = {{-100, 0}, {-70, 0}}));
+      connect(idealGyroscope.w[1], sampleX.u) annotation(
+        Line(points = {{-50, 0}, {-40, 0}, {-40, 40}, {-8, 40}}, color = {0, 0, 127}));
+      connect(idealGyroscope.w[2], sampleY.u) annotation(
+        Line(points = {{-50, 0}, {-8, 0}}, color = {0, 0, 127}));
+      connect(idealGyroscope.w[3], sampleZ.u) annotation(
+        Line(points = {{-50, 0}, {-40, 0}, {-40, -40}, {-8, -40}}, color = {0, 0, 127}));
       annotation(
-        Icon(graphics = {Text(lineColor = {0, 0, 255}, extent = {{-127, 77}, {134, 125}}, textString = "%name"), Text(lineColor = {64, 64, 64}, extent = {{-50, -14}, {50, -54}}, textString = "rad/s")}),
+        Icon(graphics = {Text(lineColor = {0, 0, 255}, extent = {{-127, 77}, {134, 125}}, textString = "%name"), Text(lineColor = {64, 64, 64}, extent = {{-50, -14}, {50, -54}}, textString = "deg/s")}),
         Diagram);
     end RealGyroscope;
 
@@ -253,72 +236,50 @@ package Components
     end PartialRealInertialSensor;
 
     model RealAccelerometer
-      parameter SI.Frequency samplingRate;
-      parameter SI.Acceleration bias[3];
-      parameter SI.Duration noiseSamplePeriod "Noise sample period";
-      parameter SI.Acceleration sigmaNoise;
-      parameter SI.Jerk sigmaBiasInstability;
+      parameter Integer samplePeriodMs(min = 0) "Sample period in milliseconds";
+      parameter SI.Acceleration bias[3] "Measurement bias for each axis";
+      parameter SI.Acceleration acc_max "Acceleration measurement upper limit";
+      parameter SI.Acceleration acc_min = -acc_max "Acceleration measurement lower limit";
+      parameter Integer bits(min = 1) = 8 "Resolution in bits";
+      parameter SI.Acceleration sigmaNoise "Noise standard deviation";
+      parameter SI.Jerk sigmaBiasInstability "Bias instability standard deviation";
+      parameter Integer fixedLocalSeed[3] = {10, 100, 1000} "Local seed for each of the accelerometer axes";
       extends Modelica.Mechanics.MultiBody.Sensors.Internal.PartialAbsoluteSensor;
-      Modelica.Blocks.Interfaces.RealOutput acc[3] annotation(
+      Modelica.Blocks.Interfaces.RealOutput acc[3](each final quantity = "Acceleration", each final unit = "m/s2") annotation(
         Placement(visible = true, transformation(origin = {106, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {102, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-      RocketControl.Components.Noise.NormalNoiseAndRandomWalk noiseX(samplePeriod = noiseSamplePeriod, sigmaNoise = sigmaNoise, sigmaRW = sigmaBiasInstability) annotation(
-        Placement(visible = true, transformation(origin = {-26, 90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-      Modelica.Blocks.Math.MultiSum multiSumX(nu = 3) annotation(
-        Placement(visible = true, transformation(origin = {48, 60}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
-      Modelica.Blocks.Sources.Constant biasX(k = bias[1]) annotation(
-        Placement(visible = true, transformation(origin = {14, 90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-      RocketControl.Components.Noise.NormalNoiseAndRandomWalk noiseY(samplePeriod = noiseSamplePeriod, sigmaNoise = sigmaNoise, sigmaRW = sigmaBiasInstability) annotation(
-        Placement(visible = true, transformation(origin = {-26, 30}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-      Modelica.Blocks.Sources.Constant biasY(k = bias[2]) annotation(
-        Placement(visible = true, transformation(origin = {14, 30}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-      Modelica.Blocks.Math.MultiSum multiSum(nu = 3) annotation(
-        Placement(visible = true, transformation(origin = {48, 0}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
-      Modelica.Blocks.Sources.Constant biasZ(k = bias[3]) annotation(
-        Placement(visible = true, transformation(origin = {14, -30}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-      RocketControl.Components.Noise.NormalNoiseAndRandomWalk noiseZ(samplePeriod = noiseSamplePeriod, sigmaNoise = sigmaNoise, sigmaRW = sigmaBiasInstability) annotation(
-        Placement(visible = true, transformation(origin = {-26, -30}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-      Modelica.Blocks.Math.MultiSum multiSum1(nu = 3) annotation(
-        Placement(visible = true, transformation(origin = {48, -60}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
+      Modelica.Clocked.ClockSignals.Clocks.PeriodicExactClock periodicClock1(factor = samplePeriodMs) annotation(
+        Placement(visible = true, transformation(origin = {-60, -80}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
       RocketControl.Components.Sensors.IdealAccelerometer idealAccelerometer annotation(
-        Placement(visible = true, transformation(origin = {-70, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Clocked.RealSignals.Sampler.SampleVectorizedAndClocked sample1(n = 3)  annotation(
-        Placement(visible = true, transformation(origin = {80, 0}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
-  Modelica.Clocked.ClockSignals.Clocks.PeriodicRealClock periodicClock1(period = 1 / samplingRate)  annotation(
-        Placement(visible = true, transformation(origin = {62, -88}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
+        Placement(visible = true, transformation(origin = {-60, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      RocketControl.Components.Sensors.Internal.SampleClockedWithADeffects sampleX(redeclare RocketControl.Components.Sensors.Internal.Noise.ClockedSensorNoise noise(sigmaNoise = sigmaNoise, sigmaRW = sigmaBiasInstability, useAutomaticLocalSeed = false, fixedLocalSeed = fixedLocalSeed[1]), bias = bias[1], biased = true, bits = bits, limited = true, noisy = true, quantized = true, yMax = acc_max, yMin = acc_min) annotation(
+        Placement(visible = true, transformation(origin = {0, 40}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
+      RocketControl.Components.Sensors.Internal.SampleClockedWithADeffects sampleY(redeclare RocketControl.Components.Sensors.Internal.Noise.ClockedSensorNoise noise(sigmaNoise = sigmaNoise, sigmaRW = sigmaBiasInstability, useAutomaticLocalSeed = false, fixedLocalSeed = fixedLocalSeed[2]), bias = bias[1], biased = true, bits = bits, limited = true, noisy = true, quantized = true, yMax = acc_max, yMin = acc_min) annotation(
+        Placement(visible = true, transformation(origin = {0, 0}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
+      RocketControl.Components.Sensors.Internal.SampleClockedWithADeffects sampleZ(redeclare RocketControl.Components.Sensors.Internal.Noise.ClockedSensorNoise noise(sigmaNoise = sigmaNoise, sigmaRW = sigmaBiasInstability, useAutomaticLocalSeed = false, fixedLocalSeed = fixedLocalSeed[3]), bias = bias[1], biased = true, bits = bits, limited = true, noisy = true, quantized = true, yMax = acc_max, yMin = acc_min) annotation(
+        Placement(visible = true, transformation(origin = {0, -40}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
     equation
-  connect(biasX.y, multiSumX.u[1]) annotation(
-        Line(points = {{25, 90}, {31, 90}, {31, 60}, {41, 60}}, color = {0, 0, 127}));
-  connect(noiseX.y, multiSumX.u[2]) annotation(
-        Line(points = {{-15, 90}, {-5, 90}, {-5, 60}, {41, 60}}, color = {0, 0, 127}));
-  connect(noiseY.y, multiSum.u[2]) annotation(
-        Line(points = {{-15, 30}, {-5, 30}, {-5, 0}, {41, 0}}, color = {0, 0, 127}));
-  connect(biasY.y, multiSum.u[1]) annotation(
-        Line(points = {{25, 30}, {31, 30}, {31, 0}, {41, 0}}, color = {0, 0, 127}));
-  connect(biasZ.y, multiSum1.u[1]) annotation(
-        Line(points = {{25, -30}, {31, -30}, {31, -60}, {42, -60}}, color = {0, 0, 127}));
-  connect(noiseZ.y, multiSum1.u[2]) annotation(
-        Line(points = {{-15, -30}, {-5, -30}, {-5, -60}, {42, -60}}, color = {0, 0, 127}));
       connect(frame_a, idealAccelerometer.frame_a) annotation(
-        Line(points = {{-100, 0}, {-80, 0}}));
-  connect(idealAccelerometer.acc[1], multiSumX.u[3]) annotation(
-        Line(points = {{-60, 0}, {-40, 0}, {-40, 60}, {42, 60}}, color = {0, 0, 127}));
-  connect(idealAccelerometer.acc[2], multiSum.u[3]) annotation(
-        Line(points = {{-60, 0}, {42, 0}}, color = {0, 0, 127}));
-  connect(idealAccelerometer.acc[3], multiSum1.u[3]) annotation(
-        Line(points = {{-60, 0}, {-40, 0}, {-40, -60}, {42, -60}}, color = {0, 0, 127}));
-  connect(sample1.y, acc) annotation(
-        Line(points = {{86, 0}, {106, 0}}, color = {0, 0, 127}, thickness = 0.5));
-  connect(multiSumX.y, sample1.u[1]) annotation(
-        Line(points = {{56, 60}, {64, 60}, {64, 0}, {72, 0}}, color = {0, 0, 127}));
-  connect(multiSum.y, sample1.u[2]) annotation(
-        Line(points = {{56, 0}, {72, 0}}, color = {0, 0, 127}));
-  connect(multiSum1.y, sample1.u[3]) annotation(
-        Line(points = {{56, -60}, {64, -60}, {64, 0}, {72, 0}}, color = {0, 0, 127}));
-  connect(periodicClock1.y, sample1.clock) annotation(
-        Line(points = {{68, -88}, {80, -88}, {80, -8}}, color = {175, 175, 175}));
+        Line(points = {{-100, 0}, {-70, 0}}));
+      connect(idealAccelerometer.acc[1], sampleX.u) annotation(
+        Line(points = {{-50, 0}, {-29, 0}, {-29, 40}, {-7, 40}}, color = {0, 0, 127}));
+      connect(idealAccelerometer.acc[2], sampleY.u) annotation(
+        Line(points = {{-50, 0}, {-8, 0}}, color = {0, 0, 127}));
+      connect(idealAccelerometer.acc[3], sampleZ.u) annotation(
+        Line(points = {{-50, 0}, {-28, 0}, {-28, -40}, {-8, -40}}, color = {0, 0, 127}));
+      connect(sampleX.y, acc[1]) annotation(
+        Line(points = {{6, 40}, {40, 40}, {40, 0}, {106, 0}}, color = {0, 0, 127}));
+      connect(sampleY.y, acc[2]) annotation(
+        Line(points = {{6, 0}, {106, 0}}, color = {0, 0, 127}));
+      connect(sampleZ.y, acc[3]) annotation(
+        Line(points = {{6, -40}, {40, -40}, {40, 0}, {106, 0}}, color = {0, 0, 127}));
+      connect(periodicClock1.y, sampleZ.clock) annotation(
+        Line(points = {{-53, -80}, {0, -80}, {0, -48}}, color = {175, 175, 175}));
+      connect(periodicClock1.y, sampleY.clock) annotation(
+        Line(points = {{-53, -80}, {0, -80}, {0, -8}}, color = {175, 175, 175}));
+      connect(periodicClock1.y, sampleX.clock) annotation(
+        Line(points = {{-53, -80}, {0, -80}, {0, 32}}, color = {175, 175, 175}));
       annotation(
-        Icon(graphics = {Text(lineColor = {0, 0, 255}, extent = {{-127, 77}, {134, 125}}, textString = "%name"), Text(lineColor = {64, 64, 64}, extent = {{-50, -14}, {50, -54}}, textString = "rad/s")}),
-        Diagram);
+        Icon(graphics = {Text(lineColor = {64, 64, 64}, extent = {{-50, -14}, {50, -54}}, textString = "m/s^2"), Text(lineColor = {0, 0, 255}, extent = {{-130, 72}, {131, 120}}, textString = "%name")}));
     end RealAccelerometer;
 
     model IdealAccelerometer
@@ -326,7 +287,7 @@ package Components
       outer World world;
       SI.Acceleration acc_inertial[3];
       SI.Acceleration acc_body[3];
-      Modelica.Blocks.Interfaces.RealOutput acc[3] annotation(
+      Modelica.Blocks.Interfaces.RealOutput acc[3](each final quantity = "Acceleration", each final unit = "m/s2") annotation(
         Placement(visible = true, transformation(origin = {106, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {102, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
       Modelica.Mechanics.MultiBody.Sensors.AbsoluteVelocity absoluteVelocity(resolveInFrame = Modelica.Mechanics.MultiBody.Types.ResolveInFrameA.world) annotation(
         Placement(visible = true, transformation(origin = {-60, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
@@ -340,32 +301,499 @@ package Components
         Icon(graphics = {Text(lineColor = {0, 0, 255}, extent = {{-130, 72}, {131, 120}}, textString = "%name"), Text(lineColor = {64, 64, 64}, extent = {{-50, -14}, {50, -54}}, textString = "m/s^2")}));
     end IdealAccelerometer;
 
-    model SampledAccelerometer
-    extends Modelica.Mechanics.MultiBody.Sensors.Internal.PartialAbsoluteSensor;
-  RocketControl.Components.Sensors.IdealAccelerometer idealAccelerometer annotation(
-        Placement(visible = true, transformation(origin = {-50, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Blocks.Interfaces.RealOutput acc[3] annotation(
-        Placement(visible = true, transformation(origin = {106, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {102, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Clocked.RealSignals.Sampler.SampleClocked sample1[3] annotation(
-        Placement(visible = true, transformation(origin = {40, 0}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
-  Modelica.Clocked.ClockSignals.Clocks.PeriodicRealClock periodicClock1(period = 0.01)  annotation(
-        Placement(visible = true, transformation(origin = {-10, -64}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
+    model IdealMagnetometer
+      extends Modelica.Mechanics.MultiBody.Sensors.Internal.PartialAbsoluteSensor;
+      //  outer World.Interfaces.WorldBase world;
+      outer World.MyWorld world;
+      Modelica.Blocks.Interfaces.RealOutput b[3](each final quantity = "MagneticFluxDensity", each final displayUnit = "nT") annotation(
+        Placement(visible = true, transformation(origin = {106, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {104, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
     equation
-      connect(frame_a, idealAccelerometer.frame_a) annotation(
-        Line(points = {{-100, 0}, {-60, 0}}));
-  connect(idealAccelerometer.acc, sample1.u) annotation(
-        Line(points = {{-40, 0}, {32, 0}}, color = {0, 0, 127}, thickness = 0.5));
-  connect(sample1.y, acc) annotation(
-        Line(points = {{46, 0}, {106, 0}}, color = {0, 0, 127}, thickness = 0.5));
-  connect(periodicClock1.y, sample1[1].clock) annotation(
-        Line(points = {{-4, -64}, {40, -64}, {40, -8}}, color = {175, 175, 175}));
-  connect(periodicClock1.y, sample1[2].clock) annotation(
-        Line(points = {{-4, -64}, {40, -64}, {40, -8}}, color = {175, 175, 175}));
-  connect(periodicClock1.y, sample1[3].clock) annotation(
-        Line(points = {{-4, -64}, {40, -64}, {40, -8}}, color = {175, 175, 175}));
+      b = Modelica.Mechanics.MultiBody.Frames.resolve2(frame_a.R, world.magneticField(frame_a.r_0)) * 1e9;
+      assert(cardinality(frame_a) > 0, "Connector frame_a must be connected at least once");
+      frame_a.f = zeros(3);
+      frame_a.t = zeros(3);
+      annotation(
+        Icon(graphics = {Text(lineColor = {0, 0, 255}, extent = {{-130, 72}, {131, 120}}, textString = "%name"), Text(lineColor = {64, 64, 64}, extent = {{-50, -14}, {50, -54}}, textString = "uT")}));
+    end IdealMagnetometer;
+
+    package Internal
+      block SampleClockedWithADeffects "Sample with (simulated) Analog-Digital converter effects including noise"
+        extends Modelica.Clocked.RealSignals.Interfaces.PartialSISOSampler;
+        parameter Boolean noisy = false "= true, if output should be superimposed with noise" annotation(
+          Evaluate = true,
+          choices(checkBox = true),
+          Dialog(group = "Sampling and noise"));
+        parameter Boolean biased = false "= true, if output should be biased" annotation(
+          Evaluate = true,
+          choices(checkBox = true),
+          Dialog(group = "Bias"));
+        parameter Boolean limited = false "= true, if output is limited" annotation(
+          Evaluate = true,
+          choices(checkBox = true),
+          Dialog(group = "Limiting and quantization"));
+        parameter Boolean quantized = false "= true, if output quantization effects included" annotation(
+          Evaluate = true,
+          choices(checkBox = true),
+          Dialog(enable = limited, group = "Limiting and quantization"));
+        parameter Real yMax = 1 "Upper limit of output (if limited = true)" annotation(
+          Dialog(enable = limited, group = "Limiting and quantization"));
+        parameter Real yMin = -yMax "Lower limit of output (if limited = true)" annotation(
+          Dialog(enable = limited, group = "Limiting and quantization"));
+        parameter Integer bits(min = 1) = 8 "Number of bits of quantization (if quantized = true)" annotation(
+          Dialog(enable = limited and quantized, group = "Limiting and quantization"));
+        Modelica.Clocked.RealSignals.Sampler.SampleClocked sample annotation(
+          Placement(transformation(extent = {{-84, -6}, {-72, 6}})));
+        parameter Real bias "Signal bias" annotation(
+          Dialog(enable = biased, group = "Bias"));
+        replaceable RocketControl.Components.Sensors.Internal.Noise.ClockedNormalNoise noise if noisy constrainedby Modelica.Clocked.RealSignals.Interfaces.PartialNoise "Noise model" annotation(
+           choicesAllMatching = true,
+           Dialog(enable = noisy, group = "Sampling and noise"),
+           Placement(transformation(extent = {{-54, -6}, {-42, 6}})));
+        Modelica.Clocked.RealSignals.Sampler.Utilities.Internal.Limiter limiter(uMax = yMax, uMin = yMin) if limited annotation(
+          Placement(visible = true, transformation(extent = {{22, -8}, {38, 8}}, rotation = 0)));
+        Modelica.Clocked.RealSignals.Sampler.Utilities.Internal.Quantization quantization(quantized = quantized, yMax = yMax, yMin = yMin, bits = bits) if quantized and limited annotation(
+          Placement(visible = true, transformation(extent = {{60, -8}, {76, 8}}, rotation = 0)));
+        Modelica.Clocked.ClockSignals.Interfaces.ClockInput clock annotation(
+          Placement(visible = true, transformation(origin = {0, -120}, extent = {{-20, -20}, {20, 20}}, rotation = 90), iconTransformation(extent = {{-20, -140}, {20, -100}}, rotation = 90)));
+        Modelica.Blocks.Math.Add add if biased annotation(
+          Placement(visible = true, transformation(origin = {-12, -1.33227e-15}, extent = {{-8, -8}, {8, 8}}, rotation = 0)));
+        Modelica.Blocks.Sources.Constant bias_k(k = bias) if biased annotation(
+          Placement(visible = true, transformation(origin = {-48, -30}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
+      protected
+        Modelica.Blocks.Interfaces.RealInput uFeedthrough1 if not noisy annotation(
+          Placement(transformation(extent = {{-58, 12}, {-42, 28}})));
+        Modelica.Blocks.Interfaces.RealInput uFeedthrough2 if not biased annotation(
+          Placement(visible = true, transformation(extent = {{-20, 12}, {-4, 28}}, rotation = 0), iconTransformation(extent = {{-26, 12}, {-10, 28}}, rotation = 0)));
+        Modelica.Blocks.Interfaces.RealInput uFeedthrough3 if not limited annotation(
+          Placement(visible = true, transformation(extent = {{20, 12}, {36, 28}}, rotation = 0), iconTransformation(extent = {{-26, 12}, {-10, 28}}, rotation = 0)));
+        Modelica.Blocks.Interfaces.RealInput uFeedthrough4 if not quantized or not limited annotation(
+          Placement(visible = true, transformation(extent = {{58, 12}, {74, 28}}, rotation = 0), iconTransformation(extent = {{12, 12}, {28, 28}}, rotation = 0)));
+        Modelica.Blocks.Interfaces.RealOutput y1 "Connector with a Real output signal" annotation(
+          Placement(transformation(extent = {{-61, -1}, {-59, 1}})));
+        Modelica.Blocks.Interfaces.RealOutput y3 annotation(
+          Placement(visible = true, transformation(extent = {{11, -1}, {13, 1}}, rotation = 0), iconTransformation(extent = {{-35, -1}, {-33, 1}}, rotation = 0)));
+        Modelica.Blocks.Interfaces.RealOutput y4 annotation(
+          Placement(visible = true, transformation(extent = {{49, -1}, {51, 1}}, rotation = 0), iconTransformation(extent = {{3, -1}, {5, 1}}, rotation = 0)));
+        Modelica.Blocks.Interfaces.RealOutput y5 annotation(
+          Placement(visible = true, transformation(extent = {{87, -1}, {89, 1}}, rotation = 0), iconTransformation(extent = {{41, -1}, {43, 1}}, rotation = 0)));
+        Modelica.Blocks.Interfaces.RealOutput y2 annotation(
+          Placement(visible = true, transformation(extent = {{-31, -1}, {-29, 1}}, rotation = 0), iconTransformation(extent = {{-35, -1}, {-33, 1}}, rotation = 0)));
+      equation
+        connect(uFeedthrough1, y1) annotation(
+          Line(points = {{-50, 20}, {-58, 20}, {-58, 0}, {-60, 0}}, color = {0, 0, 127}));
+        connect(y1, noise.u) annotation(
+          Line(points = {{-60, 0}, {-55.2, 0}}, color = {0, 0, 127}));
+        connect(y3, limiter.u) annotation(
+          Line(points = {{12, 0}, {20.4, 0}}, color = {0, 0, 127}));
+        connect(y3, uFeedthrough3) annotation(
+          Line(points = {{12, 0}, {16, 0}, {16, 20}, {28, 20}}, color = {0, 0, 127}));
+        connect(limiter.y, y4) annotation(
+          Line(points = {{38.8, 0}, {50, 0}}, color = {0, 0, 127}));
+        connect(y4, quantization.u) annotation(
+          Line(points = {{50, 0}, {58.4, 0}}, color = {0, 0, 127}));
+        connect(y4, uFeedthrough4) annotation(
+          Line(points = {{50, 0}, {54, 0}, {54, 20}, {66, 20}}, color = {0, 0, 127}));
+        connect(quantization.y, y5) annotation(
+          Line(points = {{76.8, 0}, {88, 0}}, color = {0, 0, 127}));
+        connect(uFeedthrough4, y5) annotation(
+          Line(points = {{66, 20}, {84, 20}, {84, 0}, {88, 0}}, color = {0, 0, 127}));
+        connect(uFeedthrough3, y4) annotation(
+          Line(points = {{28, 20}, {46, 20}, {46, 0}, {50, 0}}, color = {0, 0, 127}));
+        connect(sample.y, y1) annotation(
+          Line(points = {{-71.4, 0}, {-60, 0}}, color = {0, 0, 127}));
+        connect(u, sample.u) annotation(
+          Line(points = {{-120, 0}, {-85.2, 0}}, color = {0, 0, 127}));
+        connect(y5, y) annotation(
+          Line(points = {{88, 0}, {110, 0}}, color = {0, 0, 127}));
+        connect(sample.clock, clock) annotation(
+          Line(points = {{-78, -8}, {-80, -8}, {-80, -60}, {0, -60}, {0, -120}}, color = {175, 175, 175}));
+        connect(noise.y, y2) annotation(
+          Line(points = {{-42, 0}, {-30, 0}}, color = {0, 0, 127}));
+        connect(uFeedthrough1, y2) annotation(
+          Line(points = {{-50, 20}, {-36, 20}, {-36, 0}, {-30, 0}}, color = {0, 0, 127}));
+        connect(y2, uFeedthrough2) annotation(
+          Line(points = {{-30, 0}, {-28, 0}, {-28, 20}, {-12, 20}}, color = {0, 0, 127}));
+        connect(uFeedthrough2, y3) annotation(
+          Line(points = {{-12, 20}, {4, 20}, {4, 0}, {12, 0}}, color = {0, 0, 127}));
+        connect(add.u1, y2) annotation(
+          Line(points = {{-22, 4}, {-26, 4}, {-26, 0}, {-30, 0}}, color = {0, 0, 127}));
+        connect(add.y, y3) annotation(
+          Line(points = {{-4, 0}, {12, 0}}, color = {0, 0, 127}));
+        connect(bias_k.y, add.u2) annotation(
+          Line(points = {{-41, -30}, {-32, -30}, {-32, -4}, {-22, -4}}, color = {0, 0, 127}));
+        annotation(
+          defaultComponentName = "sample",
+          Icon(coordinateSystem(preserveAspectRatio = true, extent = {{-100, -100}, {100, 100}}, initialScale = 0.06), graphics = {Polygon(lineColor = {192, 192, 192}, fillColor = {192, 192, 192}, fillPattern = FillPattern.Solid, points = {{0, -22}, {-6, -38}, {6, -38}, {0, -22}}), Line(points = {{0, -100}, {0, -38}}, color = {192, 192, 192}), Line(points = {{-40, -72}, {40, -72}}, color = {192, 192, 192}), Polygon(origin = {48, -72}, rotation = -90, lineColor = {192, 192, 192}, fillColor = {192, 192, 192}, fillPattern = FillPattern.Solid, points = {{0, 8}, {-6, -8}, {6, -8}, {0, 8}}), Line(points = {{-30, -92}, {-10, -92}, {-10, -72}, {10, -72}, {10, -52}, {30, -52}}, color = {0, 0, 127}), Text(lineColor = {0, 0, 255}, extent = {{-150, 90}, {150, 50}}, textString = "%name")}),
+          Documentation(info = "<html>
+      <p>
+      This block is similar to the
+      <a href=\"modelica://Modelica.Clocked.RealSignals.Sampler.Sample\">Sample</a>
+      block. The only difference is that after the sampling of the input signal,
+      simulated real-world effects are applied on the sampled signal. In particular:
+      </p>
+      
+      <ul>
+      <li> The output is limited, if parameter <strong>limited</strong> = true.</li>
+      <li> The output is value discretized in the form of an Analog-Digital converter
+           with a definable number of bits,
+           if parameters <strong>limited</strong> = true, and <strong>quantized</strong> = true.</li>
+      <li> Noise is added to the output if
+           parameter <strong>noisy</strong> = true.
+           A pseudo random number generator is used to generate uniformly distributed
+           random numbers in a given band.</li>
+      </ul>
+      
+      <h4>Example</h4>
+      
+      <p>
+      The following
+      <a href=\"modelica://Modelica.Clocked.Examples.Elementary.RealSignals.SampleWithADeffects\">example</a>
+      samples a sine signal with a periodic clock of 20 ms period, and adds the following effects:
+      </p>
+      <ul>
+      <li> Limits the output to +/- 0.8.</li>
+      <li> Discretizes the output with an 8 bit AD converter.</li>
+      <li> Adds large uniform noise with a band of +/- 0.2.</li>
+      </ul>
+      <table border=\"0\" cellspacing=\"0\" cellpadding=\"2\">
+      <tr><td width=\"50\"></td>
+          <td valign=\"bottom\"><img src=\"modelica://Modelica/Resources/Images/Clocked/RealSignals/SampleWithADeffects_Model.png\" alt=\"SampleWithADeffects_Model.png\"></td>
+          <td valign=\"bottom\">&nbsp;&nbsp;&nbsp;
+                              <img src=\"modelica://Modelica/Resources/Images/Clocked/RealSignals/SampleWithADeffects_Result.png\" alt=\"SampleWithADeffects_Result.png\"></td>
+          </tr>
+      <tr><td></td>
+          <td align=\"center\">model</td>
+          <td align=\"center\">simulation result</td>
+         </tr>
+      </table>
+      
+      <p>
+      <br>The output y is quite far away from the continuous-time input signal,
+          due to the strong discretization and large noise applied to the
+          sampled input.
+      </p>
+      </html>"));
+      end SampleClockedWithADeffects;
+
+      package Noise
+        block ClockedNormalNoise "Noise generator with normal distribution"
+          import distribution = Modelica.Math.Distributions.Normal.quantile;
+          extends PartialClockedNoise;
+          // Main dialog menu
+          parameter Real mu = 0 "Expectation (mean) value of the normal distribution" annotation(
+            Dialog(enable = enableNoise));
+          parameter Real sigma(start = 1) "Standard deviation of the normal distribution" annotation(
+            Dialog(enable = enableNoise));
+        equation
+// Draw random number at sample times
+          when Clock() then
+            r = distribution(r_raw, mu, sigma);
+          end when;
+          annotation(
+            Icon(coordinateSystem(preserveAspectRatio = false, extent = {{-100, -100}, {100, 100}}), graphics = {Text(visible = enableNoise, extent = {{-66, 92}, {94, 66}}, textColor = {175, 175, 175}, textString = "mu=%mu"), Text(visible = enableNoise, extent = {{-70, -68}, {94, -96}}, textColor = {175, 175, 175}, textString = "sigma=%sigma")}),
+            Documentation(info = "<html>
+        <p>
+        A summary of the common properties of the noise blocks is provided in the documentation of package
+        <a href=\"modelica://Modelica.Blocks.Noise\">Blocks.Noise</a>.
+        This NormalNoise block generates reproducible, random noise at its output according to a normal distribution.
+        This means that random values are normally distributed with expectation value mu and standard deviation sigma.
+        (see example <a href=\"modelica://Modelica.Blocks.Examples.Noise.NormalNoiseProperties\">Examples.Noise.NormalNoiseProperties</a>).
+        By default, two or more instances produce different, uncorrelated noise at the same time instant.
+        The block can only be used if on the same or a higher hierarchical level,
+        model <a href=\"modelica://Modelica.Blocks.Noise.GlobalSeed\">Blocks.Noise.GlobalSeed</a>
+        is dragged to provide global settings for all instances.
+        </p>
+        </html>", revisions = "<html>
+        <table border=\"1\" cellspacing=\"0\" cellpadding=\"2\">
+        <tr><th>Date</th> <th align=\"left\">Description</th></tr>
+        
+        <tr><td> June 22, 2015 </td>
+          <td>
+        
+        <table border=\"0\">
+        <tr><td>
+               <img src=\"modelica://Modelica/Resources/Images/Logos/dlr_logo.png\" alt=\"DLR logo\">
+        </td><td valign=\"bottom\">
+               Initial version implemented by
+               A. Kl&ouml;ckner, F. v.d. Linden, D. Zimmer, M. Otter.<br>
+               <a href=\"http://www.dlr.de/rmc/sr/en\">DLR Institute of System Dynamics and Control</a>
+        </td></tr></table>
+        </td></tr>
+        
+        </table>
+        </html>"));
+        end ClockedNormalNoise;
+
+        partial block PartialClockedNoise "Partial noise generator"
+          import generator = Modelica.Math.Random.Generators.Xorshift128plus;
+          import Modelica.Math.Random.Utilities.automaticLocalSeed;
+          extends Modelica.Clocked.RealSignals.Interfaces.PartialNoise;
+          // Advanced dialog menu: Noise generation
+          parameter Boolean enableNoise = globalSeed.enableNoise "= true: y = u + noise, otherwise y = u" annotation(
+            choices(checkBox = true),
+            Dialog(tab = "Advanced", group = "Noise generation"));
+          // Advanced dialog menu: Initialization
+          parameter Boolean useGlobalSeed = true "= true: use global seed, otherwise ignore it" annotation(
+            choices(checkBox = true),
+            Dialog(tab = "Advanced", group = "Initialization", enable = enableNoise));
+          parameter Boolean useAutomaticLocalSeed = true "= true: use automatic local seed, otherwise use fixedLocalSeed" annotation(
+            choices(checkBox = true),
+            Dialog(tab = "Advanced", group = "Initialization", enable = enableNoise));
+          parameter Integer fixedLocalSeed = 1 "Local seed (any Integer number)" annotation(
+            Dialog(tab = "Advanced", group = "Initialization", enable = enableNoise and not useAutomaticLocalSeed));
+          final parameter Integer localSeed(fixed = false) "The actual localSeed";
+        protected
+          outer Modelica.Blocks.Noise.GlobalSeed globalSeed "Definition of global seed via inner/outer";
+          parameter Integer actualGlobalSeed = if useGlobalSeed then globalSeed.seed else 0 "The global seed, which is actually used";
+          parameter Boolean generateNoise = enableNoise and globalSeed.enableNoise "= true, if noise shall be generated, otherwise no noise";
+          // Declare state and random number variables
+          Integer state[generator.nState](start = generator.initialState(localSeed, actualGlobalSeed)) "Internal state of random number generator";
+          Real r "Random number according to the desired distribution";
+          Real r_raw "Uniform random number in the range (0,1]";
+        initial equation
+          localSeed = if useAutomaticLocalSeed then automaticLocalSeed(getInstanceName()) else fixedLocalSeed;
+//   pre(state) = generator.initialState(localSeed, actualGlobalSeed);
+//   r_raw = generator.random(pre(state));
+        equation
+// Draw random number at sample times
+//  when firstTick(clock) then
+//    r_raw = generator.random(previous(state));
+//  end when;
+          when Clock() then
+            (r_raw, state) = generator.random(pre(state));
+// Generate noise if requested
+            y = if not generateNoise then u else u + r;
+          end when;
+          annotation(
+            Icon(coordinateSystem(preserveAspectRatio = false, extent = {{-100, -100}, {100, 100}}), graphics = {Line(points = {{-81, -17}, {-67, -17}, {-67, -1}, {-59, -1}, {-59, -49}, {-51, -49}, {-51, -27}, {-43, -27}, {-43, 57}, {-35, 57}, {-35, 25}}, color = {0, 0, 127}, pattern = LinePattern.Dot), Ellipse(lineColor = {0, 0, 127}, fillColor = {0, 0, 127}, fillPattern = FillPattern.Solid, extent = {{40, 19}, {46, 13}}, endAngle = 360), Ellipse(lineColor = {0, 0, 127}, fillColor = {0, 0, 127}, fillPattern = FillPattern.Solid, extent = {{-54, -23}, {-48, -29}}, endAngle = 360), Ellipse(lineColor = {0, 0, 127}, fillColor = {0, 0, 127}, fillPattern = FillPattern.Solid, extent = {{-18, -41}, {-12, -47}}, endAngle = 360), Polygon(lineColor = {192, 192, 192}, fillColor = {192, 192, 192}, fillPattern = FillPattern.Solid, points = {{91, -22}, {69, -14}, {69, -30}, {91, -22}}), Ellipse(lineColor = {0, 0, 127}, fillColor = {0, 0, 127}, fillPattern = FillPattern.Solid, extent = {{-62, -47}, {-56, -53}}, endAngle = 360), Ellipse(lineColor = {0, 0, 127}, fillColor = {0, 0, 127}, fillPattern = FillPattern.Solid, extent = {{-28, -15}, {-22, -21}}, endAngle = 360), Line(points = {{-90, -23}, {82, -23}}, color = {192, 192, 192}), Ellipse(lineColor = {0, 0, 127}, fillColor = {0, 0, 127}, fillPattern = FillPattern.Solid, extent = {{14, 9}, {20, 3}}, endAngle = 360), Ellipse(lineColor = {0, 0, 127}, fillColor = {0, 0, 127}, fillPattern = FillPattern.Solid, extent = {{4, -1}, {10, -7}}, endAngle = 360), Ellipse(lineColor = {0, 0, 127}, fillColor = {0, 0, 127}, fillPattern = FillPattern.Solid, extent = {{-8, 39}, {-2, 33}}, endAngle = 360), Ellipse(lineColor = {0, 0, 127}, fillColor = {0, 0, 127}, fillPattern = FillPattern.Solid, extent = {{48, -47}, {54, -53}}, endAngle = 360), Ellipse(lineColor = {0, 0, 127}, fillColor = {0, 0, 127}, fillPattern = FillPattern.Solid, extent = {{-2, 53}, {4, 47}}, endAngle = 360), Ellipse(lineColor = {0, 0, 127}, fillColor = {0, 0, 127}, fillPattern = FillPattern.Solid, extent = {{30, 53}, {36, 47}}, endAngle = 360), Ellipse(lineColor = {0, 0, 127}, fillColor = {0, 0, 127}, fillPattern = FillPattern.Solid, extent = {{-46, 59}, {-40, 53}}, endAngle = 360), Ellipse(lineColor = {0, 0, 127}, fillColor = {0, 0, 127}, fillPattern = FillPattern.Solid, extent = {{20, -19}, {26, -25}}, endAngle = 360), Ellipse(lineColor = {0, 0, 127}, fillColor = {0, 0, 127}, fillPattern = FillPattern.Solid, extent = {{-84, -13}, {-78, -19}}, endAngle = 360), Ellipse(lineColor = {0, 0, 127}, fillColor = {0, 0, 127}, fillPattern = FillPattern.Solid, extent = {{-38, -33}, {-32, -39}}, endAngle = 360), Line(points = {{-35, 25}, {-35, -35}, {-25, -35}, {-25, -17}, {-15, -17}, {-15, -45}, {-5, -45}, {-5, 37}, {1, 37}, {1, 51}, {7, 51}, {7, -5}, {17, -5}, {17, 7}, {23, 7}, {23, -23}, {33, -23}, {33, 49}, {43, 49}, {43, 15}, {51, 15}, {51, -51}, {61, -51}}, color = {0, 0, 127}, pattern = LinePattern.Dot), Ellipse(lineColor = {0, 0, 127}, fillColor = {0, 0, 127}, fillPattern = FillPattern.Solid, extent = {{-70, 3}, {-64, -3}}, endAngle = 360), Line(points = {{-81, 78}, {-81, -90}}, color = {192, 192, 192}), Polygon(lineColor = {192, 192, 192}, fillColor = {192, 192, 192}, fillPattern = FillPattern.Solid, points = {{-81, 90}, {-89, 68}, {-73, 68}, {-81, 90}})}),
+            Documentation(info = "<html>
+        <p>
+        Partial base class of noise generators defining the common features
+        of noise blocks.
+        </p>
+        </html>", revisions = "<html>
+        <table border=\"1\" cellspacing=\"0\" cellpadding=\"2\">
+        <tr><th>Date</th> <th align=\"left\">Description</th></tr>
+        
+        <tr><td> June 22, 2015 </td>
+          <td>
+        
+        <table border=\"0\">
+        <tr><td>
+               <img src=\"modelica://Modelica/Resources/Images/Logos/dlr_logo.png\" alt=\"DLR logo\">
+        </td><td valign=\"bottom\">
+               Initial version implemented by
+               A. Kl&ouml;ckner, F. v.d. Linden, D. Zimmer, M. Otter.<br>
+               <a href=\"http://www.dlr.de/rmc/sr/en\">DLR Institute of System Dynamics and Control</a>
+        </td></tr></table>
+        </td></tr>
+        
+        </table>
+        </html>"));
+        end PartialClockedNoise;
+
+        model ClockedSensorNoise
+          extends Modelica.Clocked.RealSignals.Interfaces.PartialNoise;
+          parameter Boolean enableNoise = globalSeed.enableNoise "= true: y = u + noise, otherwise y = u" annotation(
+            choices(checkBox = true),
+            Dialog(tab = "Advanced", group = "Noise generation"));
+          // Advanced dialog menu: Initialization
+          parameter Boolean useGlobalSeed = true "= true: use global seed, otherwise ignore it" annotation(
+            choices(checkBox = true),
+            Dialog(tab = "Advanced", group = "Initialization", enable = enableNoise));
+          parameter Boolean useAutomaticLocalSeed = true "= true: use automatic local seed, otherwise use fixedLocalSeed" annotation(
+            choices(checkBox = true),
+            Dialog(tab = "Advanced", group = "Initialization", enable = enableNoise));
+          parameter Integer fixedLocalSeed = 1 "Local seed for the normal noise (any Integer number)" annotation(
+            Dialog(tab = "Advanced", group = "Initialization", enable = enableNoise and not useAutomaticLocalSeed));
+          parameter Integer fixedLocalSeedRW = fixedLocalSeed + 1 "Local seed for the random walk noise(any Integer number)" annotation(
+            Dialog(tab = "Advanced", group = "Initialization", enable = enableNoise and not useAutomaticLocalSeed));
+          parameter Real sigmaNoise = 1 "Standard Deviation of the white noise";
+          parameter Real sigmaRW = 1 "Standard Deviation of the white noise generating the Random Walk";
+          RocketControl.Components.Sensors.Internal.Noise.ClockedNormalNoise rwNoise(sigma = sigmaRW, useAutomaticLocalSeed = useAutomaticLocalSeed, useGlobalSeed = useGlobalSeed, enableNoise = enableNoise, fixedLocalSeed = fixedLocalSeedRW) annotation(
+            Placement(visible = true, transformation(origin = {-30, 50}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+          Modelica.Blocks.Continuous.Integrator integrator annotation(
+            Placement(visible = true, transformation(origin = {10, 50}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+          Modelica.Blocks.Math.Add add annotation(
+            Placement(visible = true, transformation(origin = {60, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+          Modelica.Blocks.Sources.Constant const(k = 0) annotation(
+            Placement(visible = true, transformation(origin = {-70, 50}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+          RocketControl.Components.Sensors.Internal.Noise.ClockedNormalNoise normalNoise(sigma = sigmaNoise, useAutomaticLocalSeed = useAutomaticLocalSeed, useGlobalSeed = useGlobalSeed, enableNoise = enableNoise, fixedLocalSeed = fixedLocalSeed) annotation(
+            Placement(visible = true, transformation(origin = {-30, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+        protected
+          outer Modelica.Blocks.Noise.GlobalSeed globalSeed "Definition of global seed via inner/outer";
+        equation
+          connect(rwNoise.y, integrator.u) annotation(
+            Line(points = {{-19, 50}, {-2, 50}}, color = {0, 0, 127}));
+          connect(add.y, y) annotation(
+            Line(points = {{72, 0}, {110, 0}}, color = {0, 0, 127}));
+          connect(integrator.y, add.u1) annotation(
+            Line(points = {{22, 50}, {40, 50}, {40, 6}, {48, 6}}, color = {0, 0, 127}));
+          connect(const.y, rwNoise.u) annotation(
+            Line(points = {{-59, 50}, {-42, 50}}, color = {0, 0, 127}));
+          connect(u, normalNoise.u) annotation(
+            Line(points = {{-120, 0}, {-42, 0}}, color = {0, 0, 127}));
+          connect(normalNoise.y, add.u2) annotation(
+            Line(points = {{-19, 0}, {40, 0}, {40, -6}, {48, -6}}, color = {0, 0, 127}));
+          annotation(
+            Icon(graphics = {Ellipse(lineColor = {0, 0, 127}, fillColor = {0, 0, 127}, fillPattern = FillPattern.Solid, extent = {{-38, -33}, {-32, -39}}, endAngle = 360), Polygon(lineColor = {192, 192, 192}, fillColor = {192, 192, 192}, fillPattern = FillPattern.Solid, points = {{-81, 90}, {-89, 68}, {-73, 68}, {-81, 90}}), Ellipse(lineColor = {0, 0, 127}, fillColor = {0, 0, 127}, fillPattern = FillPattern.Solid, extent = {{-70, 3}, {-64, -3}}, endAngle = 360), Ellipse(lineColor = {0, 0, 127}, fillColor = {0, 0, 127}, fillPattern = FillPattern.Solid, extent = {{-28, -15}, {-22, -21}}, endAngle = 360), Ellipse(lineColor = {0, 0, 127}, fillColor = {0, 0, 127}, fillPattern = FillPattern.Solid, extent = {{30, 53}, {36, 47}}, endAngle = 360), Ellipse(lineColor = {0, 0, 127}, fillColor = {0, 0, 127}, fillPattern = FillPattern.Solid, extent = {{-84, -13}, {-78, -19}}, endAngle = 360), Ellipse(lineColor = {0, 0, 127}, fillColor = {0, 0, 127}, fillPattern = FillPattern.Solid, extent = {{48, -47}, {54, -53}}, endAngle = 360), Ellipse(lineColor = {0, 0, 127}, fillColor = {0, 0, 127}, fillPattern = FillPattern.Solid, extent = {{40, 19}, {46, 13}}, endAngle = 360), Ellipse(lineColor = {0, 0, 127}, fillColor = {0, 0, 127}, fillPattern = FillPattern.Solid, extent = {{-46, 59}, {-40, 53}}, endAngle = 360), Line(points = {{-90, -23}, {82, -23}}, color = {192, 192, 192}), Ellipse(lineColor = {0, 0, 127}, fillColor = {0, 0, 127}, fillPattern = FillPattern.Solid, extent = {{20, -19}, {26, -25}}, endAngle = 360), Ellipse(lineColor = {0, 0, 127}, fillColor = {0, 0, 127}, fillPattern = FillPattern.Solid, extent = {{-54, -23}, {-48, -29}}, endAngle = 360), Ellipse(lineColor = {0, 0, 127}, fillColor = {0, 0, 127}, fillPattern = FillPattern.Solid, extent = {{-2, 53}, {4, 47}}, endAngle = 360), Line(points = {{-81, 78}, {-81, -90}}, color = {192, 192, 192}), Line(points = {{-35, 25}, {-35, -35}, {-25, -35}, {-25, -17}, {-15, -17}, {-15, -45}, {-5, -45}, {-5, 37}, {1, 37}, {1, 51}, {7, 51}, {7, -5}, {17, -5}, {17, 7}, {23, 7}, {23, -23}, {33, -23}, {33, 49}, {43, 49}, {43, 15}, {51, 15}, {51, -51}, {61, -51}}, color = {0, 0, 127}, pattern = LinePattern.Dot), Ellipse(lineColor = {0, 0, 127}, fillColor = {0, 0, 127}, fillPattern = FillPattern.Solid, extent = {{14, 9}, {20, 3}}, endAngle = 360), Polygon(lineColor = {192, 192, 192}, fillColor = {192, 192, 192}, fillPattern = FillPattern.Solid, points = {{91, -22}, {69, -14}, {69, -30}, {91, -22}}), Ellipse(lineColor = {0, 0, 127}, fillColor = {0, 0, 127}, fillPattern = FillPattern.Solid, extent = {{-8, 39}, {-2, 33}}, endAngle = 360), Ellipse(lineColor = {0, 0, 127}, fillColor = {0, 0, 127}, fillPattern = FillPattern.Solid, extent = {{-62, -47}, {-56, -53}}, endAngle = 360), Ellipse(lineColor = {0, 0, 127}, fillColor = {0, 0, 127}, fillPattern = FillPattern.Solid, extent = {{-18, -41}, {-12, -47}}, endAngle = 360), Ellipse(lineColor = {0, 0, 127}, fillColor = {0, 0, 127}, fillPattern = FillPattern.Solid, extent = {{4, -1}, {10, -7}}, endAngle = 360), Line(points = {{-81, -17}, {-67, -17}, {-67, -1}, {-59, -1}, {-59, -49}, {-51, -49}, {-51, -27}, {-43, -27}, {-43, 57}, {-35, 57}, {-35, 25}}, color = {0, 0, 127}, pattern = LinePattern.Dot), Text(lineColor = {175, 175, 175}, extent = {{-66, 92}, {94, 66}}, textString = "sigmaRW=sigmaRW"), Text(lineColor = {175, 175, 175}, extent = {{-70, -68}, {94, -96}}, textString = "sigma=%sigma"), Line(origin = {5, 0.35}, points = {{-86.0123, -23.0123}, {-54.0123, -9.01233}, {-40.0123, -17.0123}, {-14.0123, 2.98767}, {9.98767, -5.01233}, {31.9877, 10.9877}, {45.9877, -1.01233}, {63.9877, 4.98767}}, color = {255, 0, 0})}));
+        end ClockedSensorNoise;
+        annotation(
+          Icon(coordinateSystem(grid = {2, 0})));
+      end Noise;
+
+      partial model SensorGroupBase
+        extends Modelica.Mechanics.MultiBody.Sensors.Internal.PartialAbsoluteSensor;
+        RocketControl.Interfaces.AvionicsBus bus annotation(
+          Placement(visible = true, transformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+        annotation(
+          Icon(coordinateSystem(grid = {2, 0})));
+      end SensorGroupBase;
       annotation(
         Icon(coordinateSystem(grid = {2, 0})));
-    end SampledAccelerometer;
+    end Internal;
+
+    model IdealGyroscope
+      extends Modelica.Mechanics.MultiBody.Sensors.Internal.PartialAbsoluteSensor;
+      outer World world;
+      Modelica.Blocks.Interfaces.RealOutput w[3](each final quantity = "AngularVelocity", each final unit = "deg/s") annotation(
+        Placement(visible = true, transformation(origin = {106, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {102, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      Modelica.Mechanics.MultiBody.Sensors.AbsoluteAngularVelocity absoluteAngularVelocity(resolveInFrame = Modelica.Mechanics.MultiBody.Types.ResolveInFrameA.frame_a) annotation(
+        Placement(visible = true, transformation(origin = {-50, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      Modelica.Blocks.Math.UnitConversions.To_deg to_deg[3] annotation(
+        Placement(visible = true, transformation(origin = {22, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+    equation
+      connect(frame_a, absoluteAngularVelocity.frame_a) annotation(
+        Line(points = {{-100, 0}, {-60, 0}}));
+      connect(absoluteAngularVelocity.w, to_deg.u) annotation(
+        Line(points = {{-38, 0}, {10, 0}}, color = {0, 0, 127}, thickness = 0.5));
+      connect(to_deg.y, w) annotation(
+        Line(points = {{33, 0}, {106, 0}}, color = {0, 0, 127}, thickness = 0.5));
+      annotation(
+        Icon(graphics = {Text(lineColor = {0, 0, 255}, extent = {{-130, 72}, {131, 120}}, textString = "%name"), Text(lineColor = {64, 64, 64}, extent = {{-50, -14}, {50, -54}}, textString = "deg/s")}));
+    end IdealGyroscope;
+
+    model RealMagnetometer "Magnetometer sensor model with bias, gaussian noise and quantization effects"
+      import RocketControl.Types.NanoTesla;
+      extends Modelica.Mechanics.MultiBody.Sensors.Internal.PartialAbsoluteSensor;
+      parameter Integer samplePeriodMs(min = 0) "Sample period in milliseconds";
+      parameter NanoTesla bias[3] "Measurement bias for each axis";
+      parameter NanoTesla b_max "Magnetic field measurement upper limit";
+      parameter NanoTesla b_min = -b_max "Magnetic field measurement lower limit";
+      parameter Integer bits(min = 1) = 8 "Resolution in bits";
+      parameter Integer fixedLocalSeed[3] = {10, 100, 1000} "Local seed for each of the axes";
+      parameter NanoTesla sigmaNoise "Angular random walk standard deviation";
+      Modelica.Blocks.Interfaces.RealOutput b_meas[3](each final quantity = "MagneticFluxDensity", each final unit = "nT") annotation(
+        Placement(visible = true, transformation(origin = {106, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {102, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      RocketControl.Components.Sensors.Internal.SampleClockedWithADeffects sampleX(noise(sigma = sigmaNoise, useAutomaticLocalSeed = false, fixedLocalSeed = fixedLocalSeed[1]), bias = bias[1], biased = true, bits = bits, limited = true, noisy = true, quantized = true, yMax = b_max, yMin = b_min) annotation(
+        Placement(visible = true, transformation(origin = {0, 40}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
+      RocketControl.Components.Sensors.Internal.SampleClockedWithADeffects sampleY(noise(sigma = sigmaNoise, useAutomaticLocalSeed = false, fixedLocalSeed = fixedLocalSeed[2]), bias = bias[2], biased = true, bits = bits, limited = true, noisy = true, quantized = true, yMax = b_max, yMin = b_min) annotation(
+        Placement(visible = true, transformation(origin = {0, 0}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
+      RocketControl.Components.Sensors.Internal.SampleClockedWithADeffects sampleZ(noise(sigma = sigmaNoise, useAutomaticLocalSeed = false, fixedLocalSeed = fixedLocalSeed[3]), bias = bias[3], biased = true, bits = bits, limited = true, noisy = true, quantized = true, yMax = b_max, yMin = b_min) annotation(
+        Placement(visible = true, transformation(origin = {0, -40}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
+      Modelica.Clocked.ClockSignals.Clocks.PeriodicExactClock periodicClock1(factor = samplePeriodMs) annotation(
+        Placement(visible = true, transformation(origin = {-60, -80}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
+      RocketControl.Components.Sensors.IdealMagnetometer idealMagnetometer annotation(
+        Placement(visible = true, transformation(origin = {-60, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+    equation
+      connect(frame_a, idealMagnetometer.frame_a) annotation(
+        Line(points = {{-100, 0}, {-70, 0}}));
+      connect(idealMagnetometer.b[1], sampleX.u) annotation(
+        Line(points = {{-50, 0}, {-40, 0}, {-40, 40}, {-8, 40}}, color = {0, 0, 127}));
+      connect(idealMagnetometer.b[2], sampleY.u) annotation(
+        Line(points = {{-50, 0}, {-8, 0}}, color = {0, 0, 127}));
+      connect(idealMagnetometer.b[3], sampleZ.u) annotation(
+        Line(points = {{-50, 0}, {-40, 0}, {-40, -40}, {-8, -40}}, color = {0, 0, 127}));
+      connect(periodicClock1.y, sampleZ.clock) annotation(
+        Line(points = {{-54, -80}, {0, -80}, {0, -48}}, color = {175, 175, 175}));
+      connect(periodicClock1.y, sampleY.clock) annotation(
+        Line(points = {{-54, -80}, {0, -80}, {0, -8}}, color = {175, 175, 175}));
+      connect(periodicClock1.y, sampleX.clock) annotation(
+        Line(points = {{-54, -80}, {0, -80}, {0, 32}}, color = {175, 175, 175}));
+      connect(sampleX.y, b_meas[1]) annotation(
+        Line(points = {{6, 40}, {40, 40}, {40, 0}, {106, 0}}, color = {0, 0, 127}));
+      connect(sampleY.y, b_meas[2]) annotation(
+        Line(points = {{6, 0}, {106, 0}}, color = {0, 0, 127}));
+      connect(sampleZ.y, b_meas[3]) annotation(
+        Line(points = {{6, -40}, {40, -40}, {40, 0}, {106, 0}}, color = {0, 0, 127}));
+      annotation(
+        Icon(graphics = {Text(lineColor = {0, 0, 255}, extent = {{-127, 77}, {134, 125}}, textString = "%name"), Text(lineColor = {64, 64, 64}, extent = {{-50, -14}, {50, -54}}, textString = "rad/s")}),
+        Diagram);
+    end RealMagnetometer;
+
+    model Sensors
+      extends Modelica.Mechanics.MultiBody.Sensors.Internal.PartialAbsoluteSensor;
+      RocketControl.Interfaces.AvionicsBus avionicsBus annotation(
+        Placement(visible = true, transformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      RocketControl.Components.Sensors.RealGyroscope realGyroscope annotation(
+        Placement(visible = true, transformation(origin = {0, 40}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      RocketControl.Components.Sensors.RealAccelerometer realAccelerometer annotation(
+        Placement(visible = true, transformation(origin = {0, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      RocketControl.Components.Sensors.RealMagnetometer realMagnetometer annotation(
+        Placement(visible = true, transformation(origin = {0, -40}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+    equation
+      connect(frame_a, realGyroscope.frame_a) annotation(
+        Line(points = {{-100, 0}, {-60, 0}, {-60, 40}, {-10, 40}}));
+      connect(frame_a, realAccelerometer.frame_a) annotation(
+        Line(points = {{-100, 0}, {-10, 0}}));
+      connect(frame_a, realMagnetometer.frame_a) annotation(
+        Line(points = {{-100, 0}, {-60, 0}, {-60, -40}, {-10, -40}}));
+      connect(realGyroscope.w_meas, avionicsBus.w) annotation(
+        Line(points = {{10, 40}, {40, 40}, {40, 0}, {100, 0}}, color = {0, 0, 127}, thickness = 0.5));
+      connect(realAccelerometer.acc, avionicsBus.a) annotation(
+        Line(points = {{10, 0}, {100, 0}}, color = {0, 0, 127}, thickness = 0.5));
+      connect(realMagnetometer.b_meas, avionicsBus.b) annotation(
+        Line(points = {{10, -40}, {40, -40}, {40, 0}, {100, 0}}, color = {0, 0, 127}, thickness = 0.5));
+      annotation(
+        Icon(graphics = {Line(origin = {80, 0}, points = {{-10, 0}, {10, 0}}), Text(lineColor = {0, 0, 255}, extent = {{-130, 72}, {131, 120}}, textString = "%name")}));
+    end Sensors;
+
+    model IdealBarometer
+      extends Modelica.Mechanics.MultiBody.Sensors.Internal.PartialAbsoluteSensor;
+      outer RocketControl.World.Atmosphere atmosphere;
+  Modelica.Blocks.Interfaces.RealOutput press annotation(
+        Placement(visible = true, transformation(origin = {106, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {102, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+    equation
+    press = atmosphere.pressure(frame_a.r_0);
+    assert(cardinality(frame_a) > 0, "Connector frame_a must be connected at least once");
+      frame_a.f = zeros(3);
+      frame_a.t = zeros(3);
+      annotation(
+        Icon(graphics = {Text(lineColor = {0, 0, 255}, extent = {{-127, 77}, {134, 125}}, textString = "%name"), Text(lineColor = {64, 64, 64}, extent = {{-50, -14}, {50, -54}}, textString = "Pa"), Line(origin = {85.1063, -1.10634}, points = {{-15.1063, 1.10634}, {6.89366, 1.10634}, {14.8937, -0.893661}})}));
+    end IdealBarometer;
+
+    model RealBarometer
+     extends Modelica.Mechanics.MultiBody.Sensors.Internal.PartialAbsoluteSensor;
+     
+      parameter Integer samplePeriodMs(min = 0) "Sample period in milliseconds";
+      parameter SI.Pressure bias "Measurement bias";
+      parameter SI.Pressure p_max "Pressure measurement upper limit";
+      parameter SI.Pressure p_min = 0 "Pressure measurement lower limit";
+      parameter Integer bits(min = 1) = 8 "Resolution in bits";
+      parameter Integer fixedLocalSeed = 10 "Local seed for each of the axes";
+      parameter SI.Pressure sigmaNoise "Noise standard deviation";
+     
+  Modelica.Blocks.Interfaces.RealOutput press annotation(
+        Placement(visible = true, transformation(origin = {106, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {102, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  RocketControl.Components.Sensors.IdealBarometer idealBarometer annotation(
+        Placement(visible = true, transformation(origin = {-50, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Clocked.ClockSignals.Clocks.PeriodicExactClock periodicClock1(factor = samplePeriodMs) annotation(
+        Placement(visible = true, transformation(origin = {-20, -60}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
+        
+        RocketControl.Components.Sensors.Internal.SampleClockedWithADeffects sample(noise(sigma = sigmaNoise, useAutomaticLocalSeed = false, fixedLocalSeed = fixedLocalSeed), bias = bias, biased = true, bits = bits, limited = true, noisy = true, quantized = true, yMax = p_max, yMin = p_min) annotation(
+        Placement(visible = true, transformation(origin = {40, 0}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
+    equation
+      connect(frame_a, idealBarometer.frame_a) annotation(
+        Line(points = {{-100, 0}, {-60, 0}}));
+  connect(idealBarometer.press, sample.u) annotation(
+        Line(points = {{-40, 0}, {32, 0}}, color = {0, 0, 127}));
+  connect(sample.y, press) annotation(
+        Line(points = {{46, 0}, {106, 0}}, color = {0, 0, 127}));
+  connect(periodicClock1.y, sample.clock) annotation(
+        Line(points = {{-14, -60}, {40, -60}, {40, -8}}, color = {175, 175, 175}));
+      annotation(
+        Icon(graphics = {Text(lineColor = {64, 64, 64}, extent = {{-50, -14}, {50, -54}}, textString = "Pa"), Text(lineColor = {0, 0, 255}, extent = {{-127, 77}, {134, 125}}, textString = "%name"), Line(origin = {81, 0}, points = {{-11, 0}, {11, 0}})}));
+    end RealBarometer;
   end Sensors;
 
   model BodyVariableMass "Rigid body with mass, inertia tensor and one frame connector (12 potential states)"
@@ -465,7 +893,7 @@ package Components
       Connections.potentialRoot(frame_a.R);
     end if;
     r_0 = frame_a.r_0;
-  if not Connections.isRoot(frame_a.R) then
+    if not Connections.isRoot(frame_a.R) then
 // Body does not have states
 // Dummies
       Q = {0, 0, 0, 1};
@@ -705,7 +1133,7 @@ package Components
         parameter Modelica.Units.SI.Mass m_0 "Initial mass";
         RocketControl.Components.Motors.Internal.Inertia.SolidPropellantInertia solidPropellantInertia(Dext = Dext, Din_0 = Din_0, h = h, m_0 = m_0) annotation(
           Placement(visible = true, transformation(origin = {0, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-        RocketControl.Components.BodyVariableMass bodyVariableMass(enforceStates = false, r_CM = {h / 2, 0, 0}, sequence_angleStates = {3, 2, 1}, useQuaternions = true, w_a(start = {0, 0, 0})) annotation(
+        RocketControl.Components.BodyVariableMass bodyVariableMass(r_CM = {h / 2, 0, 0}, sequence_angleStates = {3, 2, 1}, w_a(start = {0, 0, 0})) annotation(
           Placement(visible = true, transformation(origin = {40, 4}, extent = {{-10, -10}, {10, 10}}, rotation = -90)));
         Modelica.Mechanics.MultiBody.Interfaces.Frame_b frame_b annotation(
           Placement(visible = true, transformation(origin = {0, 98}, extent = {{-16, -16}, {16, 16}}, rotation = -90), iconTransformation(origin = {0, 98}, extent = {{-16, -16}, {16, 16}}, rotation = -90)));
@@ -745,6 +1173,23 @@ package Components
       annotation(
         Icon(graphics = {Text(origin = {2, -184}, lineColor = {0, 0, 255}, extent = {{-150, 110}, {150, 70}}, textString = "%name"), Rectangle(origin = {0.51, 47.73}, fillColor = {85, 85, 85}, fillPattern = FillPattern.VerticalCylinder, extent = {{-59.94, 48.27}, {59.94, -48.27}}), Polygon(origin = {1, -30}, fillColor = {43, 88, 85}, fillPattern = FillPattern.VerticalCylinder, points = {{-21, 30}, {-51, 10}, {-71, -30}, {71, -30}, {49, 10}, {19, 30}, {5, 30}, {-21, 30}}), Text(origin = {1, 38}, lineColor = {255, 255, 255}, extent = {{-59, 38}, {59, -38}}, textString = "SUS")}));
     end Sustainer;
+
+    model Cesaroni
+      parameter Modelica.Units.SI.Time start_delay = 0;
+      Modelica.Blocks.Sources.TimeTable thrustCurve(offset = 0, shiftTime = start_delay, startTime = start_delay, table = [0, 0; 0.016, 1421.724; 0.034, 1345.218; 0.049, 1502.479; 0.081, 1415.348; 0.21, 1432.349; 0.453, 1432.349; 0.809, 1462.102; 1.07, 1534.357; 1.28, 1540.732; 2.661, 1283.589; 2.843, 1277.214; 2.932, 1115.702; 3.037, 488.784; 3.163, 82.881; 3.284, 0.0; 500, 0], timeScale = 1) annotation(
+        Placement(visible = true, transformation(origin = {-70, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      RocketControl.Components.Motors.Internal.SolidMotorAndTank l1350cs(Dext = 0.075, Din_0 = 0.02, Isp = 228.2, h = 0.532, m_0 = 1.905) annotation(
+        Placement(visible = true, transformation(origin = {0, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      Modelica.Mechanics.MultiBody.Interfaces.Frame_b frame_b annotation(
+        Placement(visible = true, transformation(origin = {0, 98}, extent = {{-16, -16}, {16, 16}}, rotation = -90), iconTransformation(origin = {0, 98}, extent = {{-16, -16}, {16, 16}}, rotation = -90)));
+    equation
+      connect(l1350cs.frame_b, frame_b) annotation(
+        Line(points = {{0, 10}, {0, 98}}));
+      connect(thrustCurve.y, l1350cs.thrust) annotation(
+        Line(points = {{-59, 0}, {-10, 0}}, color = {0, 0, 127}));
+      annotation(
+        Icon(graphics = {Text(origin = {2, -184}, lineColor = {0, 0, 255}, extent = {{-150, 110}, {150, 70}}, textString = "%name"), Rectangle(origin = {0.51, 47.73}, fillColor = {85, 85, 85}, fillPattern = FillPattern.VerticalCylinder, extent = {{-59.94, 48.27}, {59.94, -48.27}}), Polygon(origin = {1, -30}, fillColor = {43, 88, 85}, fillPattern = FillPattern.VerticalCylinder, points = {{-21, 30}, {-51, 10}, {-71, -30}, {71, -30}, {49, 10}, {19, 30}, {5, 30}, {-21, 30}}), Text(origin = {1, 38}, lineColor = {255, 255, 255}, extent = {{-59, 38}, {59, -38}}, textString = "M2000R")}));
+    end Cesaroni;
   end Motors;
 
   package Forces
@@ -826,6 +1271,133 @@ package Components
       annotation(
         Icon(graphics = {Line(points = {{-52, -40}, {68, -40}}), Ellipse(visible = false, lineColor = {255, 0, 0}, extent = {{70, 30}, {130, -30}}, endAngle = 360), Text(origin = {-82, 122}, extent = {{-150, -75}, {150, -45}}, textString = "d=%d"), Line(points = {{38, -70}, {80, -70}}), Text(lineColor = {0, 0, 255}, extent = {{-150, -150}, {150, -110}}, textString = "%name"), Ellipse(visible = false, lineColor = {255, 0, 0}, extent = {{-70, 30}, {-130, -30}}, endAngle = 360), Line(points = {{80, 40}, {80, -70}}), Text(visible = false, lineColor = {255, 0, 0}, extent = {{-62, 50}, {-140, 30}}, textString = "R=0"), Text(origin = {-2, 52}, extent = {{-150, -75}, {150, -45}}, textString = "n=%n"), Text(visible = false, lineColor = {255, 0, 0}, extent = {{62, 50}, {140, 30}}, textString = "R=0"), Text(visible = false, origin = {0, -28}, lineColor = {255, 0, 0}, extent = {{62, 50}, {140, 30}}, textString = "R=0"), Rectangle(fillColor = {192, 192, 192}, fillPattern = FillPattern.Solid, extent = {{-52, -40}, {38, -100}}), Line(points = {{-80, 40}, {-60, 40}, {-45, 10}, {-15, 70}, {15, 10}, {45, 70}, {60, 40}, {80, 40}}), Text(origin = {-82, 154}, extent = {{-150, -75}, {150, -45}}, textString = "c=%c"), Line(points = {{-80, -70}, {-52, -70}}), Text(visible = false, lineColor = {255, 0, 0}, extent = {{-62, 50}, {-140, 30}}, textString = "R=0"), Text(lineColor = {0, 0, 255}, extent = {{-150, -150}, {150, -110}}, textString = "%name"), Ellipse(visible = false, lineColor = {255, 0, 0}, extent = {{70, 30}, {130, -30}}, endAngle = 360), Line(points = {{80, 0}, {100, 0}}), Line(points = {{-52, -100}, {68, -100}}), Line(visible = false, points = {{-100, -101}, {-100, -80}, {-6, -80}}, color = {191, 0, 0}, pattern = LinePattern.Dot), Ellipse(visible = false, lineColor = {255, 0, 0}, extent = {{-70, 30}, {-130, -30}}, endAngle = 360), Line(origin = {-80, -15}, points = {{0, 55}, {0, -55}}), Line(origin = {-89, 0}, points = {{9, 0}, {-7, 0}, {-9, 0}}), Line(origin = {18.3173, -69.7805}, points = {{-68, 0}, {16, 0}, {16, 0}}, thickness = 0.75), Line(origin = {-39.4628, -69.8086}, points = {{9.64645, 20}, {-10.3536, -7.10543e-15}, {9.64645, -20}}, thickness = 0.75), Line(origin = {24.2344, -69.8295}, points = {{-9.64645, 20}, {10.3536, -7.10543e-15}, {-9.64645, -20}}, thickness = 0.75)}));
     end LinearSpringDamperParallel;
+
+    model ConnectionFlange
+      extends Modelica.Mechanics.MultiBody.Interfaces.PartialTwoFrames;
+      parameter SI.Length diameter "Flange diameter";
+      parameter SI.TranslationalSpringConstant c(final min = 0) "Spring constant";
+      parameter SI.Length s_unstretched = 0 "Unstretched spring length";
+      parameter SI.TranslationalDampingConstant d(final min = 0) = 0 "Damping constant";
+      Modelica.Mechanics.MultiBody.Parts.FixedTranslation fixedTranslation(r = {0, 0.5, sqrt(3) / 2} * r) annotation(
+        Placement(visible = true, transformation(origin = {-50, 60}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      Modelica.Mechanics.MultiBody.Parts.FixedTranslation fixedTranslation2(r = {0, 0, -1} * r) annotation(
+        Placement(visible = true, transformation(origin = {-50, -60}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      Modelica.Mechanics.MultiBody.Forces.SpringDamperParallel springDamperParallel1(c = c, d = d, s_unstretched = s_unstretched) annotation(
+        Placement(visible = true, transformation(origin = {0, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      Modelica.Mechanics.MultiBody.Forces.SpringDamperParallel springDamperParallel2(c = c, d = d, s_unstretched = s_unstretched) annotation(
+        Placement(visible = true, transformation(origin = {0, -60}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      Modelica.Mechanics.MultiBody.Parts.FixedTranslation fixedTranslation3(r = {0, -0.5, -sqrt(3) / 2} * r) annotation(
+        Placement(visible = true, transformation(origin = {50, 60}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      Modelica.Mechanics.MultiBody.Parts.FixedTranslation fixedTranslation4(r = {0, 0.5, -sqrt(3) / 2} * r) annotation(
+        Placement(visible = true, transformation(origin = {50, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      Modelica.Mechanics.MultiBody.Parts.FixedTranslation fixedTranslation5(r = {0, 0, 1} * r) annotation(
+        Placement(visible = true, transformation(origin = {50, -60}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+    protected
+      final parameter SI.Length r = diameter / 2;
+      Modelica.Mechanics.MultiBody.Parts.FixedTranslation fixedTranslation1(r = {0, -0.5, sqrt(3) / 2} * r) annotation(
+        Placement(visible = true, transformation(origin = {-50, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      Modelica.Mechanics.MultiBody.Forces.SpringDamperParallel springDamperParallel(c = c, d = d, s_unstretched = s_unstretched) annotation(
+        Placement(visible = true, transformation(origin = {0, 60}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+    equation
+      connect(fixedTranslation.frame_a, frame_a) annotation(
+        Line(points = {{-60, 60}, {-80, 60}, {-80, 0}, {-100, 0}}, color = {95, 95, 95}));
+      connect(fixedTranslation1.frame_a, frame_a) annotation(
+        Line(points = {{-60, 0}, {-100, 0}}, color = {95, 95, 95}));
+      connect(fixedTranslation2.frame_a, frame_a) annotation(
+        Line(points = {{-60, -60}, {-80, -60}, {-80, 0}, {-100, 0}}));
+      connect(fixedTranslation.frame_b, springDamperParallel.frame_a) annotation(
+        Line(points = {{-40, 60}, {-10, 60}}, color = {95, 95, 95}));
+      connect(fixedTranslation2.frame_b, springDamperParallel2.frame_a) annotation(
+        Line(points = {{-40, -60}, {-10, -60}}));
+      connect(fixedTranslation1.frame_b, springDamperParallel1.frame_a) annotation(
+        Line(points = {{-40, 0}, {-10, 0}}, color = {95, 95, 95}));
+      connect(springDamperParallel2.frame_b, fixedTranslation5.frame_a) annotation(
+        Line(points = {{10, -60}, {40, -60}}, color = {95, 95, 95}));
+      connect(fixedTranslation5.frame_b, frame_b) annotation(
+        Line(points = {{60, -60}, {80, -60}, {80, 0}, {100, 0}}));
+      connect(springDamperParallel1.frame_b, fixedTranslation4.frame_a) annotation(
+        Line(points = {{10, 0}, {40, 0}}));
+      connect(fixedTranslation4.frame_b, frame_b) annotation(
+        Line(points = {{60, 0}, {100, 0}}));
+      connect(fixedTranslation3.frame_b, frame_b) annotation(
+        Line(points = {{60, 60}, {80, 60}, {80, 0}, {100, 0}}, color = {95, 95, 95}));
+      connect(springDamperParallel.frame_b, fixedTranslation3.frame_a) annotation(
+        Line(points = {{10, 60}, {40, 60}}));
+      annotation(
+        Icon(graphics = {Rectangle(origin = {-20, 0}, fillColor = {107, 107, 107}, fillPattern = FillPattern.Solid, extent = {{-20, 60}, {20, -60}}), Rectangle(origin = {20, 0}, fillColor = {147, 147, 147}, fillPattern = FillPattern.Solid, extent = {{20, 60}, {-20, -60}}), Line(origin = {-79, 0}, points = {{39, 0}, {-19, 0}}), Line(origin = {81, 0}, points = {{-41, 0}, {21, 0}}), Text(lineColor = {0, 0, 255}, extent = {{-150, -150}, {150, -110}}, textString = "%name"), Text(extent = {{-150, 105}, {150, 135}}, textString = "c=%c"), Text(extent = {{-150, 70}, {150, 100}}, textString = "d=%d")}));
+    end ConnectionFlange;
+
+    model CompressionSpring "Spring that reacts only when compressed"
+      extends Modelica.Mechanics.MultiBody.Interfaces.PartialTwoFrames;
+      import Modelica.Mechanics.MultiBody.Frames.resolve2;
+      import Modelica.Mechanics.MultiBody.Frames.resolveRelative;
+      parameter Real n[3] = {1, 0, 0} "Direction along which the spring is acting";
+      parameter Modelica.Units.SI.ModulusOfElasticity c;
+      SI.Position s(fixed = false, start = 0);
+      SI.Position r_rel[3];
+      SI.Force f[3];
+    equation
+      r_rel = resolve2(frame_a.R, frame_b.r_0 - frame_a.r_0);
+      s = r_rel * n;
+      frame_b.t = zeros(3);
+      frame_a.t = zeros(3);
+      if s < 0 then
+        f = -c * r_rel;
+      else
+        f = zeros(3);
+      end if;
+      frame_a.f = f;
+      frame_b.f = resolveRelative(-f, frame_a.R, frame_b.R);
+      annotation(
+        Icon(graphics = {Line(points = {{-100, 0}, {-58, 0}, {-43, -30}, {-13, 30}, {17, -30}, {47, 30}, {62, 0}, {100, 0}}), Line(origin = {-23.8859, 59.9583}, points = {{44, 0}, {4, 0}}, thickness = 0.75), Text(origin = {0, 22}, extent = {{-150, -75}, {150, -45}}, textString = "c=%c"), Text(origin = {0, -12}, extent = {{-150, -75}, {150, -45}}, textString = "n=%n"), Text(origin = {4, -176}, lineColor = {0, 0, 255}, extent = {{-150, 85}, {150, 45}}, textString = "%name"), Polygon(origin = {30, 60}, fillPattern = FillPattern.Solid, points = {{10, 20}, {-10, 0}, {10, -20}, {0, 0}, {10, 20}}), Polygon(origin = {-30, 60}, rotation = 180, fillPattern = FillPattern.Solid, points = {{10, 20}, {-10, 0}, {10, -20}, {0, 0}, {10, 20}})}));
+    end CompressionSpring;
+
+    model CompressionDamper "Damper that acts only on a specific direction and can be enabled / disabled"
+      extends Modelica.Mechanics.MultiBody.Interfaces.PartialTwoFrames;
+      import Modelica.Mechanics.MultiBody.Frames.resolve2;
+      import Modelica.Mechanics.MultiBody.Frames.resolveRelative;
+      parameter Real n[3] = {1, 0, 0} "Direction along which the damper is acting";
+      parameter Modelica.Units.SI.DampingCoefficient d;
+      SI.Position s(fixed = false, start = 0);
+      SI.Position r_rel[3];
+      SI.Force f[3];
+    equation
+      r_rel = resolve2(frame_a.R, frame_b.r_0 - frame_a.r_0);
+      s = r_rel * n;
+      frame_b.t = zeros(3);
+      frame_a.t = zeros(3);
+      if der(s) < 0 and s < 0 then
+        f = -d * der(r_rel);
+      else
+        f = zeros(3);
+      end if;
+      frame_a.f = f;
+      frame_b.f = resolveRelative(-f, frame_a.R, frame_b.R);
+      annotation(
+        Icon(graphics = {Text(origin = {4, -176}, lineColor = {0, 0, 255}, extent = {{-150, 85}, {150, 45}}, textString = "%name"), Text(origin = {0, -12}, extent = {{-150, -75}, {150, -45}}, textString = "n=%n"), Rectangle(origin = {8, 0}, fillColor = {192, 192, 192}, fillPattern = FillPattern.Solid, extent = {{-60, 30}, {30, -30}}), Line(origin = {7.40383, -1.76063e-06}, points = {{-101, 0}, {-60, 0}}), Line(origin = {7.40383, -1.76063e-06}, points = {{30, 0}, {100, 0}}), Line(origin = {7.40383, -1.76063e-06}, points = {{-60, -30}, {-60, 30}}), Text(origin = {0, 18}, extent = {{-150, -75}, {150, -45}}, textString = "d=%d"), Line(visible = false, origin = {7.40383, -1.76063e-06}, points = {{-100, -99}, {-100, -25}, {-10, -25}}, color = {191, 0, 0}, pattern = LinePattern.Dot), Line(origin = {7.40383, -1.76063e-06}, points = {{-60, -30}, {60, -30}}), Line(origin = {7.40383, -1.76063e-06}, points = {{-60, 30}, {60, 30}}), Polygon(origin = {-30, 60}, rotation = 180, fillPattern = FillPattern.Solid, points = {{10, 20}, {-10, 0}, {10, -20}, {0, 0}, {10, 20}}), Line(origin = {-23.8859, 59.9583}, points = {{44, 0}, {4, 0}}, thickness = 0.75), Polygon(origin = {30, 60}, fillPattern = FillPattern.Solid, points = {{10, 20}, {-10, 0}, {10, -20}, {0, 0}, {10, 20}})}));
+    end CompressionDamper;
+
+    model CompressionSpringDamper "Spring and damper in parallel that act only on a specific direction and can be enabled / disabled"
+      extends Modelica.Mechanics.MultiBody.Interfaces.PartialTwoFrames;
+      parameter Real n[3] = {1, 0, 0} "Direction along which the spring is acting";
+      parameter SI.ModulusOfElasticity c;
+      parameter SI.DampingCoefficient d;
+      Components.Forces.CompressionSpring linearSpring(c = c, n = n) annotation(
+        Placement(visible = true, transformation(origin = {0, 40}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      Components.Forces.CompressionDamper linearDamper(d = d, n = n) annotation(
+        Placement(visible = true, transformation(origin = {0, -40}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+    equation
+      connect(linearSpring.frame_b, frame_b) annotation(
+        Line(points = {{10, 40}, {60, 40}, {60, 0}, {100, 0}}));
+      connect(linearDamper.frame_b, frame_b) annotation(
+        Line(points = {{10, -40}, {60, -40}, {60, 0}, {100, 0}}, color = {95, 95, 95}));
+      connect(frame_a, linearDamper.frame_a) annotation(
+        Line(points = {{-100, 0}, {-60, 0}, {-60, -40}, {-10, -40}}));
+      connect(linearSpring.frame_a, frame_a) annotation(
+        Line(points = {{-10, 40}, {-60, 40}, {-60, 0}, {-100, 0}}, color = {95, 95, 95}));
+      annotation(
+        Icon(graphics = {Line(points = {{-52, -40}, {68, -40}}), Ellipse(visible = false, lineColor = {255, 0, 0}, extent = {{70, 30}, {130, -30}}, endAngle = 360), Text(origin = {-82, 122}, extent = {{-150, -75}, {150, -45}}, textString = "d=%d"), Line(points = {{38, -70}, {80, -70}}), Text(lineColor = {0, 0, 255}, extent = {{-150, -150}, {150, -110}}, textString = "%name"), Ellipse(visible = false, lineColor = {255, 0, 0}, extent = {{-70, 30}, {-130, -30}}, endAngle = 360), Line(points = {{80, 40}, {80, -70}}), Text(visible = false, lineColor = {255, 0, 0}, extent = {{-62, 50}, {-140, 30}}, textString = "R=0"), Text(origin = {-82, 178}, extent = {{-150, -75}, {150, -45}}, textString = "n=%n"), Text(visible = false, lineColor = {255, 0, 0}, extent = {{62, 50}, {140, 30}}, textString = "R=0"), Text(visible = false, origin = {0, -28}, lineColor = {255, 0, 0}, extent = {{62, 50}, {140, 30}}, textString = "R=0"), Rectangle(fillColor = {192, 192, 192}, fillPattern = FillPattern.Solid, extent = {{-52, -40}, {38, -100}}), Line(points = {{-80, 40}, {-60, 40}, {-45, 10}, {-15, 70}, {15, 10}, {45, 70}, {60, 40}, {80, 40}}), Text(origin = {-82, 154}, extent = {{-150, -75}, {150, -45}}, textString = "c=%c"), Line(points = {{-80, -70}, {-52, -70}}), Text(visible = false, lineColor = {255, 0, 0}, extent = {{-62, 50}, {-140, 30}}, textString = "R=0"), Text(lineColor = {0, 0, 255}, extent = {{-150, -150}, {150, -110}}, textString = "%name"), Ellipse(visible = false, lineColor = {255, 0, 0}, extent = {{70, 30}, {130, -30}}, endAngle = 360), Line(points = {{80, 0}, {100, 0}}), Line(points = {{-52, -100}, {68, -100}}), Line(visible = false, points = {{-100, -101}, {-100, -80}, {-6, -80}}, color = {191, 0, 0}, pattern = LinePattern.Dot), Ellipse(visible = false, lineColor = {255, 0, 0}, extent = {{-70, 30}, {-130, -30}}, endAngle = 360), Line(origin = {-80, -15}, points = {{0, 55}, {0, -55}}), Line(origin = {-89, 0}, points = {{9, 0}, {-7, 0}, {-9, 0}}), Line(origin = {-24.6905, -11.2486}, points = {{44, 0}, {4, 0}}, thickness = 0.75), Polygon(origin = {-30, -12}, rotation = 180, fillPattern = FillPattern.Solid, points = {{10, 20}, {-10, 0}, {10, -20}, {0, 0}, {10, 20}}), Polygon(origin = {30, -12}, fillPattern = FillPattern.Solid, points = {{10, 20}, {-10, 0}, {10, -20}, {0, 0}, {10, 20}})}));
+    end CompressionSpringDamper;
   end Forces;
 
   package LaunchPad
@@ -959,6 +1531,26 @@ package Components
       annotation(
         Icon(graphics = {Polygon(origin = {-20, -6}, fillColor = {85, 122, 162}, fillPattern = FillPattern.VerticalCylinder, points = {{-28, -42}, {-14, -50}, {-14, -42}, {26, 38}, {28, 50}, {20, 42}, {-20, -38}, {-28, -42}}), Polygon(origin = {-9, 8}, fillColor = {222, 222, 222}, fillPattern = FillPattern.Forward, points = {{17, 88}, {-71, -78}, {-71, -88}, {71, -88}, {49, -80}, {-55, -80}, {17, 62}, {17, 88}}), Rectangle(origin = {6, 20}, fillPattern = FillPattern.Solid, extent = {{-2, 4}, {2, -4}}), Rectangle(origin = {-22, -36}, fillPattern = FillPattern.Solid, extent = {{-2, 4}, {2, -4}}), Text(lineColor = {0, 0, 255}, extent = {{-150, 80}, {150, 120}}, textString = "%name"), Text(origin = {-760.66, 76}, lineColor = {128, 128, 128}, extent = {{566.66, -29}, {770.66, -58}}, textString = "a"), Text(origin = {-566.66, 74}, lineColor = {128, 128, 128}, extent = {{566.66, -29}, {770.66, -58}}, textString = "bow"), Text(origin = {-227.774, 14}, lineColor = {128, 128, 128}, extent = {{277.774, -29}, {377.774, -58}}, textString = "aft"), Line(origin = {40, -48}, points = {{-62, 12}, {20, 12}, {20, -12}, {62, -12}}), Line(origin = {53, 40}, points = {{-47, -20}, {7, -20}, {7, 20}, {47, 20}})}));
     end LaunchRail;
+
+    model SurfaceFixed
+      parameter NonSI.Angle_deg latitude;
+      parameter NonSI.Angle_deg longitude;
+    equation
+
+      annotation(
+        Icon(coordinateSystem(grid = {2, 0})));
+    end SurfaceFixed;
+
+    model PartialLaunchMount
+      Modelica.Mechanics.MultiBody.Interfaces.Frame_a frame_a annotation(
+        Placement(visible = true, transformation(origin = {-100, 60}, extent = {{-16, -16}, {16, 16}}, rotation = 0), iconTransformation(origin = {-100, 60}, extent = {{-16, -16}, {16, 16}}, rotation = 0)));
+      Modelica.Mechanics.MultiBody.Interfaces.Frame_a frame_a1 annotation(
+        Placement(visible = true, transformation(origin = {-100, -40}, extent = {{-16, -16}, {16, 16}}, rotation = 0), iconTransformation(origin = {-100, -60}, extent = {{-16, -16}, {16, 16}}, rotation = 0)));
+    equation
+
+      annotation(
+        Icon(coordinateSystem(grid = {2, 0}), graphics = {Text(origin = {18, 66}, lineColor = {128, 128, 128}, extent = {{-136, -25}, {-100, -50}}, textString = "bow"), Text(origin = {16, -54}, lineColor = {128, 128, 128}, extent = {{-136, -25}, {-100, -50}}, textString = "aft")}));
+    end PartialLaunchMount;
   end LaunchPad;
 
   package Control
@@ -1003,34 +1595,15 @@ package Components
     end PitchController;
   end Control;
 
-  package Noise
-    model NormalNoiseAndRandomWalk
-      import RocketControl.Types.*;
-      extends Modelica.Blocks.Interfaces.SO;
-      parameter SI.Duration samplePeriod "Noise sample period";
-      parameter Real sigmaNoise = 1 "Standard Deviation of the white noise";
-      parameter Real sigmaRW = 1 "Standard Deviation of the white noise generating the Random Walk";
-      Modelica.Blocks.Math.Add add annotation(
-        Placement(visible = true, transformation(origin = {70, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-      Modelica.Blocks.Continuous.Integrator integrator annotation(
-        Placement(visible = true, transformation(origin = {10, 30}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-      Modelica.Blocks.Noise.NormalNoise randomWalk(samplePeriod = samplePeriod, sigma = sigmaRW, useAutomaticLocalSeed = true, useGlobalSeed = true) annotation(
-        Placement(visible = true, transformation(origin = {-50, 30}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-      Modelica.Blocks.Noise.NormalNoise noise(samplePeriod = samplePeriod, sigma = sigmaNoise, useAutomaticLocalSeed = true, useGlobalSeed = true) annotation(
-        Placement(visible = true, transformation(origin = {-50, -10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-    equation
-      connect(add.y, y) annotation(
-        Line(points = {{82, 0}, {110, 0}}, color = {0, 0, 127}));
-      connect(integrator.y, add.u1) annotation(
-        Line(points = {{22, 30}, {32, 30}, {32, 6}, {58, 6}}, color = {0, 0, 127}));
-      connect(randomWalk.y, integrator.u) annotation(
-        Line(points = {{-38, 30}, {-2, 30}}, color = {0, 0, 127}));
-      connect(noise.y, add.u2) annotation(
-        Line(points = {{-38, -10}, {32, -10}, {32, -6}, {58, -6}}, color = {0, 0, 127}));
-      annotation(
-        Icon(graphics = {Polygon(lineColor = {192, 192, 192}, fillColor = {192, 192, 192}, fillPattern = FillPattern.Solid, points = {{94, -14}, {72, -6}, {72, -22}, {94, -14}}), Polygon(lineColor = {192, 192, 192}, fillColor = {192, 192, 192}, fillPattern = FillPattern.Solid, points = {{-76, 90}, {-84, 68}, {-68, 68}, {-76, 90}}), Text(visible = false, extent = {{-75, 42}, {95, 2}}, textString = "%y_off"), Line(points = {{-76, 68}, {-76, -80}}, color = {192, 192, 192}), Line(points = {{-86, -14}, {72, -14}}, color = {192, 192, 192}), Text(visible = false, lineColor = {238, 46, 47}, extent = {{-92, 20}, {98, -22}}, textString = "%fixedLocalSeed"), Line(visible = false, points = {{-76, 48}, {72, 48}}), Line(points = {{-76, -19}, {-62, -19}, {-62, -3}, {-54, -3}, {-54, -51}, {-46, -51}, {-46, -29}, {-38, -29}, {-38, 55}, {-30, 55}, {-30, 23}, {-30, 23}, {-30, -37}, {-20, -37}, {-20, -19}, {-10, -19}, {-10, -47}, {0, -47}, {0, 35}, {6, 35}, {6, 49}, {12, 49}, {12, -7}, {22, -7}, {22, 5}, {28, 5}, {28, -25}, {38, -25}, {38, 47}, {48, 47}, {48, 13}, {56, 13}, {56, -53}, {66, -53}}), Text(origin = {0, 80}, lineColor = {175, 175, 175}, extent = {{-100, 20}, {100, -20}}, textString = "PSD=%noisePSD"), Text(origin = {0, -80}, lineColor = {175, 175, 175}, extent = {{-100, 20}, {100, -20}}, textString = "BS=%biasStability"), Text(extent = {{-150, -110}, {150, -150}}, textString = "%samplePeriod s")}));
-    end NormalNoiseAndRandomWalk;
+  model LandDetector
+    extends Modelica.Mechanics.MultiBody.Interfaces.PartialOneFrame_a;
+  equation
+    frame_a.f = zeros(3);
+    frame_a.t = zeros(3);
+    when frame_a.r_0[3] > 0 and time > 10 then
+      terminate("Simulation terminated successfully");
+    end when;
     annotation(
-      Icon(coordinateSystem(grid = {2, 0})));
-  end Noise;
+      Icon(graphics = {Polygon(origin = {-3, -53}, lineColor = {0, 170, 127}, fillColor = {85, 255, 127}, fillPattern = FillPattern.HorizontalCylinder, points = {{-53, 41}, {-73, 31}, {-83, -19}, {-73, -39}, {67, -39}, {87, -27}, {97, 21}, {87, 41}, {-53, 41}}), Ellipse(origin = {6, -51}, fillColor = {0, 134, 98}, fillPattern = FillPattern.Solid, extent = {{38, 13}, {-38, -13}}, endAngle = 360), Polygon(origin = {10, -10}, fillColor = {0, 170, 255}, fillPattern = FillPattern.Solid, points = {{-6, -42}, {18, -34}, {6, -24}, {-16, 38}, {-24, 48}, {-24, 34}, {-4, -28}, {-6, -42}}), Polygon(origin = {38, 61}, fillColor = {255, 170, 0}, fillPattern = FillPattern.Solid, points = {{-32, 25}, {20, -35}, {28, -25}, {32, -7}, {28, 13}, {18, 29}, {0, 35}, {-20, 33}, {-32, 25}}), Line(origin = {6.18874, 57.3515}, points = {{-0.188744, 28.6485}, {-12.1887, -29.3515}, {11.8113, 14.6485}, {11.8113, 14.6485}}), Line(origin = {18.3124, 43.2299}, points = {{11.6876, 14.7701}, {-24.3124, -15.2299}, {23.6876, 0.770139}}), Line(origin = {26.4447, 31.0503}, points = {{21.5553, 6.94969}, {-32.4447, -3.05031}, {31.5553, -5.05031}, {31.5553, -5.05031}}), Text(origin = {6, -204}, lineColor = {0, 0, 255}, extent = {{-150, 110}, {150, 70}}, textString = "%name"), Text(origin = {-52, 74}, extent = {{-46, 28}, {46, -28}}, textString = "z > 0")}));
+  end LandDetector;
 end Components;

@@ -177,4 +177,24 @@ finDeflectionOutput.deflection = u;
   annotation(
       Icon(graphics = {Polygon(origin = {20, 0}, fillColor = {170, 255, 127}, fillPattern = FillPattern.Solid, points = {{-80, 100}, {-80, -100}, {80, -50}, {80, 50}, {-80, 100}}, smooth = Smooth.Bezier)}));
   end FinDeflectionInput;
+
+  expandable connector AvionicsBus
+    //  SI.Velocity v;
+    SI.Acceleration a[3];
+    RocketControl.Types.AngularVelocity_degs[3] w;
+    RocketControl.Types.NanoTesla b[3];
+    SI.Pressure pressure;
+    //  Real asset[4];
+    annotation(
+      Icon(graphics = {Ellipse(origin = {0, 0.0100002}, fillColor = {0, 85, 255}, fillPattern = FillPattern.Solid, extent = {{-60, 59.99}, {60, -59.99}}, endAngle = 360), Ellipse(origin = {-0.0400009, -0.360001}, fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid, extent = {{-29.96, 30.36}, {29.96, -30.36}}, endAngle = 360), Ellipse(fillColor = {255, 255, 0}, fillPattern = FillPattern.Solid, extent = {{-10, 10}, {10, -10}}, endAngle = 360)}));
+  end AvionicsBus;
+
+  model PartialAvionicsBusPort
+  RocketControl.Interfaces.AvionicsBus bus annotation(
+      Placement(visible = true, transformation(origin = {100, 100}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {101, 99}, extent = {{-17, -17}, {17, 17}}, rotation = 0)));
+  equation
+
+    annotation(
+      Icon(coordinateSystem(grid = {2, 0})));
+  end PartialAvionicsBusPort;
 end Interfaces;

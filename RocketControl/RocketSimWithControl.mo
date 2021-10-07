@@ -44,6 +44,8 @@ model RocketSimWithControl
     Placement(visible = true, transformation(origin = {90, 60}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   RocketControl.Components.Motors.M2000R m2000r(start_delay = 0.5) annotation(
     Placement(visible = true, transformation(origin = {50, -50}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Components.Sensors.RealAccelerometer realAccelerometer(acc_max = 150, bias = {0, 0, 0}, bits = 16, samplePeriodMs = 20, sigmaBiasInstability = 0.03, sigmaNoise = 0.3)  annotation(
+    Placement(visible = true, transformation(origin = {164, 38}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
 equation
   when rocket.r_0[3] > 0 and time > 10 then
     terminate("Simulation terminated successfully");
@@ -80,6 +82,8 @@ equation
     Line(points = {{80, 53}, {66, 53}, {66, -38}, {12, -38}}, thickness = 0.5));
   connect(nozzleTranslation.frame_a, m2000r.frame_b) annotation(
     Line(points = {{50, -18}, {50, -40}}, color = {95, 95, 95}));
+  connect(realAccelerometer.frame_a, rocket.frame_a) annotation(
+    Line(points = {{154, 38}, {50, 38}, {50, 60}}, color = {95, 95, 95}));
   annotation(
-    experiment(StartTime = 0, StopTime = 100, Tolerance = 0.001, Interval = 0.01));
+    experiment(StartTime = 0, StopTime = 100, Tolerance = 1e-4, Interval = 0.01));
 end RocketSimWithControl;
