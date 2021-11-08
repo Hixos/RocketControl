@@ -270,6 +270,18 @@ package Tests
         annotation(
           Icon(coordinateSystem(grid = {2, 0})));
       end Magnetometer;
+
+      model RealGyroBias
+        RocketControl.Components.Sensors.RealGyroscope realGyroscope(bias = {3, -2, 1}, bits = 16, fixedLocalSeed = {9, 423, 43214321}, rate_max = 250, samplePeriodMs = 20, sigmaARW = 0.5, sigmaRRW = 1) annotation(
+          Placement(visible = true, transformation(origin = {0, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+        Modelica.Mechanics.MultiBody.Parts.Fixed fixed annotation(
+          Placement(visible = true, transformation(origin = {-50, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      equation
+        connect(fixed.frame_b, realGyroscope.frame_a) annotation(
+          Line(points = {{-40, 0}, {-10, 0}}, color = {95, 95, 95}));
+        annotation(
+          Icon(coordinateSystem(grid = {2, 0})));
+      end RealGyroBias;
       annotation(
         Icon(coordinateSystem(grid = {2, 0})));
     end Sensors;
@@ -409,45 +421,45 @@ package Tests
 
     package Launchpad
       model RelativeInit
-      Modelica.Mechanics.MultiBody.Parts.Fixed fixed annotation(
+        Modelica.Mechanics.MultiBody.Parts.Fixed fixed annotation(
           Placement(visible = true, transformation(origin = {-90, 10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Mechanics.MultiBody.Parts.Body body(m = 1, r_CM = {0, 0, 0})  annotation(
+        Modelica.Mechanics.MultiBody.Parts.Body body(m = 1, r_CM = {0, 0, 0}) annotation(
           Placement(visible = true, transformation(origin = {78, 10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  inner Modelica.Mechanics.MultiBody.World world annotation(
+        inner Modelica.Mechanics.MultiBody.World world annotation(
           Placement(visible = true, transformation(origin = {-90, -90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  RocketControl.Components.LaunchPad.RelativePositionInit relativePositionInit(rel_angle_1(displayUnit = "rad") = 0, rel_angle_2(displayUnit = "rad") = 0, rel_angle_3(displayUnit = "rad") = 0, rel_pos_x = 1, rel_pos_y = 1, rel_pos_z = 1)  annotation(
+        RocketControl.Components.LaunchPad.RelativePositionInit relativePositionInit(rel_angle_1(displayUnit = "rad") = 0, rel_angle_2(displayUnit = "rad") = 0, rel_angle_3(displayUnit = "rad") = 0, rel_pos_x = 1, rel_pos_y = 1, rel_pos_z = 1) annotation(
           Placement(visible = true, transformation(origin = {0, 10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Mechanics.MultiBody.Sensors.AbsoluteAngles absoluteAngles annotation(
+        Modelica.Mechanics.MultiBody.Sensors.AbsoluteAngles absoluteAngles annotation(
           Placement(visible = true, transformation(origin = {50, -30}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Mechanics.MultiBody.Sensors.AbsolutePosition absolutePosition annotation(
+        Modelica.Mechanics.MultiBody.Sensors.AbsolutePosition absolutePosition annotation(
           Placement(visible = true, transformation(origin = {50, -52}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Mechanics.MultiBody.Sensors.RelativePosition relativePosition annotation(
+        Modelica.Mechanics.MultiBody.Sensors.RelativePosition relativePosition annotation(
           Placement(visible = true, transformation(origin = {10, 60}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Mechanics.MultiBody.Sensors.RelativeAngles relativeAngles annotation(
+        Modelica.Mechanics.MultiBody.Sensors.RelativeAngles relativeAngles annotation(
           Placement(visible = true, transformation(origin = {10, 88}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Mechanics.MultiBody.Parts.FixedRotation fixedRotation(angles = {20, 30, 40}, r = {10, 10, 10})  annotation(
+        Modelica.Mechanics.MultiBody.Parts.FixedRotation fixedRotation(angles = {20, 30, 40}, r = {10, 10, 10}) annotation(
           Placement(visible = true, transformation(origin = {-50, 10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
       equation
-  connect(relativePositionInit.frame_b, body.frame_a) annotation(
+        connect(relativePositionInit.frame_b, body.frame_a) annotation(
           Line(points = {{10, 10}, {68, 10}}, color = {95, 95, 95}));
-  connect(fixed.frame_b, fixedRotation.frame_a) annotation(
+        connect(fixed.frame_b, fixedRotation.frame_a) annotation(
           Line(points = {{-80, 10}, {-60, 10}}, color = {95, 95, 95}));
-  connect(fixedRotation.frame_b, relativePositionInit.frame_a) annotation(
+        connect(fixedRotation.frame_b, relativePositionInit.frame_a) annotation(
           Line(points = {{-40, 10}, {-10, 10}}, color = {95, 95, 95}));
-  connect(relativePosition.frame_a, fixedRotation.frame_b) annotation(
+        connect(relativePosition.frame_a, fixedRotation.frame_b) annotation(
           Line(points = {{0, 60}, {-40, 60}, {-40, 10}}));
-  connect(relativePosition.frame_b, body.frame_a) annotation(
+        connect(relativePosition.frame_b, body.frame_a) annotation(
           Line(points = {{20, 60}, {68, 60}, {68, 10}}, color = {95, 95, 95}));
-  connect(relativeAngles.frame_a, fixedRotation.frame_b) annotation(
+        connect(relativeAngles.frame_a, fixedRotation.frame_b) annotation(
           Line(points = {{0, 88}, {-40, 88}, {-40, 10}}));
-  connect(relativeAngles.frame_b, body.frame_a) annotation(
+        connect(relativeAngles.frame_b, body.frame_a) annotation(
           Line(points = {{20, 88}, {68, 88}, {68, 10}}));
-  connect(absoluteAngles.frame_a, relativePositionInit.frame_b) annotation(
+        connect(absoluteAngles.frame_a, relativePositionInit.frame_b) annotation(
           Line(points = {{40, -30}, {10, -30}, {10, 10}}, color = {95, 95, 95}));
-  connect(absolutePosition.frame_a, relativePositionInit.frame_b) annotation(
+        connect(absolutePosition.frame_a, relativePositionInit.frame_b) annotation(
           Line(points = {{40, -52}, {10, -52}, {10, 10}}, color = {95, 95, 95}));
       protected
-  annotation(
+        annotation(
           Icon(coordinateSystem(grid = {2, 0})));
       end RelativeInit;
       annotation(
@@ -490,4 +502,145 @@ package Tests
     annotation(
       Icon(coordinateSystem(grid = {2, 0}), graphics = {Text(origin = {0, -2}, extent = {{-88, 92}, {88, -92}}, textString = "N")}));
   end MyNoise;
+
+  model TestADA
+    parameter SI.Time T = 1000 / 60;
+    Modelica.Blocks.Sources.Sine sine(amplitude = 1000, f = 0.1, offset = 4000) annotation(
+      Placement(visible = true, transformation(origin = {-86, 62}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+    Modelica.Clocked.ClockSignals.Clocks.PeriodicExactClock periodicClock1(factor = 20, useSolver = true) annotation(
+      Placement(visible = true, transformation(origin = {-90, 10}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
+    RocketControl.Rockets.Lynx.Estimators.DiscreteKalmanFilter discreteKalmanFilter(A = [1, 0.05, 0.0025 / 2; 0, 1, 0.05; 0, 0, 1], C = [1, 0, 0], Q = [1, 0, 0; 0, 1, 0; 0, 0, 1], R = [1], m = 0, n = 3, p = 1, x0 = {4000, 0, 0}) annotation(
+      Placement(visible = true, transformation(origin = {86, 38}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+    SampleClockedStart sample1(u(fixed = true)) annotation(
+      Placement(visible = true, transformation(origin = {-46, 46}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
+    Real h;
+    RocketControl.Rockets.Lynx.Estimators.Resample resample(nu = 1, samplePeriodMs = 70) annotation(
+      Placement(visible = true, transformation(origin = {24, 46}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  equation
+    h = hold(sample1.y);
+    connect(sine.y, sample1.u) annotation(
+      Line(points = {{-74, 62}, {-54, 62}, {-54, 46}}, color = {0, 0, 127}));
+    connect(periodicClock1.y, sample1.clock) annotation(
+      Line(points = {{-84, 10}, {-46, 10}, {-46, 38}}, color = {175, 175, 175}));
+    connect(sample1.y, resample.u[1]) annotation(
+      Line(points = {{-40, 46}, {14, 46}}, color = {0, 0, 127}));
+    connect(resample.u_rs, discreteKalmanFilter.y_meas) annotation(
+      Line(points = {{34, 46}, {55, 46}, {55, 44}, {76, 44}}, color = {0, 0, 127}, thickness = 0.5));
+    annotation(
+      Icon(coordinateSystem(grid = {2, 0})));
+  end TestADA;
+
+  model ResampleTest
+  Modelica.Clocked.ClockSignals.Clocks.PeriodicExactClock periodicClock1(factor = 10, resolution = Modelica.Clocked.Types.Resolution.ms)  annotation(
+      Placement(visible = true, transformation(origin = {-74, -50}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
+  RocketControl.Components.Sensors.Internal.Resample resample(nu = 2, samplePeriodMS = 100)  annotation(
+      Placement(visible = true, transformation(origin = {58, 10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Blocks.Sources.Sine sine(amplitude = 1, f = 0.2, offset = 3) annotation(
+      Placement(visible = true, transformation(origin = {-88, 4}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Clocked.RealSignals.Sampler.SampleClocked sample1 annotation(
+      Placement(visible = true, transformation(origin = {-42, 4}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
+  Modelica.Blocks.Sources.Sine sine1(amplitude = 1, f = 0.1, offset = 3) annotation(
+      Placement(visible = true, transformation(origin = {-92, 50}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Clocked.RealSignals.Sampler.SampleClocked sampleClocked annotation(
+      Placement(visible = true, transformation(origin = {-40, 50}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
+  equation
+    connect(sine.y, sample1.u) annotation(
+      Line(points = {{-77, 4}, {-50, 4}}, color = {0, 0, 127}));
+  connect(sine1.y, sampleClocked.u) annotation(
+      Line(points = {{-81, 50}, {-47, 50}}, color = {0, 0, 127}));
+  connect(sampleClocked.y, resample.u[1]) annotation(
+      Line(points = {{-33, 50}, {46, 50}, {46, 10}}, color = {0, 0, 127}));
+  connect(sample1.y, resample.u[2]) annotation(
+      Line(points = {{-36, 4}, {46, 4}, {46, 10}}, color = {0, 0, 127}));
+  connect(sampleClocked.clock, periodicClock1.y) annotation(
+      Line(points = {{-40, 43}, {-68, 43}, {-68, -50}}, color = {175, 175, 175}));
+  connect(periodicClock1.y, sample1.clock) annotation(
+      Line(points = {{-68, -50}, {-42, -50}, {-42, -4}}, color = {175, 175, 175}));
+    annotation(
+      Icon(coordinateSystem(grid = {2, 0})));
+  end ResampleTest;
+
+  model StartCondition
+    parameter Real startcond;
+    Modelica.Blocks.Interfaces.RealInput u annotation(
+      Placement(visible = true, transformation(origin = {-108, 0}, extent = {{-20, -20}, {20, 20}}, rotation = 0), iconTransformation(origin = {-100, 0}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
+    Modelica.Blocks.Interfaces.RealOutput y(start = startcond) annotation(
+      Placement(visible = true, transformation(origin = {106, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {104, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  equation
+    connect(u, y) annotation(
+      Line(points = {{-108, 0}, {106, 0}}, color = {0, 0, 127}));
+    annotation(
+      Icon(coordinateSystem(grid = {2, 0}), graphics = {Text(extent = {{-80, 82}, {80, -82}}, textString = "SC")}));
+  end StartCondition;
+
+  block SampleClockedStart "Sample the continuous-time, Real input signal and provide it as clocked output signal. The clock is provided as input signal"
+    extends Modelica.Clocked.RealSignals.Interfaces.SamplerIcon;
+    Modelica.Blocks.Interfaces.RealInput u(start = 4000) "Connector of continuous-time, Real input signal" annotation(
+      Placement(transformation(extent = {{-140, -20}, {-100, 20}})));
+    Modelica.Blocks.Interfaces.RealOutput y "Connector of clocked, Real output signal" annotation(
+      Placement(transformation(extent = {{100, -10}, {120, 10}})));
+    Modelica.Clocked.ClockSignals.Interfaces.ClockInput clock "Output signal y is associated with this clock input" annotation(
+      Placement(transformation(extent = {{-20, -20}, {20, 20}}, rotation = 90, origin = {0, -120})));
+  equation
+    y = sample(u, clock);
+    annotation(
+      defaultComponentName = "sample1",
+      Icon(coordinateSystem(preserveAspectRatio = true, extent = {{-100, -100}, {100, 100}}, initialScale = 0.06), graphics = {Line(points = {{0, -100}, {0, 18}}, color = {175, 175, 175}, pattern = LinePattern.Dot, thickness = 0.5), Text(extent = {{-150, 90}, {150, 50}}, textString = "%name", textColor = {0, 0, 255})}),
+      Documentation(info = "<html>
+  <p>
+  This block is similar to the
+  <a href=\"modelica://Modelica.Clocked.RealSignals.Sampler.Sample\">Sample</a>
+  block. The only difference is that a clock signal is provided via a second
+  input and the output is associated to this clock.
+  </p>
+  
+  <p>
+  Note, it does not make much sense to vectorize this block, because then
+  also the clock input is vectorized. Instead, if the input signal is a vector, use block
+  <a href=\"modelica://Modelica.Clocked.RealSignals.Sampler.SampleVectorizedAndClocked\">SampleVectorizedAndClocked</a>
+  that has a <strong>vector</strong> Real input and output, as well as a <strong>scalar</strong> clock input.
+  </p>
+  
+  <h4>Example</h4>
+  
+  <p>
+  The following
+  <a href=\"modelica://Modelica.Clocked.Examples.Elementary.RealSignals.SampleClocked\">example</a>
+  samples a sine signal with a periodic clock of 20 ms period:<br>
+  </p>
+  
+  <table border=\"0\" cellspacing=\"0\" cellpadding=\"2\">
+  <tr><td width=\"50\"></td>
+      <td valign=\"bottom\"><img src=\"modelica://Modelica/Resources/Images/Clocked/RealSignals/SampleClocked_Model.png\" alt=\"SampleClocked_Model.png\"></td>
+      <td valign=\"bottom\">&nbsp;&nbsp;&nbsp;
+                          <img src=\"modelica://Modelica/Resources/Images/Clocked/RealSignals/SampleClocked_Result.png\" alt=\"SampleClocked_Result.png\"></td>
+      </tr>
+  <tr><td></td>
+      <td align=\"center\">model</td>
+      <td align=\"center\">simulation result<br></td>
+     </tr>
+  </table>
+  </html>"));
+  end SampleClockedStart;
+
+  model ClockTest
+    Real y(start = 4);
+    //Clock c = Clock(1, 1000);
+    Clock c1 = Clock(50, 1000);
+    Clock ct = Clock(70, 1000);
+    Clock c2 = shiftSample(ct, 1);
+    //Clock c3 = shiftSample(c2, 1, 1000);
+    Real ys;
+    Real yh(start = 3);
+    Real yrs;
+  equation
+    y = sin(2 * 3.14 * 0.1 * time) + 4;
+    ys = sample(y, c1);
+    yh = hold(ys);
+    when c2 then
+      yrs = sample(yh);
+    end when;
+    annotation(
+      Icon(coordinateSystem(grid = {2, 0})));
+  end ClockTest;
 end Tests;

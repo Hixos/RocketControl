@@ -173,18 +173,22 @@ finDeflectionOutput.deflection = u;
   end FinDeflectionOutput;
 
   connector FinDeflectionInput
-    input SI.Angle deflection (displayUnit = "deg");
+    input NonSI.Angle_deg deflection (displayUnit = "deg");
   annotation(
       Icon(graphics = {Polygon(origin = {20, 0}, fillColor = {170, 255, 127}, fillPattern = FillPattern.Solid, points = {{-80, 100}, {-80, -100}, {80, -50}, {80, 50}, {-80, 100}}, smooth = Smooth.Bezier)}));
   end FinDeflectionInput;
 
   expandable connector AvionicsBus
     //  SI.Velocity v;
-    SI.Acceleration a[3];
-    RocketControl.Types.AngularVelocity_degs[3] w;
-    RocketControl.Types.NanoTesla b[3];
-    SI.Pressure pressure;
-    //  Real asset[4];
+    Boolean liftoff;
+    SI.Position x_meas[3];
+    SI.Acceleration a_meas[3];
+    SI.Acceleration a_est[3];
+    RocketControl.Types.AngularVelocity_degs[3] w_meas;
+    RocketControl.Types.AngularVelocity_degs[3] w_est;
+    RocketControl.Types.NanoTesla b_meas[3];
+    SI.Pressure p_meas;
+    Real q_est[4];
     annotation(
       Icon(graphics = {Ellipse(origin = {0, 0.0100002}, fillColor = {0, 85, 255}, fillPattern = FillPattern.Solid, extent = {{-60, 59.99}, {60, -59.99}}, endAngle = 360), Ellipse(origin = {-0.0400009, -0.360001}, fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid, extent = {{-29.96, 30.36}, {29.96, -30.36}}, endAngle = 360), Ellipse(fillColor = {255, 255, 0}, fillPattern = FillPattern.Solid, extent = {{-10, 10}, {10, -10}}, endAngle = 360)}));
   end AvionicsBus;
@@ -197,4 +201,19 @@ finDeflectionOutput.deflection = u;
     annotation(
       Icon(coordinateSystem(grid = {2, 0})));
   end PartialAvionicsBusPort;
+
+  package Internal
+    package Icons
+      model Estimator
+      equation
+
+        annotation(
+          Icon(graphics = {Rectangle(fillColor = {252, 255, 252}, fillPattern = FillPattern.Solid, extent = {{-90, 90}, {90, -90}}, radius = 50), Text(origin = {2, -262}, lineColor = {0, 0, 255}, extent = {{-115, 155}, {115, 105}}, textString = "%name"), Line(origin = {52.2533, 55.5403}, points = {{-18, -18}, {18, 18}}, arrow = {Arrow.None, Arrow.Filled}, arrowSize = 30), Line(origin = {25.5114, -29.1575}, rotation = -90, points = {{-18, -18}, {24, 24}}, arrow = {Arrow.None, Arrow.Filled}, arrowSize = 30), Text(origin = {2, -262}, lineColor = {0, 0, 255}, extent = {{-115, 155}, {115, 105}}, textString = "%name"), Line(origin = {-43.1155, -11.4371}, rotation = 180, points = {{-18, -18}, {36, -18}}, arrow = {Arrow.None, Arrow.Filled}, arrowSize = 30), Polygon(origin = {-46, -40}, fillColor = {91, 91, 91}, fillPattern = FillPattern.Solid, points = {{-2, -12}, {8, -22}, {22, 12}, {12, 22}, {-22, 8}, {-2, -12}}), Polygon(origin = {-15, -9}, fillColor = {155, 183, 193}, fillPattern = FillPattern.Solid, points = {{-43, -33}, {25, 35}, {45, 45}, {35, 25}, {-33, -43}, {-37, -39}, {-43, -33}})}));
+      end Estimator;
+      annotation(
+        Icon(coordinateSystem(grid = {2, 0})));
+    end Icons;
+    annotation(
+      Icon(coordinateSystem(grid = {2, 0})));
+  end Internal;
 end Interfaces;

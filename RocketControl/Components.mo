@@ -7,6 +7,7 @@ package Components
       import Modelica.Mechanics.MultiBody.Frames;
       import Modelica.Math.Vectors;
       outer World.Atmosphere atmosphere;
+      outer World.MyWorld world;
       Modelica.Blocks.Interfaces.RealOutput aoa(final quantity = "Angle", final unit = "rad", displayUnit = "deg") annotation(
         Placement(visible = true, transformation(origin = {102, 70}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {100, 50}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
       SI.Velocity v_b[3] "Velocity relative to wind in body frame (body frame)";
@@ -16,10 +17,10 @@ package Components
       Modelica.Blocks.Interfaces.RealOutput sideslip(final quantity = "Angle", final unit = "rad", displayUnit = "deg") annotation(
         Placement(visible = true, transformation(origin = {100, -50}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {100, -50}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
     equation
-      v_w = atmosphere.windSpeed(frame_a.r_0);
+      v_w = atmosphere.windSpeed(world.altitude(frame_a.r_0));
       v_b = Frames.resolve2(frame_a.R, der(frame_a.r_0) - v_w);
       v_norm = Vectors.norm(v_b);
-      if abs(v_b[1]) > v_small then
+  if abs(v_b[1]) > v_small then
 //aoa = atan(sqrt(v_b[3]^2 + v_b[2]^2)/v_b[1]);
         aoa = atan(v_b[3] / v_b[1]);
 //aoa = atan2(v_b[3], v_b[1]);
@@ -28,7 +29,7 @@ package Components
       else
         aoa = 0;
       end if;
-      if abs(v_b[1]) > v_small then
+  if abs(v_b[1]) > v_small then
         sideslip = atan(v_b[2] / v_b[1]);
 //sideslip = asin(v_b[2] / v_norm);
       elseif abs(v_b[2]) > v_small then
@@ -58,10 +59,10 @@ package Components
       Modelica.Mechanics.MultiBody.Sensors.AbsoluteAngularVelocity absoluteAngularVelocity(resolveInFrame = Modelica.Mechanics.MultiBody.Types.ResolveInFrameA.frame_a) annotation(
         Placement(visible = true, transformation(origin = {0, -40}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
     equation
-      v_w = atmosphere.windSpeed(frame_a.r_0);
+      v_w = atmosphere.windSpeed(world.altitude(frame_a.r_0));
       aeroStateOutput.alpha = aeroAnglesSensor.aoa;
       aeroStateOutput.beta = aeroAnglesSensor.sideslip;
-      aeroStateOutput.mach = Vectors.norm(der(frame_a.r_0)) / atmosphere.speedOfSound(frame_a.r_0);
+      aeroStateOutput.mach = Vectors.norm(der(frame_a.r_0)) / atmosphere.speedOfSound(world.altitude(frame_a.r_0));
       aeroStateOutput.altitude = world.altitude(frame_a.r_0);
       v = Frames.resolve2(frame_a.R, der(frame_a.r_0) - v_w);
       aeroStateOutput.v = v;
@@ -139,7 +140,7 @@ package Components
       import Modelica.Units.Conversions.from_deg;
       extends Modelica.Mechanics.MultiBody.Sensors.Internal.PartialAbsoluteSensor;
       parameter Integer samplePeriodMs(min = 0) "Sample period in milliseconds";
-      parameter SI.AngularVelocity bias[3] "Measurement bias for each axis";
+      parameter Types.AngularVelocity_degs bias[3] "Measurement bias for each axis";
       parameter SI.AngularVelocity rate_max "Angular velocity measurement upper limit";
       parameter SI.AngularVelocity rate_min = -rate_max "Angular velocity measurement lower limit";
       parameter Integer bits(min = 1) = 8 "Resolution in bits";
@@ -150,9 +151,9 @@ package Components
         Placement(visible = true, transformation(origin = {106, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {102, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
       RocketControl.Components.Sensors.Internal.SampleClockedWithADeffects sampleX(redeclare RocketControl.Components.Sensors.Internal.Noise.ClockedSensorNoise noise(sigmaNoise = sigmaARW, sigmaRW = sigmaRRW, useAutomaticLocalSeed = false, fixedLocalSeed = fixedLocalSeed[1]), bias = bias[1], biased = true, bits = bits, limited = true, noisy = true, quantized = true, yMax = rate_max, yMin = rate_min) annotation(
         Placement(visible = true, transformation(origin = {0, 40}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
-      RocketControl.Components.Sensors.Internal.SampleClockedWithADeffects sampleY(redeclare RocketControl.Components.Sensors.Internal.Noise.ClockedSensorNoise noise(sigmaNoise = sigmaARW, sigmaRW = sigmaRRW, useAutomaticLocalSeed = false, fixedLocalSeed = fixedLocalSeed[2]), bias = bias[1], biased = true, bits = bits, limited = true, noisy = true, quantized = true, yMax = rate_max, yMin = rate_min) annotation(
+      RocketControl.Components.Sensors.Internal.SampleClockedWithADeffects sampleY(redeclare RocketControl.Components.Sensors.Internal.Noise.ClockedSensorNoise noise(sigmaNoise = sigmaARW, sigmaRW = sigmaRRW, useAutomaticLocalSeed = false, fixedLocalSeed = fixedLocalSeed[2]), bias = bias[2], biased = true, bits = bits, limited = true, noisy = true, quantized = true, yMax = rate_max, yMin = rate_min) annotation(
         Placement(visible = true, transformation(origin = {0, 0}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
-      RocketControl.Components.Sensors.Internal.SampleClockedWithADeffects sampleZ(redeclare RocketControl.Components.Sensors.Internal.Noise.ClockedSensorNoise noise(sigmaNoise = sigmaARW, sigmaRW = sigmaRRW, useAutomaticLocalSeed = false, fixedLocalSeed = fixedLocalSeed[3]), bias = bias[1], biased = true, bits = bits, limited = true, noisy = true, quantized = true, yMax = rate_max, yMin = rate_min) annotation(
+      RocketControl.Components.Sensors.Internal.SampleClockedWithADeffects sampleZ(redeclare RocketControl.Components.Sensors.Internal.Noise.ClockedSensorNoise noise(sigmaNoise = sigmaARW, sigmaRW = sigmaRRW, useAutomaticLocalSeed = false, fixedLocalSeed = fixedLocalSeed[3]), bias = bias[3], biased = true, bits = bits, limited = true, noisy = true, quantized = true, yMax = rate_max, yMin = rate_min) annotation(
         Placement(visible = true, transformation(origin = {0, -40}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
       Modelica.Clocked.ClockSignals.Clocks.PeriodicExactClock periodicClock1(factor = samplePeriodMs) annotation(
         Placement(visible = true, transformation(origin = {-60, -80}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
@@ -341,8 +342,6 @@ package Components
           Dialog(enable = limited, group = "Limiting and quantization"));
         parameter Integer bits(min = 1) = 8 "Number of bits of quantization (if quantized = true)" annotation(
           Dialog(enable = limited and quantized, group = "Limiting and quantization"));
-        Modelica.Clocked.RealSignals.Sampler.SampleClocked sample annotation(
-          Placement(transformation(extent = {{-84, -6}, {-72, 6}})));
         parameter Real bias "Signal bias" annotation(
           Dialog(enable = biased, group = "Bias"));
         replaceable RocketControl.Components.Sensors.Internal.Noise.ClockedNormalNoise noise if noisy constrainedby Modelica.Clocked.RealSignals.Interfaces.PartialNoise "Noise model" annotation(
@@ -359,6 +358,8 @@ package Components
           Placement(visible = true, transformation(origin = {-12, -1.33227e-15}, extent = {{-8, -8}, {8, 8}}, rotation = 0)));
         Modelica.Blocks.Sources.Constant bias_k(k = bias) if biased annotation(
           Placement(visible = true, transformation(origin = {-48, -30}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
+        RocketControl.Tests.SampleClockedStart sample1 annotation(
+          Placement(visible = true, transformation(origin = {-78, 0}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
       protected
         Modelica.Blocks.Interfaces.RealInput uFeedthrough1 if not noisy annotation(
           Placement(transformation(extent = {{-58, 12}, {-42, 28}})));
@@ -399,14 +400,8 @@ package Components
           Line(points = {{66, 20}, {84, 20}, {84, 0}, {88, 0}}, color = {0, 0, 127}));
         connect(uFeedthrough3, y4) annotation(
           Line(points = {{28, 20}, {46, 20}, {46, 0}, {50, 0}}, color = {0, 0, 127}));
-        connect(sample.y, y1) annotation(
-          Line(points = {{-71.4, 0}, {-60, 0}}, color = {0, 0, 127}));
-        connect(u, sample.u) annotation(
-          Line(points = {{-120, 0}, {-85.2, 0}}, color = {0, 0, 127}));
         connect(y5, y) annotation(
           Line(points = {{88, 0}, {110, 0}}, color = {0, 0, 127}));
-        connect(sample.clock, clock) annotation(
-          Line(points = {{-78, -8}, {-80, -8}, {-80, -60}, {0, -60}, {0, -120}}, color = {175, 175, 175}));
         connect(noise.y, y2) annotation(
           Line(points = {{-42, 0}, {-30, 0}}, color = {0, 0, 127}));
         connect(uFeedthrough1, y2) annotation(
@@ -421,6 +416,12 @@ package Components
           Line(points = {{-4, 0}, {12, 0}}, color = {0, 0, 127}));
         connect(bias_k.y, add.u2) annotation(
           Line(points = {{-41, -30}, {-32, -30}, {-32, -4}, {-22, -4}}, color = {0, 0, 127}));
+        connect(u, sample1.u) annotation(
+          Line(points = {{-120, 0}, {-85, 0}}, color = {0, 0, 127}));
+        connect(sample1.y, noise.u) annotation(
+          Line(points = {{-71, 0}, {-56, 0}}, color = {0, 0, 127}));
+        connect(sample1.clock, clock) annotation(
+          Line(points = {{-78, -7}, {-78, -80}, {0, -80}, {0, -120}}, color = {175, 175, 175}));
         annotation(
           defaultComponentName = "sample",
           Icon(coordinateSystem(preserveAspectRatio = true, extent = {{-100, -100}, {100, 100}}, initialScale = 0.06), graphics = {Polygon(lineColor = {192, 192, 192}, fillColor = {192, 192, 192}, fillPattern = FillPattern.Solid, points = {{0, -22}, {-6, -38}, {6, -38}, {0, -22}}), Line(points = {{0, -100}, {0, -38}}, color = {192, 192, 192}), Line(points = {{-40, -72}, {40, -72}}, color = {192, 192, 192}), Polygon(origin = {48, -72}, rotation = -90, lineColor = {192, 192, 192}, fillColor = {192, 192, 192}, fillPattern = FillPattern.Solid, points = {{0, 8}, {-6, -8}, {6, -8}, {0, 8}}), Line(points = {{-30, -92}, {-10, -92}, {-10, -72}, {10, -72}, {10, -52}, {30, -52}}, color = {0, 0, 127}), Text(lineColor = {0, 0, 255}, extent = {{-150, 90}, {150, 50}}, textString = "%name")}),
@@ -649,6 +650,25 @@ package Components
         annotation(
           Icon(coordinateSystem(grid = {2, 0})));
       end SensorGroupBase;
+
+      model Resample
+        parameter Integer samplePeriodMS;
+        parameter Integer nu(min = 1) annotation(
+          Evaluate = true);
+        Modelica.Blocks.Interfaces.RealInput u[nu] annotation(
+          Placement(visible = true, transformation(extent = {{-140, -20}, {-100, 20}}, rotation = 0), iconTransformation(extent = {{-140, -20}, {-100, 20}}, rotation = 0)));
+        Modelica.Blocks.Interfaces.RealOutput y[nu] annotation(
+          Placement(visible = true, transformation(extent = {{100, -10}, {120, 10}}, rotation = 0), iconTransformation(extent = {{100, -10}, {120, 10}}, rotation = 0)));
+        Clock c = Clock(samplePeriodMS, 1000);
+      equation
+        when c then
+          for i in 1:nu loop
+            y[i] = sample(hold(u[i]));
+          end for;
+        end when;
+        annotation(
+          Icon(graphics = {Text(origin = {0, -1}, extent = {{-100, 99}, {100, -99}}, textString = "RS")}));
+      end Resample;
       annotation(
         Icon(coordinateSystem(grid = {2, 0})));
     end Internal;
@@ -677,45 +697,50 @@ package Components
       import RocketControl.Types.NanoTesla;
       extends Modelica.Mechanics.MultiBody.Sensors.Internal.PartialAbsoluteSensor;
       parameter Integer samplePeriodMs(min = 0) "Sample period in milliseconds";
-      parameter NanoTesla bias[3] "Measurement bias for each axis";
+      parameter NanoTesla bias "Measurement bias";
+      parameter NonSI.Angle_deg misalignement[3] "Magnetic vector measurement miasalignment";
       parameter NanoTesla b_max "Magnetic field measurement upper limit";
       parameter NanoTesla b_min = -b_max "Magnetic field measurement lower limit";
       parameter Integer bits(min = 1) = 8 "Resolution in bits";
       parameter Integer fixedLocalSeed[3] = {10, 100, 1000} "Local seed for each of the axes";
       parameter NanoTesla sigmaNoise "Angular random walk standard deviation";
+      NanoTesla b_mis[3];
       Modelica.Blocks.Interfaces.RealOutput b_meas[3](each final quantity = "MagneticFluxDensity", each final unit = "nT") annotation(
         Placement(visible = true, transformation(origin = {106, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {102, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-      RocketControl.Components.Sensors.Internal.SampleClockedWithADeffects sampleX(noise(sigma = sigmaNoise, useAutomaticLocalSeed = false, fixedLocalSeed = fixedLocalSeed[1]), bias = bias[1], biased = true, bits = bits, limited = true, noisy = true, quantized = true, yMax = b_max, yMin = b_min) annotation(
-        Placement(visible = true, transformation(origin = {0, 40}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
-      RocketControl.Components.Sensors.Internal.SampleClockedWithADeffects sampleY(noise(sigma = sigmaNoise, useAutomaticLocalSeed = false, fixedLocalSeed = fixedLocalSeed[2]), bias = bias[2], biased = true, bits = bits, limited = true, noisy = true, quantized = true, yMax = b_max, yMin = b_min) annotation(
-        Placement(visible = true, transformation(origin = {0, 0}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
-      RocketControl.Components.Sensors.Internal.SampleClockedWithADeffects sampleZ(noise(sigma = sigmaNoise, useAutomaticLocalSeed = false, fixedLocalSeed = fixedLocalSeed[3]), bias = bias[3], biased = true, bits = bits, limited = true, noisy = true, quantized = true, yMax = b_max, yMin = b_min) annotation(
-        Placement(visible = true, transformation(origin = {0, -40}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
+      RocketControl.Components.Sensors.Internal.SampleClockedWithADeffects sampleX(bias = 0, biased = false, bits = bits, limited = true, noise(fixedLocalSeed = fixedLocalSeed[1], sigma = sigmaNoise, useAutomaticLocalSeed = false), noisy = true, quantized = true, yMax = b_max, yMin = b_min) annotation(
+        Placement(visible = true, transformation(origin = {16, 40}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
+      RocketControl.Components.Sensors.Internal.SampleClockedWithADeffects sampleY(bias = 0, biased = false, bits = bits, limited = true, noise(fixedLocalSeed = fixedLocalSeed[2], sigma = sigmaNoise, useAutomaticLocalSeed = false), noisy = true, quantized = true, yMax = b_max, yMin = b_min) annotation(
+        Placement(visible = true, transformation(origin = {16, 0}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
+      RocketControl.Components.Sensors.Internal.SampleClockedWithADeffects sampleZ(bias = 0, biased = false, bits = bits, limited = true, noise(fixedLocalSeed = fixedLocalSeed[3], sigma = sigmaNoise, useAutomaticLocalSeed = false), noisy = true, quantized = true, yMax = b_max, yMin = b_min) annotation(
+        Placement(visible = true, transformation(origin = {16, -40}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
       Modelica.Clocked.ClockSignals.Clocks.PeriodicExactClock periodicClock1(factor = samplePeriodMs) annotation(
         Placement(visible = true, transformation(origin = {-60, -80}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
       RocketControl.Components.Sensors.IdealMagnetometer idealMagnetometer annotation(
         Placement(visible = true, transformation(origin = {-60, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+    protected
+      final parameter Modelica.Mechanics.MultiBody.Frames.Orientation R_mis = Modelica.Mechanics.MultiBody.Frames.axesRotations({3, 2, 1}, from_deg(misalignement), {0, 0, 0}) annotation(
+        Evaluate = true);
+      NanoTesla b_biased[3];
     equation
+      b_biased = idealMagnetometer.b + idealMagnetometer.b * bias / norm(idealMagnetometer.b);
+      b_mis = Modelica.Mechanics.MultiBody.Frames.resolve2(R_mis, b_biased);
+      sampleX.u = b_mis[1];
+      sampleY.u = b_mis[2];
+      sampleZ.u = b_mis[3];
       connect(frame_a, idealMagnetometer.frame_a) annotation(
         Line(points = {{-100, 0}, {-70, 0}}));
-      connect(idealMagnetometer.b[1], sampleX.u) annotation(
-        Line(points = {{-50, 0}, {-40, 0}, {-40, 40}, {-8, 40}}, color = {0, 0, 127}));
-      connect(idealMagnetometer.b[2], sampleY.u) annotation(
-        Line(points = {{-50, 0}, {-8, 0}}, color = {0, 0, 127}));
-      connect(idealMagnetometer.b[3], sampleZ.u) annotation(
-        Line(points = {{-50, 0}, {-40, 0}, {-40, -40}, {-8, -40}}, color = {0, 0, 127}));
       connect(periodicClock1.y, sampleZ.clock) annotation(
-        Line(points = {{-54, -80}, {0, -80}, {0, -48}}, color = {175, 175, 175}));
+        Line(points = {{-54, -80}, {16, -80}, {16, -47}}, color = {175, 175, 175}));
       connect(periodicClock1.y, sampleY.clock) annotation(
-        Line(points = {{-54, -80}, {0, -80}, {0, -8}}, color = {175, 175, 175}));
+        Line(points = {{-54, -80}, {16, -80}, {16, -7}}, color = {175, 175, 175}));
       connect(periodicClock1.y, sampleX.clock) annotation(
-        Line(points = {{-54, -80}, {0, -80}, {0, 32}}, color = {175, 175, 175}));
+        Line(points = {{-54, -80}, {16, -80}, {16, 33}}, color = {175, 175, 175}));
       connect(sampleX.y, b_meas[1]) annotation(
-        Line(points = {{6, 40}, {40, 40}, {40, 0}, {106, 0}}, color = {0, 0, 127}));
+        Line(points = {{23, 40}, {40, 40}, {40, 0}, {106, 0}}, color = {0, 0, 127}));
       connect(sampleY.y, b_meas[2]) annotation(
-        Line(points = {{6, 0}, {106, 0}}, color = {0, 0, 127}));
+        Line(points = {{23, 0}, {106, 0}}, color = {0, 0, 127}));
       connect(sampleZ.y, b_meas[3]) annotation(
-        Line(points = {{6, -40}, {40, -40}, {40, 0}, {106, 0}}, color = {0, 0, 127}));
+        Line(points = {{23, -40}, {40, -40}, {40, 0}, {106, 0}}, color = {0, 0, 127}));
       annotation(
         Icon(graphics = {Text(lineColor = {0, 0, 255}, extent = {{-127, 77}, {134, 125}}, textString = "%name"), Text(lineColor = {64, 64, 64}, extent = {{-50, -14}, {50, -54}}, textString = "rad/s")}),
         Diagram);
@@ -751,11 +776,12 @@ package Components
     model IdealBarometer
       extends Modelica.Mechanics.MultiBody.Sensors.Internal.PartialAbsoluteSensor;
       outer RocketControl.World.Atmosphere atmosphere;
-  Modelica.Blocks.Interfaces.RealOutput press annotation(
+      outer RocketControl.World.MyWorld world;
+      Modelica.Blocks.Interfaces.RealOutput press(start = 123000) annotation(
         Placement(visible = true, transformation(origin = {106, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {102, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
     equation
-    press = atmosphere.pressure(frame_a.r_0);
-    assert(cardinality(frame_a) > 0, "Connector frame_a must be connected at least once");
+      press = atmosphere.pressure(world.altitude(frame_a.r_0));
+      assert(cardinality(frame_a) > 0, "Connector frame_a must be connected at least once");
       frame_a.f = zeros(3);
       frame_a.t = zeros(3);
       annotation(
@@ -763,8 +789,7 @@ package Components
     end IdealBarometer;
 
     model RealBarometer
-     extends Modelica.Mechanics.MultiBody.Sensors.Internal.PartialAbsoluteSensor;
-     
+      extends Modelica.Mechanics.MultiBody.Sensors.Internal.PartialAbsoluteSensor;
       parameter Integer samplePeriodMs(min = 0) "Sample period in milliseconds";
       parameter SI.Pressure bias "Measurement bias";
       parameter SI.Pressure p_max "Pressure measurement upper limit";
@@ -772,28 +797,125 @@ package Components
       parameter Integer bits(min = 1) = 8 "Resolution in bits";
       parameter Integer fixedLocalSeed = 10 "Local seed for each of the axes";
       parameter SI.Pressure sigmaNoise "Noise standard deviation";
-     
-  Modelica.Blocks.Interfaces.RealOutput press annotation(
+      Modelica.Blocks.Interfaces.RealOutput press annotation(
         Placement(visible = true, transformation(origin = {106, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {102, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  RocketControl.Components.Sensors.IdealBarometer idealBarometer annotation(
+      RocketControl.Components.Sensors.IdealBarometer idealBarometer annotation(
         Placement(visible = true, transformation(origin = {-50, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Clocked.ClockSignals.Clocks.PeriodicExactClock periodicClock1(factor = samplePeriodMs) annotation(
+      Modelica.Clocked.ClockSignals.Clocks.PeriodicExactClock periodicClock1(factor = samplePeriodMs) annotation(
         Placement(visible = true, transformation(origin = {-20, -60}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
-        
-        RocketControl.Components.Sensors.Internal.SampleClockedWithADeffects sample(noise(sigma = sigmaNoise, useAutomaticLocalSeed = false, fixedLocalSeed = fixedLocalSeed), bias = bias, biased = true, bits = bits, limited = true, noisy = true, quantized = true, yMax = p_max, yMin = p_min) annotation(
+      RocketControl.Components.Sensors.Internal.SampleClockedWithADeffects sample(noise(sigma = sigmaNoise, useAutomaticLocalSeed = false, fixedLocalSeed = fixedLocalSeed), bias = bias, biased = true, bits = bits, limited = true, noisy = true, quantized = true, yMax = p_max, yMin = p_min) annotation(
         Placement(visible = true, transformation(origin = {40, 0}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
     equation
       connect(frame_a, idealBarometer.frame_a) annotation(
         Line(points = {{-100, 0}, {-60, 0}}));
-  connect(idealBarometer.press, sample.u) annotation(
+      connect(idealBarometer.press, sample.u) annotation(
         Line(points = {{-40, 0}, {32, 0}}, color = {0, 0, 127}));
-  connect(sample.y, press) annotation(
+      connect(sample.y, press) annotation(
         Line(points = {{46, 0}, {106, 0}}, color = {0, 0, 127}));
-  connect(periodicClock1.y, sample.clock) annotation(
+      connect(periodicClock1.y, sample.clock) annotation(
         Line(points = {{-14, -60}, {40, -60}, {40, -8}}, color = {175, 175, 175}));
       annotation(
         Icon(graphics = {Text(lineColor = {64, 64, 64}, extent = {{-50, -14}, {50, -54}}, textString = "Pa"), Text(lineColor = {0, 0, 255}, extent = {{-127, 77}, {134, 125}}, textString = "%name"), Line(origin = {81, 0}, points = {{-11, 0}, {11, 0}})}));
     end RealBarometer;
+
+    package Conversions
+      model Altimeter
+        import Modelica.Constants.R;
+        parameter SI.Position ref_altitude = world.altitude_0;
+        parameter SI.Temperature ref_temperature = atmosphere.temperature(ref_altitude);
+        parameter SI.Pressure ref_pressure = atmosphere.pressure(ref_altitude);
+        parameter RocketControl.Types.LapseRate lapse_rate = 0.0065;
+        parameter SI.Acceleration g0 = 9.80665;
+        parameter SI.MolarMass M = 0.0289644;
+        parameter SI.SpecificHeatCapacity Rs = R / M;
+        final parameter Real n = g0 / (Rs * lapse_rate);
+        final parameter SI.Temperature msl_temperature = ref_temperature + ref_altitude * lapse_rate;
+        final parameter SI.Pressure msl_pressure = ref_pressure / (1 - lapse_rate * ref_altitude / msl_temperature) ^ n;
+        Modelica.Blocks.Interfaces.RealOutput h annotation(
+          Placement(visible = true, transformation(origin = {106, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {102, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+        Modelica.Blocks.Interfaces.RealInput p annotation(
+          Placement(visible = true, transformation(origin = {-106, 0}, extent = {{-20, -20}, {20, 20}}, rotation = 0), iconTransformation(origin = {-100, 0}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
+      protected
+        outer RocketControl.World.MyWorld world;
+        outer RocketControl.World.Atmosphere atmosphere;
+      equation
+        h = msl_temperature / lapse_rate * (1 - (p / msl_pressure) ^ (1 / n));
+        annotation(
+          Icon(graphics = {Text(origin = {-3, 5}, extent = {{-83, 85}, {83, -85}}, textString = "ALT")}));
+      end Altimeter;
+
+      model Variometer
+        import Modelica.Constants.R;
+        parameter SI.Position ref_altitude = world.altitude_0;
+        parameter SI.Temperature ref_temperature = atmosphere.temperature(ref_altitude);
+        parameter SI.Pressure ref_pressure = atmosphere.pressure(ref_altitude);
+        parameter RocketControl.Types.LapseRate lapse_rate = 0.0065;
+        parameter SI.Acceleration g0 = 9.80665;
+        parameter SI.MolarMass M = 0.0289644;
+        parameter SI.SpecificHeatCapacity Rs = R / M;
+        final parameter Real n = g0 / (Rs * lapse_rate);
+        final parameter SI.Temperature msl_temperature = ref_temperature + ref_altitude * lapse_rate;
+        final parameter SI.Pressure msl_pressure = ref_pressure / (1 - lapse_rate * ref_altitude / msl_temperature) ^ n;
+        Modelica.Blocks.Interfaces.RealOutput vs annotation(
+          Placement(visible = true, transformation(origin = {106, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {102, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+        Modelica.Blocks.Interfaces.RealInput p annotation(
+          Placement(visible = true, transformation(origin = {-106, 60}, extent = {{-20, -20}, {20, 20}}, rotation = 0), iconTransformation(origin = {-100, 60}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
+        Modelica.Blocks.Interfaces.RealInput dp annotation(
+          Placement(visible = true, transformation(origin = {-106, -42}, extent = {{-20, -20}, {20, 20}}, rotation = 0), iconTransformation(origin = {-100, -60}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
+      protected
+        outer RocketControl.World.MyWorld world;
+        outer RocketControl.World.Atmosphere atmosphere;
+      equation
+        vs = -msl_temperature * dp * (p / msl_pressure) ^ (1 / n) / (lapse_rate * n * p);
+        annotation(
+          Icon(graphics = {Text(origin = {-3, 5}, extent = {{-83, 85}, {83, -85}}, textString = "VAR")}));
+      end Variometer;
+      annotation(
+        Icon(coordinateSystem(grid = {2, 0})));
+    end Conversions;
+
+    model RealGNSS
+      parameter Integer samplePeriodMs(min = 0) "Sample period in milliseconds";
+      parameter SI.Position sigmaNoise_xy "Noise standard deviation on the horizontal plane";
+      parameter SI.Position sigmaNoise_z "Noise standard deviation on the vertical plane";
+      parameter Integer fixedLocalSeed[3] = {10, 100, 1000} "Local seed for each of the accelerometer axes";
+      extends Modelica.Mechanics.MultiBody.Sensors.Internal.PartialAbsoluteSensor;
+      Modelica.Blocks.Interfaces.RealOutput pos[3](each final quantity = "Position", each final unit = "m") annotation(
+        Placement(visible = true, transformation(origin = {106, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {102, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      Modelica.Clocked.ClockSignals.Clocks.PeriodicExactClock periodicClock1(factor = samplePeriodMs) annotation(
+        Placement(visible = true, transformation(origin = {-60, -80}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
+      RocketControl.Components.Sensors.Internal.SampleClockedWithADeffects sampleX(biased = false, limited = false, noise(fixedLocalSeed = fixedLocalSeed[1], sigma = sigmaNoise_xy, useAutomaticLocalSeed = false), noisy = true, quantized = false) annotation(
+        Placement(visible = true, transformation(origin = {0, 40}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
+      RocketControl.Components.Sensors.Internal.SampleClockedWithADeffects sampleY(biased = false, limited = false, noise(fixedLocalSeed = fixedLocalSeed[2], sigma = sigmaNoise_xy, useAutomaticLocalSeed = false), noisy = true, quantized = false) annotation(
+        Placement(visible = true, transformation(origin = {0, 0}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
+      RocketControl.Components.Sensors.Internal.SampleClockedWithADeffects sampleZ(biased = false, limited = false, noise(fixedLocalSeed = fixedLocalSeed[3], sigma = sigmaNoise_z, useAutomaticLocalSeed = false), noisy = true, quantized = false) annotation(
+        Placement(visible = true, transformation(origin = {0, -40}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
+      Modelica.Mechanics.MultiBody.Sensors.AbsolutePosition idealGNSS(resolveInFrame = Modelica.Mechanics.MultiBody.Types.ResolveInFrameA.world) annotation(
+        Placement(visible = true, transformation(origin = {-60, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+    equation
+      connect(sampleX.y, pos[1]) annotation(
+        Line(points = {{6, 40}, {40, 40}, {40, 0}, {106, 0}}, color = {0, 0, 127}));
+      connect(sampleY.y, pos[2]) annotation(
+        Line(points = {{6, 0}, {106, 0}}, color = {0, 0, 127}));
+      connect(sampleZ.y, pos[3]) annotation(
+        Line(points = {{6, -40}, {40, -40}, {40, 0}, {106, 0}}, color = {0, 0, 127}));
+      connect(periodicClock1.y, sampleZ.clock) annotation(
+        Line(points = {{-53, -80}, {0, -80}, {0, -48}}, color = {175, 175, 175}));
+      connect(periodicClock1.y, sampleY.clock) annotation(
+        Line(points = {{-53, -80}, {0, -80}, {0, -8}}, color = {175, 175, 175}));
+      connect(periodicClock1.y, sampleX.clock) annotation(
+        Line(points = {{-53, -80}, {0, -80}, {0, 32}}, color = {175, 175, 175}));
+      connect(frame_a, idealGNSS.frame_a) annotation(
+        Line(points = {{-100, 0}, {-70, 0}}));
+      connect(idealGNSS.r[1], sampleX.u) annotation(
+        Line(points = {{-49, 0}, {-22, 0}, {-22, 40}, {-8, 40}}, color = {0, 0, 127}));
+      connect(idealGNSS.r[2], sampleY.u) annotation(
+        Line(points = {{-49, 0}, {-8, 0}}, color = {0, 0, 127}));
+      connect(idealGNSS.r[3], sampleZ.u) annotation(
+        Line(points = {{-49, 0}, {-22, 0}, {-22, -40}, {-8, -40}}, color = {0, 0, 127}));
+      annotation(
+        Icon(graphics = {Text(lineColor = {64, 64, 64}, extent = {{-50, -14}, {50, -54}}, textString = "GNSS"), Text(lineColor = {0, 0, 255}, extent = {{-130, 72}, {131, 120}}, textString = "%name")}));
+    end RealGNSS;
   end Sensors;
 
   model BodyVariableMass "Rigid body with mass, inertia tensor and one frame connector (12 potential states)"
@@ -893,7 +1015,7 @@ package Components
       Connections.potentialRoot(frame_a.R);
     end if;
     r_0 = frame_a.r_0;
-    if not Connections.isRoot(frame_a.R) then
+  if not Connections.isRoot(frame_a.R) then
 // Body does not have states
 // Dummies
       Q = {0, 0, 0, 1};
@@ -1491,6 +1613,10 @@ package Components
         Placement(visible = true, transformation(origin = {100, 80}, extent = {{-16, -16}, {16, 16}}, rotation = 0), iconTransformation(origin = {100, 60}, extent = {{-16, -16}, {16, 16}}, rotation = 0)));
       Modelica.Mechanics.MultiBody.Interfaces.Frame_b frame_b_lug_aft annotation(
         Placement(visible = true, transformation(origin = {100, 20}, extent = {{-16, -16}, {16, 16}}, rotation = 0), iconTransformation(origin = {100, -60}, extent = {{-16, -16}, {16, 16}}, rotation = 0)));
+      Modelica.Blocks.Logical.Not not1 annotation(
+        Placement(visible = true, transformation(origin = {50, -40}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      Modelica.Blocks.Interfaces.BooleanOutput liftoff annotation(
+        Placement(visible = true, transformation(origin = {108, -40}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {60, -104}, extent = {{-10, -10}, {10, 10}}, rotation = -90)));
     equation
       connect(frame_a, launchRailAngle.frame_a) annotation(
         Line(points = {{-100, -50}, {-72, -50}}));
@@ -1528,6 +1654,10 @@ package Components
         Line(points = {{-60, 17}, {-32, 17}, {-32, 36}, {-10, 36}, {-10, 30}}, color = {255, 0, 255}));
       connect(lug_aft.frame_a, launchRailAngle.frame_b) annotation(
         Line(points = {{-20, 20}, {-40, 20}, {-40, -50}, {-52, -50}}));
+      connect(not1.u, launchPadSensorBase.y) annotation(
+        Line(points = {{38, -40}, {20, -40}, {20, -62}}, color = {255, 0, 255}));
+      connect(not1.y, liftoff) annotation(
+        Line(points = {{62, -40}, {108, -40}}, color = {255, 0, 255}));
       annotation(
         Icon(graphics = {Polygon(origin = {-20, -6}, fillColor = {85, 122, 162}, fillPattern = FillPattern.VerticalCylinder, points = {{-28, -42}, {-14, -50}, {-14, -42}, {26, 38}, {28, 50}, {20, 42}, {-20, -38}, {-28, -42}}), Polygon(origin = {-9, 8}, fillColor = {222, 222, 222}, fillPattern = FillPattern.Forward, points = {{17, 88}, {-71, -78}, {-71, -88}, {71, -88}, {49, -80}, {-55, -80}, {17, 62}, {17, 88}}), Rectangle(origin = {6, 20}, fillPattern = FillPattern.Solid, extent = {{-2, 4}, {2, -4}}), Rectangle(origin = {-22, -36}, fillPattern = FillPattern.Solid, extent = {{-2, 4}, {2, -4}}), Text(lineColor = {0, 0, 255}, extent = {{-150, 80}, {150, 120}}, textString = "%name"), Text(origin = {-760.66, 76}, lineColor = {128, 128, 128}, extent = {{566.66, -29}, {770.66, -58}}, textString = "a"), Text(origin = {-566.66, 74}, lineColor = {128, 128, 128}, extent = {{566.66, -29}, {770.66, -58}}, textString = "bow"), Text(origin = {-227.774, 14}, lineColor = {128, 128, 128}, extent = {{277.774, -29}, {377.774, -58}}, textString = "aft"), Line(origin = {40, -48}, points = {{-62, 12}, {20, 12}, {20, -12}, {62, -12}}), Line(origin = {53, 40}, points = {{-47, -20}, {7, -20}, {7, 20}, {47, 20}})}));
     end LaunchRail;
@@ -1593,6 +1723,222 @@ package Components
       annotation(
         Icon(graphics = {Text(extent = {{-100, 80}, {100, -80}}, textString = "Pitch")}));
     end PitchController;
+
+    package Estimators
+      model DiscreteKalmanFilter
+        parameter Integer n(min = 1) "Number of states" annotation(
+          Evaluate = true);
+        parameter Integer m(min = 0) "Number of inputs" annotation(
+          Evaluate = true);
+        parameter Integer p(min = 1) "Number of outputs" annotation(
+          Evaluate = true);
+        parameter Real A[n, n];
+        parameter Real B[n, max(m, 1)] = zeros(n, max(m, 1)) annotation(
+          Dialog(enable = m > 0));
+        parameter Real C[p, n];
+        parameter Real P0[n, n] = identity(n) "Initial state covariance matrix";
+        parameter Real Q[n, n] "Process covariance matrix";
+        parameter Real R[p, p] "Output covariance matrix";
+        parameter Real x0[n] "Initial state";
+        Real P[n, n](start = P0) "P(k|k)";
+        Real Pest[n, n](start = P0) "P(k|k-1)";
+        Real L[n, p];
+        Real x_pred[n](start = x0);
+        Modelica.Blocks.Interfaces.RealInput y_meas[p] annotation(
+          Placement(visible = true, transformation(origin = {-106, 40}, extent = {{-20, -20}, {20, 20}}, rotation = 0), iconTransformation(origin = {-100, 60}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
+        Modelica.Blocks.Interfaces.RealOutput x_est[n](start = x0, each fixed = true) annotation(
+          Placement(visible = true, transformation(origin = {106, 40}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {102, 58}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+        Modelica.Blocks.Interfaces.RealOutput y_est[p](start = C * x0, each fixed = true) annotation(
+          Placement(visible = true, transformation(origin = {106, -40}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {102, -60}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+        Modelica.Blocks.Interfaces.RealInput u[max(m, 1)] annotation(
+          Placement(visible = true, transformation(origin = {-106, -40}, extent = {{-20, -20}, {20, 20}}, rotation = 0), iconTransformation(origin = {-100, -60}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
+        Modelica.Blocks.Interfaces.BooleanInput enable annotation(
+          Placement(visible = true, transformation(origin = {0, 108}, extent = {{-20, -20}, {20, 20}}, rotation = -90), iconTransformation(origin = {0, 102}, extent = {{-20, -20}, {20, 20}}, rotation = -90)));
+      equation
+        when Clock() then
+          if m == 0 then
+            u[1] = sample(0);
+          end if;
+          if not sample(enable) then
+            Pest = P0;
+            L = zeros(n, p);
+            P = P0;
+            x_pred = x0;
+            x_est = x0;
+            y_est = C * x_est;
+          else
+            Pest = A * previous(P) * transpose(A) + Q;
+            L = transpose(Modelica.Math.Matrices.solve2(transpose(C * Pest * transpose(C) + R), transpose(Pest * transpose(C))));
+            P = Pest - L * C * Pest;
+            x_pred = A * previous(x_est) + B * u;
+            x_est = x_pred + L * (y_meas - C * x_pred);
+            y_est = C * x_est;
+          end if;
+        end when;
+        annotation(
+          Icon(graphics = {Text(extent = {{-100, 100}, {100, -100}}, textString = "KF"), Text(origin = {102, 58.24}, lineColor = {128, 128, 128}, extent = {{-246, 56.76}, {-164, 23.76}}, textString = "y_meas"), Text(origin = {-22, -53}, lineColor = {128, 128, 128}, extent = {{-108, 43}, {-72, 18}}, textString = "u"), Text(origin = {300, 52.24}, lineColor = {128, 128, 128}, extent = {{-246, 56.76}, {-164, 23.76}}, textString = "x_est"), Text(origin = {304, -69.76}, lineColor = {128, 128, 128}, extent = {{-246, 56.76}, {-164, 23.76}}, textString = "y_est")}));
+      end DiscreteKalmanFilter;
+
+      model AES
+        import Modelica.Mechanics.MultiBody.Frames.Quaternions;
+        extends RocketControl.Interfaces.Internal.Icons.Estimator;
+        parameter Integer samplingPeriodMs;
+        parameter NonSI.Angle_deg heading0;
+        parameter NonSI.Angle_deg elevation0;
+        parameter NonSI.Angle_deg roll0 = 0;
+        parameter SI.AngularVelocity bias0[3] = {0, 0, 0};
+        parameter Real P0[6, 6] = identity(6);
+        parameter Real sigma_v "Attitude noise";
+        parameter SI.AngularVelocity sigma_u "Bias noise";
+        parameter Real sigma_b "Normalized magnetomer measurement noise";
+        SI.AngularVelocity bias[3](start = zeros(3));
+        Modelica.Blocks.Interfaces.RealInput w_meas_degs[3] annotation(
+          Placement(visible = true, transformation(origin = {-100, 60}, extent = {{-20, -20}, {20, 20}}, rotation = 0), iconTransformation(origin = {-120, 80}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
+        Modelica.Blocks.Interfaces.RealInput b_meas_nt[3] annotation(
+          Placement(visible = true, transformation(origin = {-100, 0}, extent = {{-20, -20}, {20, 20}}, rotation = 0), iconTransformation(origin = {-120, 0}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
+        Modelica.Blocks.Interfaces.RealInput r_0_est[3] annotation(
+          Placement(visible = true, transformation(origin = {-100, -70}, extent = {{-20, -20}, {20, 20}}, rotation = 0), iconTransformation(origin = {-120, -80}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
+        Modelica.Blocks.Interfaces.RealOutput q_est[4] annotation(
+          Placement(visible = true, transformation(origin = {110, 30}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {110, 50}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+        Modelica.Blocks.Interfaces.RealOutput w_est_degs[3](each final quantity = "AngularVelocity", each final unit = "deg/s") annotation(
+          Placement(visible = true, transformation(origin = {110, -30}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {110, -50}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      protected
+        final parameter SI.Duration T = samplingPeriodMs / 1000;
+        final parameter Modelica.Mechanics.MultiBody.Frames.Orientation R0 = Modelica.Mechanics.MultiBody.Frames.axesRotations({3, 2, 1}, from_deg({heading0, elevation0, roll0}), {0, 0, 0});
+        final parameter Real q0[4] = Quaternions.from_T(R0.T);
+        final parameter Real x0[6] = {0, 0, 0, 0, 0, 0};
+        final parameter Real R[3, 3] = identity(3) * sigma_b ^ 2;
+        Real q_prop[4](start = q0);
+        Real q_prev[4];
+        Real q_update[4];
+        Real q_star[4];
+        SI.MagneticFluxDensity b_n[3];
+        Real b_n_vers[3];
+        Real b_b_vers[3];
+        Real P_prop[6, 6](start = P0);
+        Real P_update[6, 6];
+        Real K[6, 3];
+        Real H[3, 6];
+        Real h[3];
+        Real Aq[3, 3];
+        Real x_update[6];
+        Real F[6, 6];
+        Real Q[6, 6];
+        SI.AngularVelocity w_meas[3];
+        SI.MagneticFluxDensity b_meas[3];
+        SI.AngularVelocity w_est[3];
+
+        function Fmatrix
+          input Real[3] w;
+          output Real[6, 6] F;
+        protected
+          Real wnorm;
+          Real Ftemp[6, 6];
+        algorithm
+//    Ftemp := [-skew(w), -identity(3); zeros(3, 3), zeros(3, 3)];
+//    F := identity(6) + T * Ftemp;
+          wnorm := norm(w);
+          F := zeros(6, 6);
+          F[1:3, 1:3] := identity(3) - skew(w) * sin(wnorm * T) / wnorm + skew(w) ^ 2 * (1 - cos(wnorm * T)) / wnorm ^ 2;
+          F[1:3, 4:6] := skew(w) * (1 - cos(wnorm * T)) ./ wnorm ^ 2 - identity(3) * T - skew(w) ^ 2 * (wnorm * T - sin(wnorm * T)) ./ wnorm ^ 3;
+          F[4:6, 4:6] := identity(3);
+        end Fmatrix;
+
+        function Qmatrix
+          input Real[3] w;
+          input Real sigma_v;
+          input Real sigma_u;
+          output Real Q[6, 6];
+        protected
+          Real wnorm;
+          Real Qtemp[6, 6];
+          constant Real G[6, 6] = [-identity(3), zeros(3, 3); zeros(3, 3), identity(3)];
+        algorithm
+          wnorm := norm(w);
+          if wnorm > 1e-5 then
+            Q[1:3, 1:3] := sigma_v ^ 2 * T * identity(3) + sigma_u ^ 2 * (1 / 3 * T ^ 3 * identity(3) - skew(w) ^ 2 * (2 * wnorm * T - 2 * sin(wnorm * T) - 1 / 3 * wnorm ^ 3 * T ^ 3) / wnorm ^ 5);
+            Q[1:3, 4:6] := sigma_u ^ 2 * (skew(w) * (wnorm * T - sin(wnorm * T)) / wnorm ^ 3 - 0.5 * T ^ 2 * identity(3) - skew(w) ^ 2 * (0.5 * wnorm ^ 2 * T ^ 2 + cos(wnorm * T) - 1) / wnorm ^ 4);
+            Q[4:6, 1:3] := transpose(Q[1:3, 4:6]);
+            Q[4:6, 4:6] := sigma_u ^ 2 * T * identity(3);
+          else
+            Qtemp := [identity(3) * sigma_v ^ 2, zeros(3, 3); zeros(3, 3), identity(3) * sigma_u ^ 2];
+            Q := T * G * Qtemp * transpose(G);
+          end if;
+        end Qmatrix;
+
+        function quatSkew
+          input Real q[4];
+          output Real E[4, 3];
+        algorithm
+          E[1, 1] := q[4];
+          E[1, 2] := -q[3];
+          E[1, 3] := q[2];
+          E[2, 1] := q[3];
+          E[2, 2] := q[4];
+          E[2, 3] := -q[1];
+          E[3, 1] := -q[2];
+          E[3, 2] := q[1];
+          E[3, 3] := q[4];
+          E[4, 1] := -q[1];
+          E[4, 2] := -q[2];
+          E[4, 3] := -q[3];
+        end quatSkew;
+
+        function propagateQuaternion
+          input Real[4] q;
+          input Real[3] w;
+          output Real[4] q_prop;
+        protected
+          Real[4, 4] O;
+          Real[3] psi;
+          Real wnorm;
+        algorithm
+          wnorm := norm(w);
+          if wnorm > 1e-7 then
+            psi := sin(0.5 * wnorm * T) * w / wnorm;
+            O := [cos(0.5 * wnorm * T) * identity(3) - skew(psi), matrix(psi); -transpose(matrix(psi)), cos(0.5 * wnorm * T)];
+          else
+            O := identity(4);
+          end if;
+          q_prop := O * q;
+        end propagateQuaternion;
+
+        outer RocketControl.World.MyWorld world;
+      equation
+        when Clock() then
+// Unit conversion
+          w_meas = from_deg(w_meas_degs);
+          b_meas = b_meas_nt * 1e-9;
+          q_prev = previous(q_prop);
+          q_est = q_prev;
+          Aq = Quaternions.to_T(q_prev);
+// Update
+          b_n = world.magneticField(r_0_est);
+          b_n_vers = b_n / norm(b_n);
+          b_b_vers = b_meas / norm(b_meas);
+          h = Modelica.Mechanics.MultiBody.Frames.Quaternions.resolve2(q_prev, b_n_vers);
+          H = [skew(h), zeros(3, 3)];
+          K = transpose(Modelica.Math.Matrices.solve2(transpose(H * previous(P_prop) * transpose(H) + R), transpose(previous(P_prop) * transpose(H))));
+          P_update = (identity(6) - K * H) * previous(P_prop);
+          x_update = K * (b_b_vers - h);
+// Reset
+          q_star = q_prev + 0.5 * quatSkew(q_prev) * x_update[1:3];
+          q_update = q_star / norm(q_star);
+          bias = previous(bias) + x_update[4:6];
+// Propagate
+          w_est = w_meas - bias;
+          w_est_degs = to_deg(w_est);
+          F = Fmatrix(w_est);
+          Q = Qmatrix(w_est, sigma_v, sigma_u);
+          P_prop = F * P_update * transpose(F) + Q;
+          q_prop = propagateQuaternion(q_update, w_est);
+        end when;
+        annotation(
+          Icon(graphics = {Text(origin = {134, 84}, lineColor = {111, 111, 111}, extent = {{-30, 20}, {30, -20}}, textString = "q"), Text(origin = {134, -16}, lineColor = {111, 111, 111}, extent = {{-30, 20}, {30, -20}}, textString = "w"), Text(origin = {-152, 120}, lineColor = {111, 111, 111}, extent = {{-40, 20}, {40, -20}}, textString = "w"), Text(origin = {-148, 40}, lineColor = {111, 111, 111}, extent = {{-40, 20}, {40, -20}}, textString = "b"), Text(origin = {-146, -40}, lineColor = {111, 111, 111}, extent = {{-40, 20}, {40, -20}}, textString = "r_0"), Text(origin = {0, -76}, fillColor = {102, 102, 102}, extent = {{-100, 18}, {100, -18}}, textString = "asset"), Line(origin = {-97, 0}, points = {{-3, 80}, {3, 80}, {3, -80}, {-3, -80}}), Line(origin = {-95, 0}, points = {{-5, 0}, {5, 0}}), Line(origin = {95, 25}, points = {{-5, -25}, {-1, -25}, {-1, 25}, {5, 25}}), Line(origin = {102, -25}, points = {{-8, 25}, {-8, -25}, {8, -25}})}));
+      end AES;
+      annotation(
+        Icon(coordinateSystem(grid = {2, 0})));
+    end Estimators;
   end Control;
 
   model LandDetector

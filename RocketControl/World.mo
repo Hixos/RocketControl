@@ -14,34 +14,44 @@ package World
     parameter NanoTesla g11 = -1450.9 "IGRF gauss coefficient (n=1, m=1)";
     parameter NanoTesla h11 = 4652.5 "IGRF gauss coefficient (n=1, m=1)";
     parameter SI.Position x_0_ecef[3] = lla2ecef(latitude_0, longitude_0, altitude_0) "Coordinates of the origin of the NED (world) frame in the ecef frame";
-     parameter Real T[3, 3] = ecef2nedMatrix(x_0_ecef) "Transformation matrix from world frame to ecef frame";
+    final parameter Real T[3, 3] = ecef2nedMatrix(x_0_ecef) "Transformation matrix from world frame to ned frame";
   //    final parameter Real rpole[3] = Coordinates.lla2ecef(pole_lat, pole_lon, 0) "Magnetic north dipole pole coordinates in ecef frame (IGRF 2020)";
   //    final parameter Real m[3] = -rpole / norm(rpole) "Magnetic dipole axis in ecef frame (IGRF 2020)";
     final parameter SI.Length R = 6371200 "IGRF Earth radius";
     final parameter SI.MagneticFluxDensity H0 = sqrt(g10 ^ 2 + g11 ^ 2 + h11 ^ 2) / 1e9;
-  
+    final parameter Real m_vec[3] = -lla2ecef(pole_lat, pole_lon, 0);
+    final parameter Real m[3] = m_vec / norm(m_vec);
+    
     redeclare function extends altitude
       algorithm
-        altitude := -x[3];
+        altitude := -x[3] + altitude_0;
       annotation(
         Icon(coordinateSystem(grid = {2, 0})));
     end altitude;
   
     redeclare function extends magneticField "Calculates the Earth's magnetic field intensity based on the IGRF model with N = 1. Default parameter values refer to IGRF-13 year 2020"
-  //      protected
-  //        Real r_vec[3];
-  //        Real r_norm;
-  //        Real r[3];
+        protected
+          Real r_vec[3];
+          Real r_norm;
+          Real r[3];
   
       algorithm
-  //        r_vec := Coordinates.ned2ecefPosition(x);
-  //        r_norm := norm(r_vec);
-  //        r := r_vec / r_norm;
-        b := {1,2,3};//Coordinates.ecef2ned(R ^ 3 * H0 * (3 * (m * r) * r - m) / r_norm ^ 3);
+          r_vec := x_0_ecef + transpose(T)*x;
+          r_norm := norm(r_vec);
+          r := r_vec / r_norm;
+          b := T*(R ^ 3 * H0 * (3 * (m * r) * r - m) / r_norm ^ 3);
       annotation(
         Inline = true,
         Icon(coordinateSystem(grid = {2, 0})));
     end magneticField;
+    
+  function ned2ecefPosition
+  input SI.Position[3] x_ned;
+  output SI.Position[3] x_ecef;
+  algorithm
+  x_ecef := x_0_ecef + transpose(T)*x_ned;
+  end ned2ecefPosition;
+  
   function lla2ecef
     input NonSI.Angle_deg lat;
     input NonSI.Angle_deg lon;
@@ -171,8 +181,8 @@ package World
 
   model Atmosphere
     outer MyWorld world;
-    type LapseRate = Real(unit = "K/m");
     import Modelica.Constants.R;
+    import RocketControl.Types.LapseRate;
     parameter SI.Temperature T0 = 288.15;
     parameter SI.Pressure P0 = 101325;
     parameter LapseRate lapse_rate = -0.0065;
@@ -181,54 +191,46 @@ package World
     parameter SI.Acceleration g0 = 9.80665;
 
     function density
-      input SI.Position[3] r_0;
+      input SI.Position h;
       output SI.Density density;
-    protected
-      SI.Position h;
+    
     algorithm
-      h := world.altitude(r_0);
       density := rho0 * (T0 / (T0 + h * lapse_rate)) ^ (1 + g0 * M / (R * lapse_rate));
     end density;
 
     function temperature
-      input SI.Position[3] r_0;
+      input SI.Position h;
       output SI.Temperature temp;
-    protected
-      SI.Position h;
     algorithm
-      h := world.altitude(r_0);
       temp := T0 + h * lapse_rate;
     end temperature;
 
     function pressure
-      input SI.Position[3] pos_ecef;
+      input SI.Position h;
       output SI.Pressure press;
-    protected
-      SI.Position h;
     algorithm
-      h := world.altitude(pos_ecef);
       press := P0 * ((T0 + h * lapse_rate) / T0) ^ (-g0 * M / (R * lapse_rate));
       annotation(Inline = true);
     end pressure;
 
     function speedOfSound
-      input SI.Position[3] r_0;
+      input SI.Position h;
       output SI.Velocity speedOfSound;
     protected
       SI.Temperature T;
     algorithm
-      T := temperature(r_0);
+      T := temperature(h);
       speedOfSound := sqrt(1.4 * R * T / M);
     end speedOfSound;
 
     function windSpeed
-      input SI.Position[3] r_0;
+      input SI.Position h;
       output SI.Velocity[3] windSpeed;
     algorithm
 //if r_0[3] < -1000 then
 //windSpeed := {0, 30, 0};
 //else
-      windSpeed := {10, 0, 0};
+      windSpeed := {0, 0, 0};
 //  end if;
     end windSpeed;
   equation

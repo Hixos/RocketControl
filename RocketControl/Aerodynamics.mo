@@ -237,6 +237,7 @@ package Aerodynamics
       type AeroCoeffictient = Real(unit = "1");
       type C = Coefficients;
       outer World.Atmosphere atmosphere;
+      outer World.MyWorld world;
       parameter Modelica.Units.SI.Angle max_alpha = Modelica.Units.Conversions.from_deg(75);
       parameter Modelica.Units.SI.Angle min_alpha = Modelica.Units.Conversions.from_deg(-75);
       parameter Modelica.Units.SI.Angle max_beta = Modelica.Units.Conversions.from_deg(75);
@@ -267,10 +268,10 @@ package Aerodynamics
       alpha0 = aeroState.alpha;
       beta0 = aeroState.beta;
       v_norm = norm(aeroState.v);
-      q_v = 0.5 * atmosphere.density(frame_b.r_0) * v_norm;
+      q_v = 0.5 * atmosphere.density(world.altitude(frame_b.r_0)) * v_norm;
       q = q_v * v_norm;
       CA = coeffs[C.CA];
-      CY = coeffs[C.CY] + coeffs[C.CYB] * (aeroState.beta - beta0);
+      CY = coeffs[C.CY] + coeffs[C.CYB] * (aeroState.beta - beta0); // Second term is always zero in case of linear interpoaltion of the coefficients
       CN = coeffs[C.CN] + coeffs[C.CNA] * (aeroState.alpha - alpha0);
       CLL = coeffs[C.CLL] + coeffs[C.CLLB] * (aeroState.beta - beta0);
       CLM = coeffs[C.CM] + coeffs[C.CMA] * (aeroState.alpha - alpha0);

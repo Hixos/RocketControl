@@ -5,4 +5,5 @@ package RocketControl
   import Modelica.Mechanics.MultiBody;
   import Modelica.Units.Conversions.from_deg;
   import Modelica.Units.Conversions.to_deg;
+  import Modelica.Constants.pi;
 end RocketControl;
