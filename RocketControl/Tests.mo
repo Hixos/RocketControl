@@ -235,6 +235,163 @@ package Tests
       annotation(
         Icon(coordinateSystem(grid = {2, 0})));
     end Sensors;
+
+    package World
+      model wgs84
+      
+      parameter NonSI.Angle_deg lat = 0;
+      parameter NonSI.Angle_deg lon = 0;
+      parameter SI.Distance alt = 0;
+      
+      
+      SI.Position pos_ecef[3];
+      SI.Position pos_ned[3];
+      NonSI.Angle_deg res_lat;
+      NonSI.Angle_deg res_lon;
+      SI.Position res_alt;
+      Modelica.Mechanics.MultiBody.Frames.Orientation Rned;
+      Real nadir[3];
+      algorithm
+   pos_ecef := RocketControl.World.MyWorld.WGS84.lla2ecef(lat, lon, alt);
+      (res_lat, res_lon, res_alt) := RocketControl.World.MyWorld.WGS84.ecef2lla(pos_ecef);
+      nadir := RocketControl.World.MyWorld.WGS84.getNadir(pos_ecef);
+      
+      Rned := RocketControl.World.MyWorld.NEDOrientation(pos_ecef);
+      pos_ned :=  Modelica.Mechanics.MultiBody.Frames.resolve2(Rned, pos_ecef);
+        annotation(
+          Icon(coordinateSystem(grid = {2, 0})));
+      end wgs84;
+      annotation(
+        Icon(coordinateSystem(grid = {2, 0})));
+    end World;
+
+    package Frames
+      model Ecef
+      inner RocketControl.World.MyWorld world annotation(
+          Placement(visible = true, transformation(origin = {-90, 70}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      Modelica.Mechanics.MultiBody.Frames.Orientation R;
+  RocketControl.Components.Frames.ECEF ecef annotation(
+          Placement(visible = true, transformation(origin = {-72, 2}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Mechanics.MultiBody.Parts.FixedTranslation fixedTranslation(r = {6378137, 0, 0})  annotation(
+          Placement(visible = true, transformation(origin = {-22, 2}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Mechanics.MultiBody.Sensors.AbsoluteAngularVelocity absoluteAngularVelocity annotation(
+          Placement(visible = true, transformation(origin = {74, 38}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Mechanics.MultiBody.Sensors.AbsoluteVelocity absoluteVelocity(resolveInFrame = Modelica.Mechanics.MultiBody.Types.ResolveInFrameA.world)  annotation(
+          Placement(visible = true, transformation(origin = {74, 2}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      Real v2[3];
+      equation
+      v2 = RocketControl.World.MyWorld.eci2ecef(fixedTranslation.frame_b.r_0, time);
+      R = RocketControl.World.MyWorld.eci2ecefOrientation(time);
+  connect(ecef.frame_b, fixedTranslation.frame_a) annotation(
+          Line(points = {{-62, 2}, {-32, 2}}, color = {95, 95, 95}));
+  connect(fixedTranslation.frame_b, absoluteAngularVelocity.frame_a) annotation(
+          Line(points = {{-12, 2}, {16, 2}, {16, 38}, {64, 38}}));
+  connect(fixedTranslation.frame_b, absoluteVelocity.frame_a) annotation(
+          Line(points = {{-12, 2}, {64, 2}}, color = {95, 95, 95}));
+        annotation(
+          Icon(coordinateSystem(grid = {2, 0})));
+      end Ecef;
+
+      model Frames
+      RocketControl.Components.Frames.ECEF ecef annotation(
+          Placement(visible = true, transformation(origin = {-70, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  RocketControl.Components.Frames.EarthSurfaceTranslation earthSurfaceTranslation(altitude = 309, latitude = 45.691049, longitude = 8.490597) annotation(
+          Placement(visible = true, transformation(origin = {-10, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  inner RocketControl.World.MyWorld world annotation(
+          Placement(visible = true, transformation(origin = {-90, 90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  RocketControl.Components.Frames.ecef2ned ecef2ned annotation(
+          Placement(visible = true, transformation(origin = {48, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      equation
+        connect(ecef.frame_b, earthSurfaceTranslation.frame_a) annotation(
+          Line(points = {{-60, 0}, {-20, 0}}, color = {95, 95, 95}));
+  connect(earthSurfaceTranslation.frame_b, ecef2ned.frame_a) annotation(
+          Line(points = {{0, 0}, {38, 0}}));
+      protected
+        annotation(
+          Icon(coordinateSystem(grid = {2, 0})));
+      end Frames;
+
+      model ecef2nedTest
+  inner RocketControl.World.MyWorld world(gravityType = Modelica.Mechanics.MultiBody.Types.GravityTypes.PointGravity, n = {-1, 0, 0})  annotation(
+          Placement(visible = true, transformation(origin = {-90, 90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Mechanics.MultiBody.Parts.FixedTranslation fixedTranslation(r = {7000000, 0, 0}) annotation(
+          Placement(visible = true, transformation(origin = {-52, 10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  RocketControl.Components.Frames.ECEF ecef annotation(
+          Placement(visible = true, transformation(origin = {-92, 10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  RocketControl.Components.Frames.toNED toNED annotation(
+          Placement(visible = true, transformation(origin = {-18, 10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Mechanics.MultiBody.Parts.Body body(m = 1, r_0(each fixed = true, start = {7000001, 0, 0}), r_CM = {0, 0, 0})  annotation(
+          Placement(visible = true, transformation(origin = {88, 10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Mechanics.MultiBody.Parts.FixedTranslation fixedTranslation1(r = {0, 0, -100}) annotation(
+          Placement(visible = true, transformation(origin = {14, 10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  RocketControl.Components.Forces.ConnectionFlange connectionFlange(c = 30000, d = 400, diameter = 0.3)  annotation(
+          Placement(visible = true, transformation(origin = {52, 10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      equation
+        connect(ecef.frame_b, fixedTranslation.frame_a) annotation(
+          Line(points = {{-82, 10}, {-62, 10}}, color = {95, 95, 95}));
+        connect(fixedTranslation.frame_b, toNED.frame_a) annotation(
+          Line(points = {{-42, 10}, {-28, 10}}));
+        connect(toNED.frame_b, fixedTranslation1.frame_a) annotation(
+          Line(points = {{-8, 10}, {4, 10}}, color = {95, 95, 95}));
+  connect(fixedTranslation1.frame_b, connectionFlange.frame_a) annotation(
+          Line(points = {{24, 10}, {42, 10}}, color = {95, 95, 95}));
+  connect(connectionFlange.frame_b, body.frame_a) annotation(
+          Line(points = {{62, 10}, {78, 10}}));
+      protected
+  annotation(
+          Icon(coordinateSystem(grid = {2, 0})));
+      end ecef2nedTest;
+      annotation(
+        Icon(coordinateSystem(grid = {2, 0})));
+    end Frames;
+
+    package Forces
+      model ConnectionFlange
+      Modelica.Mechanics.MultiBody.Parts.Body body(m = 20, r_CM = {0, 0, 0})  annotation(
+          Placement(visible = true, transformation(origin = {72, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  RocketControl.Components.Forces.ConnectionFlange connectionFlange(c = 30000, d = 500, diameter = 0.09)  annotation(
+          Placement(visible = true, transformation(origin = {0, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Mechanics.MultiBody.Parts.FixedTranslation fixedTranslation(r = {1, 0, 0})  annotation(
+          Placement(visible = true, transformation(origin = {36, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  inner Modelica.Mechanics.MultiBody.World world(gravityType = Modelica.Mechanics.MultiBody.Types.GravityTypes.UniformGravity)  annotation(
+          Placement(visible = true, transformation(origin = {-90, -90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Mechanics.MultiBody.Parts.Body body1(m = 20, r_0(start = {100000, 100000, 100000}), r_CM = {0, 0, 0}) annotation(
+          Placement(visible = true, transformation(origin = {-80, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 180)));
+  Modelica.Mechanics.MultiBody.Parts.FixedTranslation fixedTranslation1(r = {1, 0, 0}) annotation(
+          Placement(visible = true, transformation(origin = {-42, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Mechanics.MultiBody.Sensors.RelativePosition relativePosition annotation(
+          Placement(visible = true, transformation(origin = {0, 80}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Mechanics.MultiBody.Sensors.RelativeAngles relativeAngles annotation(
+          Placement(visible = true, transformation(origin = {0, 40}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Mechanics.MultiBody.Joints.FreeMotionScalarInit freeMotionScalarInit(angle_1(fixed = true, start = 0), angle_2(fixed = true, start = 0), angle_3(fixed = true, start = 0), angle_d_1(fixed = true), angle_d_2(fixed = true), angle_d_3(fixed = true), r_rel_a_1(fixed = true, start = 2.001), r_rel_a_2(fixed = true), r_rel_a_3(fixed = true), use_angle = true, use_angle_d = true, use_r = true, use_v = true, v_rel_a_1(fixed = true), v_rel_a_2(fixed = true), v_rel_a_3(fixed = true)) annotation(
+          Placement(visible = true, transformation(origin = {2, -40}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      equation
+        connect(connectionFlange.frame_b, fixedTranslation.frame_a) annotation(
+          Line(points = {{10, 0}, {26, 0}}, color = {95, 95, 95}));
+        connect(fixedTranslation.frame_b, body.frame_a) annotation(
+          Line(points = {{46, 0}, {62, 0}}));
+        connect(fixedTranslation1.frame_b, connectionFlange.frame_a) annotation(
+          Line(points = {{-32, 0}, {-10, 0}}, color = {95, 95, 95}));
+        connect(body1.frame_a, fixedTranslation1.frame_a) annotation(
+          Line(points = {{-70, 0}, {-52, 0}}));
+        connect(relativePosition.frame_a, body1.frame_a) annotation(
+          Line(points = {{-10, 80}, {-70, 80}, {-70, 0}}));
+        connect(relativePosition.frame_b, body.frame_a) annotation(
+          Line(points = {{10, 80}, {62, 80}, {62, 0}}, color = {95, 95, 95}));
+        connect(relativeAngles.frame_a, body1.frame_a) annotation(
+          Line(points = {{-10, 40}, {-70, 40}, {-70, 0}}, color = {95, 95, 95}));
+        connect(relativeAngles.frame_b, body.frame_a) annotation(
+          Line(points = {{10, 40}, {62, 40}, {62, 0}}, color = {95, 95, 95}));
+        connect(freeMotionScalarInit.frame_b, body.frame_a) annotation(
+          Line(points = {{12, -40}, {54, -40}, {54, 0}, {62, 0}}));
+        connect(body1.frame_a, freeMotionScalarInit.frame_a) annotation(
+          Line(points = {{-70, 0}, {-60, 0}, {-60, -40}, {-8, -40}}, color = {95, 95, 95}));
+        annotation(
+          Icon(coordinateSystem(grid = {2, 0})));
+      end ConnectionFlange;
+      annotation(
+        Icon(coordinateSystem(grid = {2, 0})));
+    end Forces;
     annotation(
       Icon(coordinateSystem(grid = {2, 0})));
   end Components;

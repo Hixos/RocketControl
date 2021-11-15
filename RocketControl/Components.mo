@@ -7,17 +7,13 @@ package Components
       import Modelica.Mechanics.MultiBody.Frames;
       import Modelica.Math.Vectors;
       outer World.Atmosphere atmosphere;
-      Modelica.Blocks.Interfaces.RealOutput aoa(final quantity="Angle",
-        final unit="rad",
-        displayUnit="deg") annotation(
+      Modelica.Blocks.Interfaces.RealOutput aoa(final quantity = "Angle", final unit = "rad", displayUnit = "deg") annotation(
         Placement(visible = true, transformation(origin = {102, 70}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {100, 50}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
       SI.Velocity v_b[3] "Velocity relative to wind in body frame (body frame)";
       SI.Velocity v_w[3] "Wind speed at current position";
       SI.Velocity v_norm;
       parameter SI.Velocity v_small = 1e-1 "Prevent division by zero when velocity is too small";
-      Modelica.Blocks.Interfaces.RealOutput sideslip(final quantity="Angle",
-        final unit="rad",
-        displayUnit="deg") annotation(
+      Modelica.Blocks.Interfaces.RealOutput sideslip(final quantity = "Angle", final unit = "rad", displayUnit = "deg") annotation(
         Placement(visible = true, transformation(origin = {100, -50}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {100, -50}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
     equation
       v_w = atmosphere.windSpeed(frame_a.r_0);
@@ -281,40 +277,40 @@ package Components
         Placement(visible = true, transformation(origin = {48, -60}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
       RocketControl.Components.Sensors.IdealAccelerometer idealAccelerometer annotation(
         Placement(visible = true, transformation(origin = {-70, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Clocked.RealSignals.Sampler.SampleVectorizedAndClocked sample1(n = 3)  annotation(
+      Modelica.Clocked.RealSignals.Sampler.SampleVectorizedAndClocked sample1(n = 3) annotation(
         Placement(visible = true, transformation(origin = {80, 0}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
-  Modelica.Clocked.ClockSignals.Clocks.PeriodicRealClock periodicClock1(period = 1 / samplingRate)  annotation(
+      Modelica.Clocked.ClockSignals.Clocks.PeriodicRealClock periodicClock1(period = 1 / samplingRate) annotation(
         Placement(visible = true, transformation(origin = {62, -88}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
     equation
-  connect(biasX.y, multiSumX.u[1]) annotation(
+      connect(biasX.y, multiSumX.u[1]) annotation(
         Line(points = {{25, 90}, {31, 90}, {31, 60}, {41, 60}}, color = {0, 0, 127}));
-  connect(noiseX.y, multiSumX.u[2]) annotation(
+      connect(noiseX.y, multiSumX.u[2]) annotation(
         Line(points = {{-15, 90}, {-5, 90}, {-5, 60}, {41, 60}}, color = {0, 0, 127}));
-  connect(noiseY.y, multiSum.u[2]) annotation(
+      connect(noiseY.y, multiSum.u[2]) annotation(
         Line(points = {{-15, 30}, {-5, 30}, {-5, 0}, {41, 0}}, color = {0, 0, 127}));
-  connect(biasY.y, multiSum.u[1]) annotation(
+      connect(biasY.y, multiSum.u[1]) annotation(
         Line(points = {{25, 30}, {31, 30}, {31, 0}, {41, 0}}, color = {0, 0, 127}));
-  connect(biasZ.y, multiSum1.u[1]) annotation(
+      connect(biasZ.y, multiSum1.u[1]) annotation(
         Line(points = {{25, -30}, {31, -30}, {31, -60}, {42, -60}}, color = {0, 0, 127}));
-  connect(noiseZ.y, multiSum1.u[2]) annotation(
+      connect(noiseZ.y, multiSum1.u[2]) annotation(
         Line(points = {{-15, -30}, {-5, -30}, {-5, -60}, {42, -60}}, color = {0, 0, 127}));
       connect(frame_a, idealAccelerometer.frame_a) annotation(
         Line(points = {{-100, 0}, {-80, 0}}));
-  connect(idealAccelerometer.acc[1], multiSumX.u[3]) annotation(
+      connect(idealAccelerometer.acc[1], multiSumX.u[3]) annotation(
         Line(points = {{-60, 0}, {-40, 0}, {-40, 60}, {42, 60}}, color = {0, 0, 127}));
-  connect(idealAccelerometer.acc[2], multiSum.u[3]) annotation(
+      connect(idealAccelerometer.acc[2], multiSum.u[3]) annotation(
         Line(points = {{-60, 0}, {42, 0}}, color = {0, 0, 127}));
-  connect(idealAccelerometer.acc[3], multiSum1.u[3]) annotation(
+      connect(idealAccelerometer.acc[3], multiSum1.u[3]) annotation(
         Line(points = {{-60, 0}, {-40, 0}, {-40, -60}, {42, -60}}, color = {0, 0, 127}));
-  connect(sample1.y, acc) annotation(
+      connect(sample1.y, acc) annotation(
         Line(points = {{86, 0}, {106, 0}}, color = {0, 0, 127}, thickness = 0.5));
-  connect(multiSumX.y, sample1.u[1]) annotation(
+      connect(multiSumX.y, sample1.u[1]) annotation(
         Line(points = {{56, 60}, {64, 60}, {64, 0}, {72, 0}}, color = {0, 0, 127}));
-  connect(multiSum.y, sample1.u[2]) annotation(
+      connect(multiSum.y, sample1.u[2]) annotation(
         Line(points = {{56, 0}, {72, 0}}, color = {0, 0, 127}));
-  connect(multiSum1.y, sample1.u[3]) annotation(
+      connect(multiSum1.y, sample1.u[3]) annotation(
         Line(points = {{56, -60}, {64, -60}, {64, 0}, {72, 0}}, color = {0, 0, 127}));
-  connect(periodicClock1.y, sample1.clock) annotation(
+      connect(periodicClock1.y, sample1.clock) annotation(
         Line(points = {{68, -88}, {80, -88}, {80, -8}}, color = {175, 175, 175}));
       annotation(
         Icon(graphics = {Text(lineColor = {0, 0, 255}, extent = {{-127, 77}, {134, 125}}, textString = "%name"), Text(lineColor = {64, 64, 64}, extent = {{-50, -14}, {50, -54}}, textString = "rad/s")}),
@@ -333,39 +329,12 @@ package Components
     equation
       acc_inertial = der(absoluteVelocity.v);
       acc_body = acc_inertial - world.gravityAcceleration(frame_a.r_0);
-      acc = Modelica.Mechanics.MultiBody.Frames.resolve2(frame_a.R, acc_body);
+      acc =Modelica.Mechanics.MultiBody.Frames.resolve2(frame_a.R, acc_inertial);
       connect(frame_a, absoluteVelocity.frame_a) annotation(
         Line(points = {{-100, 0}, {-70, 0}}));
       annotation(
         Icon(graphics = {Text(lineColor = {0, 0, 255}, extent = {{-130, 72}, {131, 120}}, textString = "%name"), Text(lineColor = {64, 64, 64}, extent = {{-50, -14}, {50, -54}}, textString = "m/s^2")}));
     end IdealAccelerometer;
-
-    model SampledAccelerometer
-    extends Modelica.Mechanics.MultiBody.Sensors.Internal.PartialAbsoluteSensor;
-  RocketControl.Components.Sensors.IdealAccelerometer idealAccelerometer annotation(
-        Placement(visible = true, transformation(origin = {-50, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Blocks.Interfaces.RealOutput acc[3] annotation(
-        Placement(visible = true, transformation(origin = {106, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {102, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Clocked.RealSignals.Sampler.SampleClocked sample1[3] annotation(
-        Placement(visible = true, transformation(origin = {40, 0}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
-  Modelica.Clocked.ClockSignals.Clocks.PeriodicRealClock periodicClock1(period = 0.01)  annotation(
-        Placement(visible = true, transformation(origin = {-10, -64}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
-    equation
-      connect(frame_a, idealAccelerometer.frame_a) annotation(
-        Line(points = {{-100, 0}, {-60, 0}}));
-  connect(idealAccelerometer.acc, sample1.u) annotation(
-        Line(points = {{-40, 0}, {32, 0}}, color = {0, 0, 127}, thickness = 0.5));
-  connect(sample1.y, acc) annotation(
-        Line(points = {{46, 0}, {106, 0}}, color = {0, 0, 127}, thickness = 0.5));
-  connect(periodicClock1.y, sample1[1].clock) annotation(
-        Line(points = {{-4, -64}, {40, -64}, {40, -8}}, color = {175, 175, 175}));
-  connect(periodicClock1.y, sample1[2].clock) annotation(
-        Line(points = {{-4, -64}, {40, -64}, {40, -8}}, color = {175, 175, 175}));
-  connect(periodicClock1.y, sample1[3].clock) annotation(
-        Line(points = {{-4, -64}, {40, -64}, {40, -8}}, color = {175, 175, 175}));
-      annotation(
-        Icon(coordinateSystem(grid = {2, 0})));
-    end SampledAccelerometer;
   end Sensors;
 
   model BodyVariableMass "Rigid body with mass, inertia tensor and one frame connector (12 potential states)"
@@ -705,7 +674,7 @@ package Components
         parameter Modelica.Units.SI.Mass m_0 "Initial mass";
         RocketControl.Components.Motors.Internal.Inertia.SolidPropellantInertia solidPropellantInertia(Dext = Dext, Din_0 = Din_0, h = h, m_0 = m_0) annotation(
           Placement(visible = true, transformation(origin = {0, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-        RocketControl.Components.BodyVariableMass bodyVariableMass(enforceStates = false, r_CM = {h / 2, 0, 0}, sequence_angleStates = {3, 2, 1}, useQuaternions = true, w_a(start = {0, 0, 0})) annotation(
+        RocketControl.Components.BodyVariableMass bodyVariableMass( r_CM = {h / 2, 0, 0}, sequence_angleStates = {3, 2, 1}, w_a(start = {0, 0, 0})) annotation(
           Placement(visible = true, transformation(origin = {40, 4}, extent = {{-10, -10}, {10, 10}}, rotation = -90)));
         Modelica.Mechanics.MultiBody.Interfaces.Frame_b frame_b annotation(
           Placement(visible = true, transformation(origin = {0, 98}, extent = {{-16, -16}, {16, 16}}, rotation = -90), iconTransformation(origin = {0, 98}, extent = {{-16, -16}, {16, 16}}, rotation = -90)));
@@ -826,6 +795,64 @@ package Components
       annotation(
         Icon(graphics = {Line(points = {{-52, -40}, {68, -40}}), Ellipse(visible = false, lineColor = {255, 0, 0}, extent = {{70, 30}, {130, -30}}, endAngle = 360), Text(origin = {-82, 122}, extent = {{-150, -75}, {150, -45}}, textString = "d=%d"), Line(points = {{38, -70}, {80, -70}}), Text(lineColor = {0, 0, 255}, extent = {{-150, -150}, {150, -110}}, textString = "%name"), Ellipse(visible = false, lineColor = {255, 0, 0}, extent = {{-70, 30}, {-130, -30}}, endAngle = 360), Line(points = {{80, 40}, {80, -70}}), Text(visible = false, lineColor = {255, 0, 0}, extent = {{-62, 50}, {-140, 30}}, textString = "R=0"), Text(origin = {-2, 52}, extent = {{-150, -75}, {150, -45}}, textString = "n=%n"), Text(visible = false, lineColor = {255, 0, 0}, extent = {{62, 50}, {140, 30}}, textString = "R=0"), Text(visible = false, origin = {0, -28}, lineColor = {255, 0, 0}, extent = {{62, 50}, {140, 30}}, textString = "R=0"), Rectangle(fillColor = {192, 192, 192}, fillPattern = FillPattern.Solid, extent = {{-52, -40}, {38, -100}}), Line(points = {{-80, 40}, {-60, 40}, {-45, 10}, {-15, 70}, {15, 10}, {45, 70}, {60, 40}, {80, 40}}), Text(origin = {-82, 154}, extent = {{-150, -75}, {150, -45}}, textString = "c=%c"), Line(points = {{-80, -70}, {-52, -70}}), Text(visible = false, lineColor = {255, 0, 0}, extent = {{-62, 50}, {-140, 30}}, textString = "R=0"), Text(lineColor = {0, 0, 255}, extent = {{-150, -150}, {150, -110}}, textString = "%name"), Ellipse(visible = false, lineColor = {255, 0, 0}, extent = {{70, 30}, {130, -30}}, endAngle = 360), Line(points = {{80, 0}, {100, 0}}), Line(points = {{-52, -100}, {68, -100}}), Line(visible = false, points = {{-100, -101}, {-100, -80}, {-6, -80}}, color = {191, 0, 0}, pattern = LinePattern.Dot), Ellipse(visible = false, lineColor = {255, 0, 0}, extent = {{-70, 30}, {-130, -30}}, endAngle = 360), Line(origin = {-80, -15}, points = {{0, 55}, {0, -55}}), Line(origin = {-89, 0}, points = {{9, 0}, {-7, 0}, {-9, 0}}), Line(origin = {18.3173, -69.7805}, points = {{-68, 0}, {16, 0}, {16, 0}}, thickness = 0.75), Line(origin = {-39.4628, -69.8086}, points = {{9.64645, 20}, {-10.3536, -7.10543e-15}, {9.64645, -20}}, thickness = 0.75), Line(origin = {24.2344, -69.8295}, points = {{-9.64645, 20}, {10.3536, -7.10543e-15}, {-9.64645, -20}}, thickness = 0.75)}));
     end LinearSpringDamperParallel;
+
+    model ConnectionFlange
+    extends Modelica.Mechanics.MultiBody.Interfaces.PartialTwoFrames;
+    
+    parameter SI.Length diameter "Flange diameter";
+    parameter SI.TranslationalSpringConstant c(final min=0) "Spring constant";
+    parameter SI.Length s_unstretched=0 "Unstretched spring length";
+    parameter SI.TranslationalDampingConstant d(final min=0) = 0
+      "Damping constant";
+        
+      Modelica.Mechanics.MultiBody.Parts.FixedTranslation fixedTranslation(r = {0, 0.5, sqrt(3) / 2} * r) annotation(
+        Placement(visible = true, transformation(origin = {-50, 60}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Mechanics.MultiBody.Parts.FixedTranslation fixedTranslation2(r = {0, 0, -1} * r) annotation(
+        Placement(visible = true, transformation(origin = {-50, -60}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Mechanics.MultiBody.Forces.SpringDamperParallel springDamperParallel1(c = c, d = d, s_unstretched = s_unstretched) annotation(
+        Placement(visible = true, transformation(origin = {0, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Mechanics.MultiBody.Forces.SpringDamperParallel springDamperParallel2(c = c, d = d, s_unstretched = s_unstretched) annotation(
+        Placement(visible = true, transformation(origin = {0, -60}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Mechanics.MultiBody.Parts.FixedTranslation fixedTranslation3(r = {0, -0.5, -sqrt(3) / 2} * r) annotation(
+        Placement(visible = true, transformation(origin = {50, 60}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Mechanics.MultiBody.Parts.FixedTranslation fixedTranslation4(r = {0, 0.5, -sqrt(3) / 2} * r) annotation(
+        Placement(visible = true, transformation(origin = {50, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Mechanics.MultiBody.Parts.FixedTranslation fixedTranslation5(r = {0, 0, 1} * r) annotation(
+        Placement(visible = true, transformation(origin = {50, -60}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+    protected
+    final parameter SI.Length r = diameter / 2;
+  Modelica.Mechanics.MultiBody.Parts.FixedTranslation fixedTranslation1(r = {0, -0.5, sqrt(3) / 2} * r)  annotation(
+        Placement(visible = true, transformation(origin = {-50, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Mechanics.MultiBody.Forces.SpringDamperParallel springDamperParallel(c = c, d = d, s_unstretched = s_unstretched)  annotation(
+        Placement(visible = true, transformation(origin = {0, 60}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+    equation
+      connect(fixedTranslation.frame_a, frame_a) annotation(
+        Line(points = {{-60, 60}, {-80, 60}, {-80, 0}, {-100, 0}}, color = {95, 95, 95}));
+  connect(fixedTranslation1.frame_a, frame_a) annotation(
+        Line(points = {{-60, 0}, {-100, 0}}, color = {95, 95, 95}));
+  connect(fixedTranslation2.frame_a, frame_a) annotation(
+        Line(points = {{-60, -60}, {-80, -60}, {-80, 0}, {-100, 0}}));
+  connect(fixedTranslation.frame_b, springDamperParallel.frame_a) annotation(
+        Line(points = {{-40, 60}, {-10, 60}}, color = {95, 95, 95}));
+  connect(fixedTranslation2.frame_b, springDamperParallel2.frame_a) annotation(
+        Line(points = {{-40, -60}, {-10, -60}}));
+  connect(fixedTranslation1.frame_b, springDamperParallel1.frame_a) annotation(
+        Line(points = {{-40, 0}, {-10, 0}}, color = {95, 95, 95}));
+  connect(springDamperParallel2.frame_b, fixedTranslation5.frame_a) annotation(
+        Line(points = {{10, -60}, {40, -60}}, color = {95, 95, 95}));
+  connect(fixedTranslation5.frame_b, frame_b) annotation(
+        Line(points = {{60, -60}, {80, -60}, {80, 0}, {100, 0}}));
+  connect(springDamperParallel1.frame_b, fixedTranslation4.frame_a) annotation(
+        Line(points = {{10, 0}, {40, 0}}));
+  connect(fixedTranslation4.frame_b, frame_b) annotation(
+        Line(points = {{60, 0}, {100, 0}}));
+  connect(fixedTranslation3.frame_b, frame_b) annotation(
+        Line(points = {{60, 60}, {80, 60}, {80, 0}, {100, 0}}, color = {95, 95, 95}));
+  connect(springDamperParallel.frame_b, fixedTranslation3.frame_a) annotation(
+        Line(points = {{10, 60}, {40, 60}}));
+      annotation(
+        Icon(graphics = {Rectangle(origin = {-20, 0}, fillColor = {107, 107, 107}, fillPattern = FillPattern.Solid, extent = {{-20, 60}, {20, -60}}), Rectangle(origin = {20, 0}, fillColor = {147, 147, 147}, fillPattern = FillPattern.Solid, extent = {{20, 60}, {-20, -60}}), Line(origin = {-79, 0}, points = {{39, 0}, {-19, 0}}), Line(origin = {81, 0}, points = {{-41, 0}, {21, 0}}), Text(lineColor = {0, 0, 255}, extent = {{-150, -150}, {150, -110}}, textString = "%name"), Text(extent = {{-150, 105}, {150, 135}}, textString = "c=%c"), Text(extent = {{-150, 70}, {150, 100}}, textString = "d=%d")}));
+    end ConnectionFlange;
   end Forces;
 
   package LaunchPad
@@ -899,37 +926,29 @@ package Components
       parameter SI.Position r_rel[3] = {0, 0, 0} "Relative position between the ramp base and the aft flange";
       Modelica.Mechanics.MultiBody.Joints.FreeMotionScalarInit freeMotionScalarInit(angle_1(fixed = true), angle_2(fixed = true), angle_3(fixed = true), angle_d_1(fixed = false), angle_d_2(fixed = false), angle_d_3(fixed = false), r_rel_a_1(fixed = true, start = r_rel[1]), r_rel_a_2(fixed = true, start = r_rel[2]), r_rel_a_3(fixed = true, start = r_rel[3]), sequence_start = {3, 2, 1}, use_angle = true, use_r = true, use_v = true, use_w = true, v_rel_a_1(fixed = true), v_rel_a_2(fixed = true), v_rel_a_3(fixed = true), w_rel_b_1(fixed = true), w_rel_b_2(fixed = true), w_rel_b_3(fixed = true)) annotation(
         Placement(visible = true, transformation(origin = {30, -10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-      Components.Sensors.LaunchRailPresenceSensor launchPadSensorBase(n = {1, 0, 0}, rail_length = 1e-8) annotation(
-        Placement(visible = true, transformation(origin = {10, -70}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
       LaunchLug lug_aft(c_ax = c_z / 2, c_norm = c_y / 2, d_ax = d_z / 2, d_norm = d_y / 2, lug_length = lug_length, useEnablePort = true) annotation(
         Placement(visible = true, transformation(origin = {-10, 20}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
       LaunchLug lug_bow(c_ax = c_z / 2, c_norm = c_y / 2, d_ax = d_z / 2, d_norm = d_y / 2, lug_length = lug_length, useEnablePort = true) annotation(
         Placement(visible = true, transformation(origin = {-10, 68}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
       RocketControl.Components.Forces.LinearSpringDamperParallel linearSpringDamperParallel(c = c_x, d = d_x, n = {1, 0, 0}, useEnablePort = true) annotation(
         Placement(visible = true, transformation(origin = {70, -70}, extent = {{-10, -10}, {10, 10}}, rotation = 90)));
-      RocketControl.Components.Sensors.LaunchRailPresenceSensor launchPadSensorAft(n = {1, 0, 0}, rail_length = rail_length) annotation(
-        Placement(visible = true, transformation(origin = {-70, 10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
       Modelica.Mechanics.MultiBody.Parts.FixedRotation launchRailAngle(angles = {azimuth, elevation, 0}, rotationType = Modelica.Mechanics.MultiBody.Types.RotationTypes.PlanarRotationSequence, sequence = {3, 2, 1}) annotation(
         Placement(visible = true, transformation(origin = {-62, -50}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-      RocketControl.Components.Sensors.LaunchRailPresenceSensor launchPadSensorBow(n = {1, 0, 0}, rail_length = rail_length) annotation(
-        Placement(visible = true, transformation(origin = {-70, 70}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
       Modelica.Mechanics.MultiBody.Interfaces.Frame_a frame_a annotation(
         Placement(visible = true, transformation(origin = {-100, -50}, extent = {{-16, -16}, {16, 16}}, rotation = 0), iconTransformation(origin = {-100, 0}, extent = {{-16, -16}, {16, 16}}, rotation = 0)));
       Modelica.Mechanics.MultiBody.Interfaces.Frame_b frame_b_lug_bow annotation(
         Placement(visible = true, transformation(origin = {100, 80}, extent = {{-16, -16}, {16, 16}}, rotation = 0), iconTransformation(origin = {100, 60}, extent = {{-16, -16}, {16, 16}}, rotation = 0)));
       Modelica.Mechanics.MultiBody.Interfaces.Frame_b frame_b_lug_aft annotation(
         Placement(visible = true, transformation(origin = {100, 20}, extent = {{-16, -16}, {16, 16}}, rotation = 0), iconTransformation(origin = {100, -60}, extent = {{-16, -16}, {16, 16}}, rotation = 0)));
+  Modelica.Blocks.Sources.BooleanConstant booleanConstant annotation(
+        Placement(visible = true, transformation(origin = {-108, 50}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
     equation
       connect(frame_a, launchRailAngle.frame_a) annotation(
         Line(points = {{-100, -50}, {-72, -50}}));
       connect(freeMotionScalarInit.frame_a, launchRailAngle.frame_b) annotation(
         Line(points = {{20, -10}, {-40, -10}, {-40, -50}, {-52, -50}}, color = {95, 95, 95}));
-      connect(launchRailAngle.frame_b, launchPadSensorAft.frame_rail) annotation(
-        Line(points = {{-52, -50}, {-40, -50}, {-40, -20}, {-70, -20}, {-70, 0}}));
       connect(launchRailAngle.frame_b, linearSpringDamperParallel.frame_a) annotation(
         Line(points = {{-52, -50}, {-40, -50}, {-40, -90}, {70, -90}, {70, -80}}, color = {95, 95, 95}));
-      connect(launchPadSensorBase.frame_rail, launchRailAngle.frame_b) annotation(
-        Line(points = {{10, -80}, {10, -90}, {-40, -90}, {-40, -50}, {-52, -50}}));
       connect(linearSpringDamperParallel.frame_b, frame_b_lug_aft) annotation(
         Line(points = {{70, -60}, {70, 20}, {100, 20}}));
       connect(freeMotionScalarInit.frame_b, frame_b_lug_aft) annotation(
@@ -938,27 +957,28 @@ package Components
         Line(points = {{-20, 68}, {-40, 68}, {-40, -50}, {-52, -50}}, color = {95, 95, 95}));
       connect(lug_bow.frame_b, frame_b_lug_bow) annotation(
         Line(points = {{0, 68}, {50, 68}, {50, 80}, {100, 80}}));
-      connect(launchPadSensorBow.frame_rail, launchRailAngle.frame_b) annotation(
-        Line(points = {{-70, 60}, {-70, 30}, {-40, 30}, {-40, -50}, {-52, -50}}, color = {95, 95, 95}));
-      connect(launchPadSensorBow.frame_lug, lug_bow.frame_b) annotation(
-        Line(points = {{-60, 66}, {-31, 66}, {-31, 68}, {0, 68}}));
-      connect(launchPadSensorBow.y, lug_bow.enable) annotation(
-        Line(points = {{-60, 77}, {-44, 77}, {-44, 84}, {-10, 84}, {-10, 78}}, color = {255, 0, 255}));
-      connect(launchPadSensorAft.frame_lug, lug_aft.frame_b) annotation(
-        Line(points = {{-60, 6}, {14, 6}, {14, 20}, {0, 20}}, color = {95, 95, 95}));
       connect(lug_aft.frame_b, frame_b_lug_aft) annotation(
         Line(points = {{0, 20}, {100, 20}}, color = {95, 95, 95}));
-      connect(launchPadSensorBase.y, linearSpringDamperParallel.enable) annotation(
-        Line(points = {{20, -62}, {34, -62}, {34, -70}, {61, -70}}, color = {255, 0, 255}));
-      connect(launchPadSensorBase.frame_lug, linearSpringDamperParallel.frame_b) annotation(
-        Line(points = {{20, -74}, {38, -74}, {38, -54}, {70, -54}, {70, -60}}));
-      connect(launchPadSensorAft.y, lug_aft.enable) annotation(
-        Line(points = {{-60, 17}, {-32, 17}, {-32, 36}, {-10, 36}, {-10, 30}}, color = {255, 0, 255}));
       connect(lug_aft.frame_a, launchRailAngle.frame_b) annotation(
         Line(points = {{-20, 20}, {-40, 20}, {-40, -50}, {-52, -50}}));
+  connect(booleanConstant.y, lug_bow.enable) annotation(
+        Line(points = {{-96, 50}, {-10, 50}, {-10, 78}}, color = {255, 0, 255}));
+  connect(booleanConstant.y, lug_aft.enable) annotation(
+        Line(points = {{-96, 50}, {-10, 50}, {-10, 30}}, color = {255, 0, 255}));
+  connect(booleanConstant.y, linearSpringDamperParallel.enable) annotation(
+        Line(points = {{-96, 50}, {60, 50}, {60, -70}}, color = {255, 0, 255}));
       annotation(
         Icon(graphics = {Polygon(origin = {-20, -6}, fillColor = {85, 122, 162}, fillPattern = FillPattern.VerticalCylinder, points = {{-28, -42}, {-14, -50}, {-14, -42}, {26, 38}, {28, 50}, {20, 42}, {-20, -38}, {-28, -42}}), Polygon(origin = {-9, 8}, fillColor = {222, 222, 222}, fillPattern = FillPattern.Forward, points = {{17, 88}, {-71, -78}, {-71, -88}, {71, -88}, {49, -80}, {-55, -80}, {17, 62}, {17, 88}}), Rectangle(origin = {6, 20}, fillPattern = FillPattern.Solid, extent = {{-2, 4}, {2, -4}}), Rectangle(origin = {-22, -36}, fillPattern = FillPattern.Solid, extent = {{-2, 4}, {2, -4}}), Text(lineColor = {0, 0, 255}, extent = {{-150, 80}, {150, 120}}, textString = "%name"), Text(origin = {-760.66, 76}, lineColor = {128, 128, 128}, extent = {{566.66, -29}, {770.66, -58}}, textString = "a"), Text(origin = {-566.66, 74}, lineColor = {128, 128, 128}, extent = {{566.66, -29}, {770.66, -58}}, textString = "bow"), Text(origin = {-227.774, 14}, lineColor = {128, 128, 128}, extent = {{277.774, -29}, {377.774, -58}}, textString = "aft"), Line(origin = {40, -48}, points = {{-62, 12}, {20, 12}, {20, -12}, {62, -12}}), Line(origin = {53, 40}, points = {{-47, -20}, {7, -20}, {7, 20}, {47, 20}})}));
     end LaunchRail;
+
+    model SurfaceFixed
+    parameter NonSI.Angle_deg latitude;
+    parameter NonSI.Angle_deg longitude;
+    equation
+
+      annotation(
+        Icon(coordinateSystem(grid = {2, 0})));
+    end SurfaceFixed;
   end LaunchPad;
 
   package Control
@@ -1033,4 +1053,178 @@ package Components
     annotation(
       Icon(coordinateSystem(grid = {2, 0})));
   end Noise;
+
+  package Frames
+    model ECEF
+    outer RocketControl.World.MyWorld world;
+    Modelica.Mechanics.MultiBody.Interfaces.Frame_b frame_b annotation(
+        Placement(visible = true, transformation(origin = {100, 0}, extent = {{-16, -16}, {16, 16}}, rotation = 0), iconTransformation(origin = {100, 0}, extent = {{-16, -16}, {16, 16}}, rotation = 0)));
+    parameter SI.AngularVelocity w = 72.92115e-6;
+    SI.Angle phi;
+    
+    initial equation
+    phi = 0;
+//frame_b.R = Modelica.Mechanics.MultiBody.Frames.nullRotation();
+    equation
+    
+    der(phi) = w;
+    Connections.root(frame_b.R);
+    
+    
+  frame_b.r_0 = {0,0,0};
+    frame_b.R = Modelica.Mechanics.MultiBody.Frames.planarRotation({0,0,1}, phi, w);
+//zeros(3) = fixed.frame_b.f ;
+//zeros(3) = fixed.frame_b.t;
+      annotation(
+        Icon(graphics = {Ellipse(lineColor = {0, 170, 255}, fillColor = {65, 188, 96}, fillPattern = FillPattern.Sphere, extent = {{-100, 100}, {100, -100}}, endAngle = 360), Line(origin = {46, 0}, points = {{-46, 0}, {46, 0}}, thickness = 1), Line(origin = {-32.21, 17.79}, points = {{32.2071, 82.2071}, {32.2071, -17.7929}, {-31.7929, -81.7929}}, thickness = 1), Ellipse(extent = {{-100, 100}, {100, -100}}, endAngle = 360), Line(origin = {-61, -61}, points = {{-3, 3}, {-3, -3}, {3, -3}}, thickness = 1), Line(origin = {0, 97.65}, points = {{-4, -1.64645}, {0, 2.35355}, {4, -1.64645}}, thickness = 1), Line(origin = {89.83, 0}, points = {{-1.64645, 4}, {2.35355, 0}, {-1.64645, -4}}, thickness = 1), Text(origin = {-45, -67}, extent = {{-15, 15}, {15, -15}}, textString = "x"), Text(origin = {85, 19}, extent = {{-15, 15}, {15, -15}}, textString = "y"), Text(origin = {19, 93}, extent = {{-15, 15}, {15, -15}}, textString = "z"), Text(origin = {31, -55}, extent = {{-53, 21}, {53, -21}}, textString = "ECEF")}));
+    end ECEF;
+
+    model toNED
+    outer RocketControl.World.MyWorld world;
+    import Modelica.Mechanics.MultiBody.Frames;
+    Modelica.Mechanics.MultiBody.Interfaces.Frame_a frame_a annotation(
+        Placement(visible = true, transformation(origin = {-100, 0}, extent = {{-16, -16}, {16, 16}}, rotation = 0), iconTransformation(origin = {-100, 0}, extent = {{-16, -16}, {16, 16}}, rotation = 0)));
+    Modelica.Mechanics.MultiBody.Interfaces.Frame_b frame_b annotation(
+        Placement(visible = true, transformation(origin = {100, 0}, extent = {{-16, -16}, {16, 16}}, rotation = 0), iconTransformation(origin = {100, 0}, extent = {{-16, -16}, {16, 16}}, rotation = 0)));
+    //Frames.Orientation R_rel;
+      //Frames.Orientation R_rel_inv;
+    Real T[3,3];
+    SI.AngularVelocity w[3];
+    equation
+//R_rel = world.eci2nedOrientation(frame_a.r_0, der(frame_a.r_0));
+//R_rel_inv = Modelica.Mechanics.MultiBody.Frames.Orientation(transpose(R_rel.T), zeros(3));
+      Connections.branch(frame_a.R, frame_b.R);
+      assert(cardinality(frame_a) > 0 or cardinality(frame_b) > 0,
+        "Neither connector frame_a nor frame_b of NED object is connected");
+//  /* Relationships between quantities of frame_a and frame_b */
+      frame_b.r_0 = frame_a.r_0;
+  if Connections.rooted(frame_a.R) then
+        (T, w) = world.eci2nedTransform(frame_a.r_0, der(frame_a.r_0));
+//Frames.absoluteRotation(frame_a.R, R_rel);
+        frame_b.R = Modelica.Mechanics.MultiBody.Frames.Orientation(T, w);
+//    zeros(3) = frame_a.f + frame_b.f;
+//    zeros(3) = frame_a.t + frame_b.f;
+        zeros(3) = frame_a.f + Frames.resolveRelative(frame_b.f, frame_b.R, frame_a.R);
+        zeros(3) = frame_a.t + Frames.resolveRelative(frame_b.t, frame_b.R, frame_a.R);
+      else
+        frame_a.R = Modelica.Mechanics.MultiBody.Frames.inverseRotation(Modelica.Mechanics.MultiBody.Frames.Orientation(T, w));
+        zeros(3) = frame_b.f + Frames.resolveRelative(frame_a.f, frame_a.R, frame_b.R);
+        zeros(3) = frame_b.t + Frames.resolveRelative(frame_a.t, frame_a.R, frame_b.R);
+      end if;      /*
+      if checkTotalPower then
+        totalPower = frame_a.f*Frames.resolve2(frame_a.R, der(frame_a.r_0)) +
+                     frame_b.f*Frames.resolve2(frame_b.R, der(frame_b.r_0)) +
+                     frame_a.t*Frames.angularVelocity2(frame_a.R) +
+                     frame_b.t*Frames.angularVelocity2(frame_b.R);
+      else
+        totalPower = 0;
+      end if;
+    */
+      annotation(
+        Icon(graphics = {Text(extent = {{-90, 90}, {90, -90}}, textString = "ecef2ned")}));
+    end toNED;
+
+    model EarthSurfaceTranslation
+      outer RocketControl.World.MyWorld world;
+      parameter NonSI.Angle_deg latitude;
+      parameter NonSI.Angle_deg longitude;
+      parameter SI.Position altitude;
+      
+    Modelica.Mechanics.MultiBody.Interfaces.Frame_a frame_a annotation(
+        Placement(visible = true, transformation(origin = {-100, 0}, extent = {{-16, -16}, {16, 16}}, rotation = 0), iconTransformation(origin = {-100, 0}, extent = {{-16, -16}, {16, 16}}, rotation = 0)));
+    Modelica.Mechanics.MultiBody.Interfaces.Frame_b frame_b annotation(
+        Placement(visible = true, transformation(origin = {100, 0}, extent = {{-16, -16}, {16, 16}}, rotation = 0), iconTransformation(origin = {100, 0}, extent = {{-16, -16}, {16, 16}}, rotation = 0)));
+  Modelica.Mechanics.MultiBody.Parts.FixedTranslation fixedTranslation(r = world.WGS84.lla2ecef(latitude, longitude, altitude))  annotation(
+        Placement(visible = true, transformation(origin = {0, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+    equation
+      connect(frame_a, fixedTranslation.frame_a) annotation(
+        Line(points = {{-100, 0}, {-10, 0}}));
+  connect(fixedTranslation.frame_b, frame_b) annotation(
+        Line(points = {{10, 0}, {100, 0}}, color = {95, 95, 95}));
+      annotation(
+        Icon(graphics = {Text(lineColor = {128, 128, 128}, extent = {{-89, 38}, {-53, 13}}, textString = "a"), Text(origin = {0, 4}, extent = {{150, -50}, {-150, -20}}, textString = "lat=%latitude"), Text(lineColor = {128, 128, 128}, extent = {{57, 39}, {93, 14}}, textString = "b"), Rectangle(fillPattern = FillPattern.Solid, extent = {{-99, 5}, {101, -5}}), Text(origin = {0, 4}, extent = {{150, -50}, {-150, -20}}, textString = "lat=%latitude"), Text(origin = {0, -54}, extent = {{150, -50}, {-150, -20}}, textString = "alt=%altitude"), Text(origin = {0, -24}, extent = {{150, -50}, {-150, -20}}, textString = "lon=%longitude")}));
+    end EarthSurfaceTranslation;
+
+    model eci2ecef
+      import Modelica.Mechanics.MultiBody.Frames;
+      
+      outer RocketControl.World.MyWorld world;
+      
+      Modelica.Mechanics.MultiBody.Interfaces.Frame_a frame_a annotation(
+          Placement(visible = true, transformation(origin = {-100, 0}, extent = {{-16, -16}, {16, 16}}, rotation = 0), iconTransformation(origin = {-100, 0}, extent = {{-16, -16}, {16, 16}}, rotation = 0)));
+      Modelica.Mechanics.MultiBody.Interfaces.Frame_b frame_b annotation(
+          Placement(visible = true, transformation(origin = {100, 0}, extent = {{-16, -16}, {16, 16}}, rotation = 0), iconTransformation(origin = {100, 0}, extent = {{-16, -16}, {16, 16}}, rotation = 0)));
+      
+      Frames.Orientation R_rel;
+      Frames.Orientation R_rel_inv;
+      
+      Real T[3,3];
+      SI.AngularVelocity w[3];
+      
+    equation
+    
+      (T, w) = world.eci2ecefTransform(time);
+      
+      R_rel = Modelica.Mechanics.MultiBody.Frames.Orientation(T, w);
+      R_rel_inv = Modelica.Mechanics.MultiBody.Frames.Orientation(transpose(R_rel.T), -w);
+      
+      Connections.branch(frame_a.R, frame_b.R);
+      assert(cardinality(frame_a) > 0 or cardinality(frame_b) > 0,
+        "Neither connector frame_a nor frame_b of eci2ecef object is connected");
+    
+      /* Relationships between quantities of frame_a and frame_b */
+      frame_b.r_0 = frame_a.r_0;
+      if Connections.rooted(frame_a.R) then
+        frame_b.R = Frames.absoluteRotation(frame_a.R, R_rel);
+        zeros(3) = frame_a.f + Frames.resolve1(R_rel, frame_b.f);
+        zeros(3) = frame_a.t + Frames.resolve1(R_rel, frame_b.t);
+      else
+        frame_a.R = Frames.absoluteRotation(frame_b.R, R_rel_inv);
+        zeros(3) = frame_b.f + Frames.resolve1(R_rel_inv, frame_a.f);
+        zeros(3) = frame_b.t + Frames.resolve1(R_rel_inv, frame_a.t);
+      end if;
+    
+      /*
+      if checkTotalPower then
+        totalPower = frame_a.f*Frames.resolve2(frame_a.R, der(frame_a.r_0)) +
+                     frame_b.f*Frames.resolve2(frame_b.R, der(frame_b.r_0)) +
+                     frame_a.t*Frames.angularVelocity2(frame_a.R) +
+                     frame_b.t*Frames.angularVelocity2(frame_b.R);
+      else
+        totalPower = 0;
+      end if;
+    */
+      annotation(
+        Icon(graphics = {Text(extent = {{-90, 90}, {90, -90}}, textString = "eci2ecef")}));
+    end eci2ecef;
+    annotation(
+      Icon(coordinateSystem(grid = {2, 0})));
+  end Frames;
+
+  model RelativePositionInit
+    "Initial conditions given on relative position resolved in frame_a"
+    parameter SI.Position r_rel_b_start[3]= {0, 0, 0}
+      "Initial position of frame_b resolved in frame_a";
+    SI.Position r_rel_b[3];
+    Modelica.Mechanics.MultiBody.Interfaces.Frame_a frame_a
+      annotation (Placement(transformation(extent={{-120,-20},{-80,20}},
+            rotation=0)));
+    Modelica.Mechanics.MultiBody.Interfaces.Frame_b frame_b
+      annotation (Placement(transformation(extent={{80,-20},{120,20}},
+            rotation=0)));
+  equation
+    frame_a.f = zeros(3);
+    frame_b.f = zeros(3);
+    frame_a.t = zeros(3);
+    frame_b.t = zeros(3);
+    r_rel_b = Modelica.Mechanics.MultiBody.Frames.resolve2(frame_b.R, frame_b.r_0 - frame_a.r_0);
+  initial equation
+    r_rel_b = r_rel_b_start;
+    der(r_rel_b) = zeros(3);
+    annotation (Diagram(graphics),
+                         Icon(graphics={
+          Line(points={{-80,0},{80,0}}, color={0,0,0}),
+          Line(points={{-46,20},{-80,0},{-48,-20}}, color={0,0,0}),
+          Line(points={{46,20},{80,0},{48,-20}}, color={0,0,0})}));
+  end RelativePositionInit;
 end Components;
