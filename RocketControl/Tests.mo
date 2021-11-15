@@ -1,31 +1,12 @@
 within RocketControl;
 
 package Tests
-  model SensorTests
-    import Modelica.Units.Conversions.from_deg;
-    import Modelica.Units.SI;
-    Modelica.Mechanics.MultiBody.Sensors.AbsoluteAngles absoluteAngles(guessAngle1 = 0, sequence = {3, 2, 1}) annotation(
-      Placement(visible = true, transformation(origin = {62, 8}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-    RocketControl.Tests.MotionFrame motionFrame(angles0 = from_deg({0, 0, 0}), v0 = {200, 0, 10}, w(each displayUnit = "deg/s") = from_deg({0, 0, 0})) annotation(
-      Placement(visible = true, transformation(origin = {-32, 8}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-    RocketControl.Components.Sensors.AeroStateSensor aeroStateSensor annotation(
-      Placement(visible = true, transformation(origin = {64, -22}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  equation
-//  Connections.root(frame_a.R);
-//  der(angles) = {0, 30, 0};
-//  frame_a.R = Modelica.Mechanics.MultiBody.Frames.axesRotations({3, 2, 1}, angles, der(angles));
-//  der(frame_a.r_0) = v0;
-    connect(motionFrame.frame_b, absoluteAngles.frame_a) annotation(
-      Line(points = {{-22, 8}, {52, 8}}, color = {95, 95, 95}));
-    connect(aeroStateSensor.frame_a, motionFrame.frame_b) annotation(
-      Line(points = {{54, -22}, {16, -22}, {16, 8}, {-22, 8}}, color = {95, 95, 95}));
-  end SensorTests;
 
   model AerodynamicsTest
     import Modelica.Units.Conversions.from_deg;
     Modelica.Mechanics.MultiBody.Parts.Fixed fixed annotation(
       Placement(visible = true, transformation(origin = {90, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 180)));
-    RocketControl.Interfaces.RealAeroState realAeroState annotation(
+    Aerodynamics.Interfaces.ComposeAeroState realAeroState annotation(
       Placement(visible = true, transformation(origin = {4, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
     Modelica.Blocks.Sources.Constant h(k = 1000) annotation(
       Placement(visible = true, transformation(origin = {-76, -22}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
@@ -39,11 +20,9 @@ package Tests
       Placement(visible = true, transformation(origin = {-76, 42}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
     Modelica.Blocks.Sources.Constant alpha(k = from_deg(0)) annotation(
       Placement(visible = true, transformation(origin = {-76, 74}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-    RocketControl.Aerodynamics.WithoutControl.AerodynamicForce aerodynamicForce annotation(
-      Placement(visible = true, transformation(origin = {54, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Rockets.Lynx.Aerodynamics.AerodynamicForce aerodynamicForce annotation(
+      Placement(visible = true, transformation(origin = {50, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   equation
-    connect(realAeroState.out, aerodynamics.aeroState) annotation(
-      Line(points = {{24, 0}, {40, 0}}));
     connect(v.y, realAeroState.v) annotation(
       Line(points = {{-64, -54}, {-26, -54}, {-26, -6}, {-5, -6}}, color = {0, 0, 127}));
     connect(w.y, realAeroState.w) annotation(
@@ -56,10 +35,10 @@ package Tests
       Line(points = {{-65, 42}, {-26, 42}, {-26, 6}, {-5, 6}}, color = {0, 0, 127}));
     connect(alpha.y, realAeroState.alpha) annotation(
       Line(points = {{-65, 74}, {-22, 74}, {-22, 9}, {-5, 9}}, color = {0, 0, 127}));
-    connect(realAeroState.out, aerodynamicForce.aeroState) annotation(
-      Line(points = {{14, 0}, {44, 0}}));
     connect(aerodynamicForce.frame_b, fixed.frame_b) annotation(
-      Line(points = {{64, 0}, {80, 0}}, color = {95, 95, 95}));
+      Line(points = {{60, 0}, {80, 0}}, color = {95, 95, 95}));
+    connect(realAeroState.out, aerodynamicForce.aeroState) annotation(
+      Line(points = {{14, 0}, {40, 0}}));
   end AerodynamicsTest;
 
   model SimpleAero
@@ -468,9 +447,8 @@ package Tests
     annotation(
       Icon(coordinateSystem(grid = {2, 0})));
   end Components;
-
   model Clocked
-    //Real int;
+  //Real int;
     Modelica.Blocks.Sources.Sine sine(f = 1) annotation(
       Placement(visible = true, transformation(origin = {-86, 10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
     Modelica.Clocked.ClockSignals.Clocks.PeriodicExactClock periodicClock1(factor = 10) annotation(
@@ -624,7 +602,7 @@ package Tests
   end SampleClockedStart;
 
   model ClockTest
-    Real y(start = 4);
+  Real y(start = 4);
     //Clock c = Clock(1, 1000);
     Clock c1 = Clock(50, 1000);
     Clock ct = Clock(70, 1000);

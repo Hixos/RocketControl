@@ -4,9 +4,9 @@ package World
   model MyWorld
     extends Interfaces.WorldBase;
     import RocketControl.Types.NanoTesla;
-    parameter NonSI.Angle_deg latitude_0 "Latitude of the origin of the world frame";
-    parameter NonSI.Angle_deg longitude_0 "Longitude of the origin of the world frame";
-    parameter SI.Position altitude_0 "Altitude of the origin of the world frame";
+    parameter NonSI.Angle_deg latitude_0 = 41.808682 "Latitude of the origin of the world frame";
+    parameter NonSI.Angle_deg longitude_0 = 14.054440 "Longitude of the origin of the world frame";
+    parameter SI.Position altitude_0 = 1416 "Altitude of the origin of the world frame";
     parameter SI.Length a = 6371000 "Planetary mean radius";
     parameter NonSI.Angle_deg pole_lat = 80.59 "North geomagnetic pole latitude";
     parameter NonSI.Angle_deg pole_lon = -72.64 "North geomagnetic pole longitude";
@@ -16,7 +16,7 @@ package World
     parameter SI.Position x_0_ecef[3] = lla2ecef(latitude_0, longitude_0, altitude_0) "Coordinates of the origin of the NED (world) frame in the ecef frame";
     final parameter Real T[3, 3] = ecef2nedMatrix(x_0_ecef) "Transformation matrix from world frame to ned frame";
   //    final parameter Real rpole[3] = Coordinates.lla2ecef(pole_lat, pole_lon, 0) "Magnetic north dipole pole coordinates in ecef frame (IGRF 2020)";
-  //    final parameter Real m[3] = -rpole / norm(rpole) "Magnetic dipole axis in ecef frame (IGRF 2020)";
+    //    final parameter Real m[3] = -rpole / norm(rpole) "Magnetic dipole axis in ecef frame (IGRF 2020)";
     final parameter SI.Length R = 6371200 "IGRF Earth radius";
     final parameter SI.MagneticFluxDensity H0 = sqrt(g10 ^ 2 + g11 ^ 2 + h11 ^ 2) / 1e9;
     final parameter Real m_vec[3] = -lla2ecef(pole_lat, pole_lon, 0);
@@ -86,11 +86,11 @@ package World
         T[1, :] := cross(E, D);
         T[2, :] := E;
         T[3, :] := D;
-  //  R := Modelica.Mechanics.MultiBody.Frames.from_T(T, {0,0,0});
+//  R := Modelica.Mechanics.MultiBody.Frames.from_T(T, {0,0,0});
         annotation(Inline = true,
           Icon(coordinateSystem(grid = {2, 0})));
       end ecef2nedMatrix;
-  //  class Coordinates
+    //  class Coordinates
   //    function ecef2nedMatrix
   //      input SI.Position x_ecef[3] "Position in ECEF coordinates";
   //      output Real T[3, 3];
@@ -112,8 +112,8 @@ package World
   //      annotation(Inline = true,
   //        Icon(coordinateSystem(grid = {2, 0})));
   //    end ecef2nedMatrix;
-  
-  //    function ecef2ned
+
+//    function ecef2ned
   //      input SI.Position v_ecef[3];
   //      output SI.Position v_ned[3];
   //    algorithm
@@ -122,10 +122,10 @@ package World
   //        Inline = true,
   //        Icon(coordinateSystem(grid = {2, 0})));
   //    end ecef2ned;
-  
   //    function lla2ecef
   //      input NonSI.Angle_deg lat;
-  //      input NonSI.Angle_deg lon;
+
+//      input NonSI.Angle_deg lon;
   //      input SI.Distance alt;
   //      output SI.Position[3] x_ecef;
   //    protected
@@ -140,25 +140,24 @@ package World
   //      annotation(
   //        Icon(coordinateSystem(grid = {2, 0})));
   //    end lla2ecef;
-  
   //    function ned2ecefPosition "Converts a position from the NED frame to the ECEF frame"
   //      input SI.Position x_ned[3];
   //      output SI.Position x_ecef[3];
   //    algorithm
-  //      x_ecef := x_0_ecef + transpose(T) * x_ned;
+
+//      x_ecef := x_0_ecef + transpose(T) * x_ned;
   //      annotation(
   //        Icon(coordinateSystem(grid = {2, 0})));
   //    end ned2ecefPosition;
-  
   //    function getNadir
   //      input SI.Position x[3] "Position in ECEF coordinates";
   //      output Real n[3] "Unit vector pointing in the nadir direction";
   //    algorithm
   //      n := -x / norm(x);
   //      annotation(
-  //        Icon(coordinateSystem(grid = {2, 0})));
+
+//        Icon(coordinateSystem(grid = {2, 0})));
   //    end getNadir;
-  
   //    function getEast
   //      input Real nadir[3];
   //      output Real east[3];
@@ -167,7 +166,8 @@ package World
   //        east := {0, 1, 0};
   //      else
   //        east := cross(nadir, {0, 0, 1});
-  //        east := east / norm(east);
+
+//        east := east / norm(east);
   //      end if;
   //      annotation(
   //        Icon(coordinateSystem(grid = {2, 0})));
@@ -261,4 +261,6 @@ package World
     annotation(
       Icon(coordinateSystem(grid = {2, 0})));
   end Interfaces;
+  annotation(
+    Icon(graphics = {Ellipse(lineColor = {255, 255, 255}, fillColor = {170, 255, 255}, pattern = LinePattern.None, fillPattern = FillPattern.Sphere, lineThickness = 0, extent = {{-90, 90}, {90, -90}}, endAngle = 360), Ellipse(fillColor = {0, 85, 255}, fillPattern = FillPattern.Solid, extent = {{-80, 80}, {80, -80}}, endAngle = 360), Polygon(origin = {25, -7}, fillColor = {0, 170, 0}, fillPattern = FillPattern.Solid, points = {{-29, 21}, {-39, 7}, {-25, -3}, {-15, 9}, {-7, -1}, {-9, -9}, {1, -5}, {-9, 11}, {15, -9}, {-5, -17}, {-31, -13}, {-53, -9}, {-51, -47}, {-33, -73}, {-7, -71}, {-1, -21}, {13, -43}, {33, -35}, {21, -17}, {51, -15}, {53, 21}, {49, 35}, {33, 61}, {21, 71}, {-5, 73}, {-19, 71}, {-21, 43}, {-5, 43}, {-5, 63}, {-3, 41}, {-29, 37}, {-29, 21}}), Polygon(origin = {-62, 5}, fillColor = {0, 170, 0}, fillPattern = FillPattern.Solid, points = {{12, 57}, {18, 41}, {2, 15}, {-12, 13}, {-16, -11}, {-2, -21}, {2, -57}, {-6, -47}, {-16, -23}, {-18, -7}, {-16, 11}, {-8, 33}, {4, 49}, {12, 57}}), Polygon(origin = {-3, 71}, fillColor = {170, 255, 255}, fillPattern = FillPattern.Solid, points = {{-35, -5}, {-21, -9}, {17, -3}, {37, 1}, {27, 5}, {9, 9}, {-15, 7}, {-35, -1}, {-35, -5}})}));
 end World;

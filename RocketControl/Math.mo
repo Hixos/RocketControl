@@ -1,7 +1,7 @@
 within RocketControl;
 
 package Math
-  function quat2euler
+  function quat2euler "Converts a quaternion to the equivalent ZYX euler angle representation"
   input Real q[4];
   output SI.Angle eul[3];
   algorithm
@@ -12,7 +12,7 @@ package Math
       Icon(coordinateSystem(grid = {2, 0})));end quat2euler;
 
   model Blocks
-    model Quaternion
+    model Quaternion "Outputs the quaternion representing the orientation of frame_a"
     Modelica.Blocks.Interfaces.RealOutput q[4] annotation(
         Placement(visible = true, transformation(origin = {110, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {102, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
     Modelica.Mechanics.MultiBody.Interfaces.Frame_a frame_a annotation(
@@ -26,7 +26,7 @@ package Math
         Icon(coordinateSystem(grid = {2, 0}), graphics = {Text(extent = {{-100, 100}, {100, -100}}, textString = "quat")}));
     end Quaternion;
 
-    model Quaternion2Euler
+    model Quaternion2Euler "Converts a quaternion to the equivalent ZYX euler angle representation"
      extends Modelica.Units.Icons.Conversion;
     Modelica.Blocks.Interfaces.RealOutput eul[3](each final quantity = "Angle", each final unit = "deg") annotation(
         Placement(visible = true, transformation(origin = {110, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {110, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
@@ -38,7 +38,7 @@ package Math
         Icon(graphics = {Text(origin = {7, 75}, extent = {{-93, 25}, {93, -25}}, textString = "quat", horizontalAlignment = TextAlignment.Left), Text(origin = {-4, -69}, extent = {{-96, 25}, {96, -25}}, textString = "y,p,r", horizontalAlignment = TextAlignment.Right)}));
     end Quaternion2Euler;
 
-    model UnwrapAngle
+    model UnwrapAngle "Unwraps the input angle(s)"
     parameter Integer n(min = 1) = 1 annotation(Evaluate = true);
     parameter Boolean inputRadians = false "Wheter the input u is in radians";
     parameter Boolean internalClock = false;
@@ -46,9 +46,9 @@ package Math
     final parameter Real a180 = if inputRadians then pi else 180;
     parameter Real threshold = a180/8;
     
-    Modelica.Blocks.Interfaces.RealInput u[n] annotation(
+    Modelica.Blocks.Interfaces.RealInput angle[n] annotation(
         Placement(visible = true, transformation(origin = {-100, 0}, extent = {{-20, -20}, {20, 20}}, rotation = 0), iconTransformation(origin = {-120, 0}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
-    Modelica.Blocks.Interfaces.RealOutput y[n] annotation(
+    Modelica.Blocks.Interfaces.RealOutput angle_unwrapped[n] annotation(
         Placement(visible = true, transformation(origin = {110, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {110, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
     
       
@@ -58,11 +58,11 @@ package Math
     equation
         when c then
           if internalClock then
-            for i in 1:n loop
-              uc[i] = sample(u[i], c);
-            end for;
-          else        
-              uc = u;   
+      for i in 1:n loop
+            uc[i] = sample(angle[i], c);
+          end for;
+          else
+      uc = angle;
           end if;
           for i in 1:n loop
             if previous(uc[i])*uc[i] < 0 and a180 - abs(previous(uc[i])) < threshold and  a180 - abs(uc[i]) < threshold then
@@ -70,7 +70,7 @@ package Math
             else
               offset[i] = previous(offset[i]);
             end if;
-            y[i] = uc[i] + offset[i];
+            angle_unwrapped[i] = uc[i] + offset[i];
           end for;
         end when;
       
@@ -82,17 +82,6 @@ package Math
     annotation(
       Icon(coordinateSystem(grid = {2, 0})));
   end Blocks;
-
-  function unwrapAngle
-  input SI.Angle angle;
-  input SI.Angle tol = 0;
-  
-  output SI.Angle angle_unwrap;
-  algorithm
-
-    annotation(
-      Icon(coordinateSystem(grid = {2, 0})));
-  end unwrapAngle;
   annotation(
     Icon(coordinateSystem(grid = {2, 0})));
 end Math;
