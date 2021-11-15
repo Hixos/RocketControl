@@ -3,37 +3,25 @@ within RocketControl;
 package Components
   package Sensors
 
-    model AssetSensor
+    model IdealGyroscope
       extends Modelica.Mechanics.MultiBody.Sensors.Internal.PartialAbsoluteSensor;
-      import Modelica.Mechanics.MultiBody.Frames;
-      import Modelica.Units.Conversions.to_deg;
-      Real x_b[3];
-      Real y_b[3];
-      Real z_b[3];
-      Real yaw_den;
-      Modelica.Blocks.Interfaces.RealOutput yaw annotation(
-        Placement(visible = true, transformation(origin = {106, 60}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {102, 60}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-      Modelica.Blocks.Interfaces.RealOutput pitch annotation(
+      outer World world;
+      Modelica.Blocks.Interfaces.RealOutput w[3](each final quantity = "AngularVelocity", each final unit = "deg/s") annotation(
         Placement(visible = true, transformation(origin = {106, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {102, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-      Modelica.Blocks.Interfaces.RealOutput roll annotation(
-        Placement(visible = true, transformation(origin = {106, -60}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {102, -60}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      Modelica.Mechanics.MultiBody.Sensors.AbsoluteAngularVelocity absoluteAngularVelocity(resolveInFrame = Modelica.Mechanics.MultiBody.Types.ResolveInFrameA.frame_a) annotation(
+        Placement(visible = true, transformation(origin = {-50, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      Modelica.Blocks.Math.UnitConversions.To_deg to_deg[3] annotation(
+        Placement(visible = true, transformation(origin = {22, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
     equation
-      x_b = frame_a.R.T[1, :];
-      y_b = frame_a.R.T[:, 2];
-      z_b = frame_a.R.T[:, 3];
-      yaw_den = x_b * {1, 0, 0};
-      if abs(yaw_den) > 1e-7 then
-        yaw = to_deg(atan(x_b * {0, 1, 0} / yaw_den));
-      else
-        yaw = 0;
-      end if;
-      pitch = to_deg(asin(x_b * {0, 0, -1}));
-      roll = 0;
-      frame_a.f = zeros(3);
-      frame_a.t = zeros(3);
+      connect(frame_a, absoluteAngularVelocity.frame_a) annotation(
+        Line(points = {{-100, 0}, {-60, 0}}));
+      connect(absoluteAngularVelocity.w, to_deg.u) annotation(
+        Line(points = {{-38, 0}, {10, 0}}, color = {0, 0, 127}, thickness = 0.5));
+      connect(to_deg.y, w) annotation(
+        Line(points = {{33, 0}, {106, 0}}, color = {0, 0, 127}, thickness = 0.5));
       annotation(
-        Icon(graphics = {Text(lineColor = {64, 64, 64}, extent = {{-50, -14}, {50, -54}}, textString = "ypr"), Line(origin = {81, 30}, points = {{-11, -30}, {-1, -30}, {-1, 30}, {11, 30}}), Line(origin = {86, 0}, points = {{-6, 0}, {6, 0}}), Line(origin = {86, -30}, points = {{-6, 30}, {-6, -30}, {6, -30}}), Text(origin = {322, 54}, lineColor = {128, 128, 128}, extent = {{-270, 43}, {-180, 18}}, textString = "yaw"), Text(origin = {328, -4}, lineColor = {128, 128, 128}, extent = {{-276, 43}, {-184, 18}}, textString = "pitch"), Text(origin = {324, -68}, lineColor = {128, 128, 128}, extent = {{-270, 43}, {-180, 18}}, textString = "roll")}));
-    end AssetSensor;
+        Icon(graphics = {Text(lineColor = {0, 0, 255}, extent = {{-130, 72}, {131, 120}}, textString = "%name"), Text(lineColor = {64, 64, 64}, extent = {{-50, -14}, {50, -54}}, textString = "deg/s")}));
+    end IdealGyroscope;
 
     model RealGyroscope "Implementation of a real gyroscope, affected by startup random bias, bias instability (Rate Random Walk) and Normal Noise (Angle Random Walk)"
       import Modelica.Units.Conversions.from_deg;
@@ -84,6 +72,57 @@ package Components
         Diagram);
     end RealGyroscope;
 
+    model AssetSensor
+      extends Modelica.Mechanics.MultiBody.Sensors.Internal.PartialAbsoluteSensor;
+      import Modelica.Mechanics.MultiBody.Frames;
+      import Modelica.Units.Conversions.to_deg;
+      Real x_b[3];
+      Real y_b[3];
+      Real z_b[3];
+      Real yaw_den;
+      Modelica.Blocks.Interfaces.RealOutput yaw annotation(
+        Placement(visible = true, transformation(origin = {106, 60}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {102, 60}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      Modelica.Blocks.Interfaces.RealOutput pitch annotation(
+        Placement(visible = true, transformation(origin = {106, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {102, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      Modelica.Blocks.Interfaces.RealOutput roll annotation(
+        Placement(visible = true, transformation(origin = {106, -60}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {102, -60}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+    equation
+      x_b = frame_a.R.T[1, :];
+      y_b = frame_a.R.T[:, 2];
+      z_b = frame_a.R.T[:, 3];
+      yaw_den = x_b * {1, 0, 0};
+      if abs(yaw_den) > 1e-7 then
+        yaw = to_deg(atan(x_b * {0, 1, 0} / yaw_den));
+      else
+        yaw = 0;
+      end if;
+      pitch = to_deg(asin(x_b * {0, 0, -1}));
+      roll = 0;
+      frame_a.f = zeros(3);
+      frame_a.t = zeros(3);
+      annotation(
+        Icon(graphics = {Text(lineColor = {64, 64, 64}, extent = {{-50, -14}, {50, -54}}, textString = "ypr"), Line(origin = {81, 30}, points = {{-11, -30}, {-1, -30}, {-1, 30}, {11, 30}}), Line(origin = {86, 0}, points = {{-6, 0}, {6, 0}}), Line(origin = {86, -30}, points = {{-6, 30}, {-6, -30}, {6, -30}}), Text(origin = {322, 54}, lineColor = {128, 128, 128}, extent = {{-270, 43}, {-180, 18}}, textString = "yaw"), Text(origin = {328, -4}, lineColor = {128, 128, 128}, extent = {{-276, 43}, {-184, 18}}, textString = "pitch"), Text(origin = {324, -68}, lineColor = {128, 128, 128}, extent = {{-270, 43}, {-180, 18}}, textString = "roll")}));
+    end AssetSensor;
+
+    model IdealAccelerometer
+      extends Modelica.Mechanics.MultiBody.Sensors.Internal.PartialAbsoluteSensor;
+      outer World world;
+      SI.Acceleration acc_inertial[3];
+      SI.Acceleration acc_body[3];
+      Modelica.Blocks.Interfaces.RealOutput acc[3](each final quantity = "Acceleration", each final unit = "m/s2") annotation(
+        Placement(visible = true, transformation(origin = {106, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {102, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      Modelica.Mechanics.MultiBody.Sensors.AbsoluteVelocity absoluteVelocity(resolveInFrame = Modelica.Mechanics.MultiBody.Types.ResolveInFrameA.world) annotation(
+        Placement(visible = true, transformation(origin = {-60, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+    equation
+      acc_inertial = der(absoluteVelocity.v);
+      acc_body = acc_inertial - world.gravityAcceleration(frame_a.r_0);
+      acc = Modelica.Mechanics.MultiBody.Frames.resolve2(frame_a.R, acc_body);
+      connect(frame_a, absoluteVelocity.frame_a) annotation(
+        Line(points = {{-100, 0}, {-70, 0}}));
+      annotation(
+        Icon(graphics = {Text(lineColor = {0, 0, 255}, extent = {{-130, 72}, {131, 120}}, textString = "%name"), Text(lineColor = {64, 64, 64}, extent = {{-50, -14}, {50, -54}}, textString = "m/s^2")}));
+    end IdealAccelerometer;
+
     model RealAccelerometer
       parameter Integer samplePeriodMs(min = 0) "Sample period in milliseconds";
       parameter SI.Acceleration bias[3] "Measurement bias for each axis";
@@ -131,25 +170,6 @@ package Components
         Icon(graphics = {Text(lineColor = {64, 64, 64}, extent = {{-50, -14}, {50, -54}}, textString = "m/s^2"), Text(lineColor = {0, 0, 255}, extent = {{-130, 72}, {131, 120}}, textString = "%name")}));
     end RealAccelerometer;
 
-    model IdealAccelerometer
-      extends Modelica.Mechanics.MultiBody.Sensors.Internal.PartialAbsoluteSensor;
-      outer World world;
-      SI.Acceleration acc_inertial[3];
-      SI.Acceleration acc_body[3];
-      Modelica.Blocks.Interfaces.RealOutput acc[3](each final quantity = "Acceleration", each final unit = "m/s2") annotation(
-        Placement(visible = true, transformation(origin = {106, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {102, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-      Modelica.Mechanics.MultiBody.Sensors.AbsoluteVelocity absoluteVelocity(resolveInFrame = Modelica.Mechanics.MultiBody.Types.ResolveInFrameA.world) annotation(
-        Placement(visible = true, transformation(origin = {-60, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-    equation
-      acc_inertial = der(absoluteVelocity.v);
-      acc_body = acc_inertial - world.gravityAcceleration(frame_a.r_0);
-      acc = Modelica.Mechanics.MultiBody.Frames.resolve2(frame_a.R, acc_body);
-      connect(frame_a, absoluteVelocity.frame_a) annotation(
-        Line(points = {{-100, 0}, {-70, 0}}));
-      annotation(
-        Icon(graphics = {Text(lineColor = {0, 0, 255}, extent = {{-130, 72}, {131, 120}}, textString = "%name"), Text(lineColor = {64, 64, 64}, extent = {{-50, -14}, {50, -54}}, textString = "m/s^2")}));
-    end IdealAccelerometer;
-
     model IdealMagnetometer
   extends Modelica.Mechanics.MultiBody.Sensors.Internal.PartialAbsoluteSensor;
       //  outer World.Interfaces.WorldBase world;
@@ -164,26 +184,6 @@ package Components
       annotation(
         Icon(graphics = {Text(lineColor = {0, 0, 255}, extent = {{-130, 72}, {131, 120}}, textString = "%name"), Text(lineColor = {64, 64, 64}, extent = {{-50, -14}, {50, -54}}, textString = "uT")}));
     end IdealMagnetometer;
-
-    model IdealGyroscope
-      extends Modelica.Mechanics.MultiBody.Sensors.Internal.PartialAbsoluteSensor;
-      outer World world;
-      Modelica.Blocks.Interfaces.RealOutput w[3](each final quantity = "AngularVelocity", each final unit = "deg/s") annotation(
-        Placement(visible = true, transformation(origin = {106, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {102, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-      Modelica.Mechanics.MultiBody.Sensors.AbsoluteAngularVelocity absoluteAngularVelocity(resolveInFrame = Modelica.Mechanics.MultiBody.Types.ResolveInFrameA.frame_a) annotation(
-        Placement(visible = true, transformation(origin = {-50, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-      Modelica.Blocks.Math.UnitConversions.To_deg to_deg[3] annotation(
-        Placement(visible = true, transformation(origin = {22, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-    equation
-      connect(frame_a, absoluteAngularVelocity.frame_a) annotation(
-        Line(points = {{-100, 0}, {-60, 0}}));
-      connect(absoluteAngularVelocity.w, to_deg.u) annotation(
-        Line(points = {{-38, 0}, {10, 0}}, color = {0, 0, 127}, thickness = 0.5));
-      connect(to_deg.y, w) annotation(
-        Line(points = {{33, 0}, {106, 0}}, color = {0, 0, 127}, thickness = 0.5));
-      annotation(
-        Icon(graphics = {Text(lineColor = {0, 0, 255}, extent = {{-130, 72}, {131, 120}}, textString = "%name"), Text(lineColor = {64, 64, 64}, extent = {{-50, -14}, {50, -54}}, textString = "deg/s")}));
-    end IdealGyroscope;
 
     model RealMagnetometer "Magnetometer sensor model with bias, gaussian noise and quantization effects"
       import RocketControl.Types.NanoTesla;
@@ -550,12 +550,16 @@ package Components
         Modelica.Blocks.Interfaces.RealOutput y[nu] annotation(
           Placement(visible = true, transformation(extent = {{100, -10}, {120, 10}}, rotation = 0), iconTransformation(extent = {{100, -10}, {120, 10}}, rotation = 0)));
         Clock c = Clock(samplePeriodMS, 1000);
+        Real uc[nu];
       equation
-        when c then
-          for i in 1:nu loop
-            y[i] = sample(hold(u[i]));
-          end for;
-        end when;
+        for i in 1:nu loop
+          uc[i] = hold(u[i]);
+        end for;
+      
+        for i in 1:nu loop
+          y[i] = sample(uc[i], c);
+        end for;
+      
         annotation(
           Icon(graphics = {Text(origin = {0, -1}, extent = {{-100, 99}, {100, -99}}, textString = "RS")}));
       end Resample;

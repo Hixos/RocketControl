@@ -153,11 +153,11 @@ package Rockets
   RocketControl.Components.Sensors.RealGNSS realGNSS(fixedLocalSeed = {1775435783, 568478634, -1728550798},samplePeriodMs = 20, sigmaNoise_xy = 5, sigmaNoise_z = 10)  annotation(
         Placement(visible = true, transformation(origin = {-10, 10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   RocketControl.Math.Blocks.Quaternion quat_true annotation(
-        Placement(visible = true, transformation(origin = {28, -2}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+        Placement(visible = true, transformation(origin = {30, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   RocketControl.Math.Blocks.Quaternion2Euler eul_true annotation(
-        Placement(visible = true, transformation(origin = {68, -2}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-      RocketControl.Math.Blocks.UnwrapAngle unwrapAngle(internalClock = true, n = 3)  annotation(
-        Placement(visible = true, transformation(origin = {116, -2}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+        Placement(visible = true, transformation(origin = {72, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      RocketControl.Math.Blocks.UnwrapAngle eul_true_unwrap(internalClock = true, n = 3)  annotation(
+        Placement(visible = true, transformation(origin = {110, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   RocketControl.Components.Interfaces.AvionicsBus bus annotation(
         Placement(visible = true, transformation(origin = {100, 100}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   RocketControl.Components.Sensors.AssetSensor assetSensor annotation(
@@ -196,12 +196,12 @@ package Rockets
         Line(points = {{-20, 10}, {-59, 10}, {-59, 0}, {-100, 0}}, color = {95, 95, 95}));
       connect(realGNSS.pos, bus.x_meas) annotation(
         Line(points = {{0, 10}, {20, 10}, {20, 100}, {100, 100}}, color = {0, 0, 127}, thickness = 0.5));
-      connect(frame_a, quat_true.frame_a) annotation(
-        Line(points = {{-100, 0}, {18, 0}, {18, -2}}));
-      connect(quat_true.q, eul_true.q) annotation(
-        Line(points = {{38, -2}, {58, -2}}, color = {0, 0, 127}));
-  connect(unwrapAngle.angle, eul_true.eul) annotation(
-        Line(points = {{104, -2}, {78, -2}}, color = {0, 0, 127}));
+  connect(frame_a, quat_true.frame_a) annotation(
+        Line(points = {{-100, 0}, {20, 0}}));
+  connect(quat_true.q, eul_true.q) annotation(
+        Line(points = {{40, 0}, {60, 0}}, color = {0, 0, 127}));
+  connect(eul_true_unwrap.angle, eul_true.eul) annotation(
+        Line(points = {{98, 0}, {83, 0}}, color = {0, 0, 127}));
   connect(frame_a, assetSensor.frame_a) annotation(
         Line(points = {{-100, 0}, {-90, 0}, {-90, -30}, {-80, -30}}));
     protected
@@ -216,7 +216,7 @@ package Rockets
         Placement(visible = true, transformation(origin = {-52, 52}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   RocketControl.Math.Blocks.Quaternion2Euler eul_est annotation(
         Placement(visible = true, transformation(origin = {-12, 10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  RocketControl.Math.Blocks.UnwrapAngle unwrapAngle(n = 3)  annotation(
+  RocketControl.Math.Blocks.UnwrapAngle eul_est_unwrap(n = 3)  annotation(
         Placement(visible = true, transformation(origin = {30, 10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   RocketControl.Components.Interfaces.AvionicsBus bus annotation(
         Placement(visible = true, transformation(origin = {100, 100}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
@@ -233,7 +233,7 @@ package Rockets
         Line(points = {{-41, 47}, {-30, 47}, {-30, 100}, {100, 100}}, color = {0, 0, 127}, thickness = 0.5));
   connect(attitude_est.q_est, eul_est.q) annotation(
         Line(points = {{-41, 57}, {-30, 57}, {-30, 10}, {-24, 10}}, color = {0, 0, 127}));
-  connect(eul_est.eul, unwrapAngle.angle) annotation(
+  connect(eul_est.eul, eul_est_unwrap.angle) annotation(
         Line(points = {{-1, 10}, {18, 10}}, color = {0, 0, 127}));
       annotation(
         Icon(graphics = {Line(origin = {92, 0}, points = {{-2, 0}, {2, 0}})}),

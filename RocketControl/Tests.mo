@@ -2,76 +2,6 @@ within RocketControl;
 
 package Tests
 
-  model AerodynamicsTest
-    import Modelica.Units.Conversions.from_deg;
-    Modelica.Mechanics.MultiBody.Parts.Fixed fixed annotation(
-      Placement(visible = true, transformation(origin = {90, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 180)));
-    Aerodynamics.Interfaces.ComposeAeroState realAeroState annotation(
-      Placement(visible = true, transformation(origin = {4, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-    Modelica.Blocks.Sources.Constant h(k = 1000) annotation(
-      Placement(visible = true, transformation(origin = {-76, -22}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-    Modelica.Blocks.Sources.Constant v[3](k = {100, 0, 0}) annotation(
-      Placement(visible = true, transformation(origin = {-76, -54}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-    Modelica.Blocks.Sources.Constant w[3](k = from_deg({0, 0, 0})) annotation(
-      Placement(visible = true, transformation(origin = {-76, -84}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-    Modelica.Blocks.Sources.Constant m(k = 0.5) annotation(
-      Placement(visible = true, transformation(origin = {-76, 12}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-    Modelica.Blocks.Sources.Constant beta(k = from_deg(0)) annotation(
-      Placement(visible = true, transformation(origin = {-76, 42}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-    Modelica.Blocks.Sources.Constant alpha(k = from_deg(0)) annotation(
-      Placement(visible = true, transformation(origin = {-76, 74}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Rockets.Lynx.Aerodynamics.AerodynamicForce aerodynamicForce annotation(
-      Placement(visible = true, transformation(origin = {50, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  equation
-    connect(v.y, realAeroState.v) annotation(
-      Line(points = {{-64, -54}, {-26, -54}, {-26, -6}, {-5, -6}}, color = {0, 0, 127}));
-    connect(w.y, realAeroState.w) annotation(
-      Line(points = {{-64, -84}, {-22, -84}, {-22, -9}, {-5, -9}}, color = {0, 0, 127}));
-    connect(h.y, realAeroState.altitude) annotation(
-      Line(points = {{-64, -22}, {-28, -22}, {-28, -2}, {-5, -2}}, color = {0, 0, 127}));
-    connect(m.y, realAeroState.mach) annotation(
-      Line(points = {{-64, 12}, {-28, 12}, {-28, 2}, {-5, 2}}, color = {0, 0, 127}));
-    connect(beta.y, realAeroState.beta) annotation(
-      Line(points = {{-65, 42}, {-26, 42}, {-26, 6}, {-5, 6}}, color = {0, 0, 127}));
-    connect(alpha.y, realAeroState.alpha) annotation(
-      Line(points = {{-65, 74}, {-22, 74}, {-22, 9}, {-5, 9}}, color = {0, 0, 127}));
-    connect(aerodynamicForce.frame_b, fixed.frame_b) annotation(
-      Line(points = {{60, 0}, {80, 0}}, color = {95, 95, 95}));
-    connect(realAeroState.out, aerodynamicForce.aeroState) annotation(
-      Line(points = {{14, 0}, {40, 0}}));
-  end AerodynamicsTest;
-
-  model SimpleAero
-    import RocketControl.Aerodynamics.*;
-    AeroData aerodata = AeroData();
-    Real coeffs[Coeff];
-    Real state_arr[State];
-    Modelica.Blocks.Interfaces.RealInput u annotation(
-      Placement(visible = true, transformation(origin = {-104, 0}, extent = {{-20, -20}, {20, 20}}, rotation = 0), iconTransformation(origin = {-94, -2}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
-    Modelica.Blocks.Interfaces.RealOutput y annotation(
-      Placement(visible = true, transformation(origin = {106, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {104, -2}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  equation
-    state_arr[State.alphas] = 10;
-    state_arr[State.betas] = 0;
-    state_arr[State.machs] = u / 300;
-    state_arr[State.alts] = 500;
-    coeffs = coeffValue(aerodata, state_arr);
-    y = -0.5 * 1.225 * u ^ 2 * 0.08 * coeffs[Coeff.CA];
-    annotation(
-      Icon(graphics = {Ellipse(origin = {-1, 0}, fillColor = {255, 255, 255}, fillPattern = FillPattern.Horizontal, extent = {{-99, 100}, {99, -100}}, endAngle = 360)}));
-  end SimpleAero;
-
-  model MotorTest
-    import Modelica.Units.Conversions.from_deg;
-    inner Modelica.Mechanics.MultiBody.World world(n = {0, 0, 1}) annotation(
-      Placement(visible = true, transformation(origin = {-90, 10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-    RocketControl.Components.Motors.M2000R m2000r annotation(
-      Placement(visible = true, transformation(origin = {2, 10}, extent = {{-10, -10}, {10, 10}}, rotation = 90)));
-  equation
-    connect(world.frame_b, m2000r.frame_b) annotation(
-      Line(points = {{-80, 10}, {-8, 10}}));
-  end MotorTest;
-
   model MotionFrame
     import Modelica.Units.SI;
     import Modelica.Mechanics.MultiBody.Frames;
@@ -94,65 +24,6 @@ package Tests
     annotation(
       Icon(graphics = {Ellipse(origin = {0.04, 1.95}, fillColor = {255, 255, 255}, fillPattern = FillPattern.CrossDiag, extent = {{-99.96, 99.95}, {99.96, -99.95}}, endAngle = 360)}));
   end MotionFrame;
-
-  model VariableInertiaTest
-    inner Modelica.Mechanics.MultiBody.World world(gravityType = Modelica.Mechanics.MultiBody.Types.GravityTypes.NoGravity) annotation(
-      Placement(visible = true, transformation(origin = {-90, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-    RocketControl.Interfaces.MassPropertiesOutput massOutput annotation(
-      Placement(visible = true, transformation(origin = {80, 20}, extent = {{-10, -10}, {10, 10}}, rotation = 180), iconTransformation(origin = {-24, -32}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-    SI.Inertia I11;
-    RocketControl.Components.BodyVariableMass bodyVariableMass(angles_fixed = true, r_0(each fixed = true), r_CM = {0, 0, 0}, v_0(each fixed = true), w_0_fixed = true, w_a(each fixed = true)) annotation(
-      Placement(visible = true, transformation(origin = {30, 40}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-    RocketControl.Components.BodyVariableMass bodyVariableMass1(angles_fixed = true, r_0(each fixed = true), r_CM = {0, 0, 0}, v_0(each fixed = true), w_0_fixed = true, w_a(each fixed = true)) annotation(
-      Placement(visible = true, transformation(origin = {30, -20}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-    RocketControl.Interfaces.MassPropertiesOutput massOutput1 annotation(
-      Placement(visible = true, transformation(origin = {80, -40}, extent = {{-10, -10}, {10, 10}}, rotation = 180), iconTransformation(extent = {{-10, -10}, {10, 10}}, rotation = 180)));
-    Modelica.Mechanics.MultiBody.Forces.WorldForce force annotation(
-      Placement(visible = true, transformation(origin = {-10, 40}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-    Modelica.Mechanics.MultiBody.Forces.WorldTorque torque annotation(
-      Placement(visible = true, transformation(origin = {-10, -20}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-    Modelica.Blocks.Sources.Constant const(k = 1) annotation(
-      Placement(visible = true, transformation(origin = {-76, 36}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-    Modelica.Blocks.Sources.Constant constant1(k = 0) annotation(
-      Placement(visible = true, transformation(origin = {-50, -30}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  initial equation
-    I11 = 20;
-    massOutput.m = 20;
-  equation
-    if massOutput.m > 1 then
-      der(massOutput.m) = -1;
-    else
-      der(massOutput.m) = 0;
-    end if;
-    massOutput.I = [10, 0, 0; 0, 10, 0; 0, 0, 10];
-    if I11 > 1 then
-      der(I11) = -1;
-    else
-      der(I11) = 0;
-    end if;
-    massOutput1.m = 20;
-    massOutput1.I = [I11, 0, 0; 0, 10, 0; 0, 0, 10];
-    connect(massOutput, bodyVariableMass.massInput) annotation(
-      Line(points = {{80, 20}, {34, 20}, {34, 34}}));
-    connect(massOutput1, bodyVariableMass1.massInput) annotation(
-      Line(points = {{80, -40}, {34, -40}, {34, -26}}));
-    connect(force.frame_b, bodyVariableMass.frame_a) annotation(
-      Line(points = {{0, 40}, {20, 40}}));
-    connect(torque.frame_b, bodyVariableMass1.frame_a) annotation(
-      Line(points = {{0, -20}, {20, -20}}, color = {95, 95, 95}));
-    connect(const.y, force.force[1]) annotation(
-      Line(points = {{-65, 36}, {-34, 36}, {-34, 40}, {-22, 40}}, color = {0, 0, 127}));
-    connect(const.y, torque.torque[1]) annotation(
-      Line(points = {{-65, 36}, {-34, 36}, {-34, -20}, {-22, -20}}, color = {0, 0, 127}));
-    connect(constant1.y, torque.torque[2]) annotation(
-      Line(points = {{-38, -30}, {-32, -30}, {-32, -20}, {-22, -20}}, color = {0, 0, 127}));
-    connect(constant1.y, torque.torque[3]) annotation(
-      Line(points = {{-38, -30}, {-30, -30}, {-30, -20}, {-22, -20}}, color = {0, 0, 127}));
-    connect(constant1.y, force.force[2]) annotation(
-      Line(points = {{-38, -30}, {-32, -30}, {-32, 40}, {-22, 40}}, color = {0, 0, 127}));
-    connect(constant1.y, force.force[3]) annotation(
-      Line(points = {{-38, -30}, {-28, -30}, {-28, 40}, {-22, 40}}, color = {0, 0, 127}));
-  end VariableInertiaTest;
 
   package Components
     package Sensors
@@ -261,31 +132,147 @@ package Tests
         annotation(
           Icon(coordinateSystem(grid = {2, 0})));
       end RealGyroBias;
+
+      model DifferentSampleFreqNotWorking
+      RocketControl.Tests.MotionFrame motionFrame(v0 = {100, 0, 0}, w(each displayUnit = "deg/s") = {0.03490658503988657, 0.05235987755982988, 0.06981317007977318})  annotation(
+          Placement(visible = true, transformation(origin = {-90, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  RocketControl.Math.Blocks.Quaternion2Euler eul_real annotation(
+          Placement(visible = true, transformation(origin = {-10, 90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  RocketControl.Math.Blocks.Quaternion quaternion annotation(
+          Placement(visible = true, transformation(origin = {-50, 90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  RocketControl.Components.Sensors.IdealMagnetometer idealMagnetometer annotation(
+          Placement(visible = true, transformation(origin = {-48, -20}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  RocketControl.Components.Sensors.IdealGyroscope idealGyroscope annotation(
+          Placement(visible = true, transformation(origin = {-48, 20}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  RocketControl.GNC.Navigation.AttitudeEstimation attitudeEstimation(elevation0 = 0, heading0 = 0, samplingPeriodMs = 100, sigma_b = 1, sigma_u = 1, sigma_v = 1)  annotation(
+          Placement(visible = true, transformation(origin = {92, -10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Mechanics.MultiBody.Sensors.AbsolutePosition absolutePosition annotation(
+          Placement(visible = true, transformation(origin = {-48, -52}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Clocked.ClockSignals.Clocks.PeriodicExactClock clock1(factor = 100)  annotation(
+          Placement(visible = true, transformation(origin = {-30, -86}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
+  Modelica.Clocked.RealSignals.Sampler.SampleVectorizedAndClocked sample1(n = 3)  annotation(
+          Placement(visible = true, transformation(origin = {2, 20}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
+  Modelica.Clocked.RealSignals.Sampler.SampleVectorizedAndClocked sampleVectorizedAndClocked(n = 3) annotation(
+          Placement(visible = true, transformation(origin = {2, -52}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
+  Modelica.Clocked.RealSignals.Sampler.SampleVectorizedAndClocked sample11(n = 3)  annotation(
+          Placement(visible = true, transformation(origin = {2, -20}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
+  Modelica.Clocked.ClockSignals.Clocks.PeriodicExactClock periodicExactClock(factor = 60) annotation(
+          Placement(visible = true, transformation(origin = {-20, -36}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
+  RocketControl.Math.Blocks.Quaternion2Euler eul_est annotation(
+          Placement(visible = true, transformation(origin = {132, -10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  RocketControl.Components.Sensors.Internal.Resample resample(nu = 3, samplePeriodMS = 100)  annotation(
+          Placement(visible = true, transformation(origin = {50, 20}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  RocketControl.Components.Sensors.Internal.Resample resample1(nu = 3, samplePeriodMS = 100) annotation(
+          Placement(visible = true, transformation(origin = {50, -10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  RocketControl.Components.Sensors.Internal.Resample resample2(nu = 3, samplePeriodMS = 100) annotation(
+          Placement(visible = true, transformation(origin = {50, -50}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      equation
+        connect(motionFrame.frame_b, quaternion.frame_a) annotation(
+          Line(points = {{-80, 0}, {-72, 0}, {-72, 90}, {-60, 90}}));
+        connect(quaternion.q, eul_real.q) annotation(
+          Line(points = {{-40, 90}, {-22, 90}}, color = {0, 0, 127}, thickness = 0.5));
+  connect(idealMagnetometer.frame_a, motionFrame.frame_b) annotation(
+          Line(points = {{-58, -20}, {-72, -20}, {-72, 0}, {-80, 0}}, color = {95, 95, 95}));
+  connect(idealGyroscope.frame_a, motionFrame.frame_b) annotation(
+          Line(points = {{-58, 20}, {-59, 20}, {-59, 0}, {-80, 0}}, color = {95, 95, 95}));
+  connect(absolutePosition.frame_a, motionFrame.frame_b) annotation(
+          Line(points = {{-58, -52}, {-72, -52}, {-72, 0}, {-80, 0}}, color = {95, 95, 95}));
+  connect(idealGyroscope.w, sample1.u) annotation(
+          Line(points = {{-37.8, 20}, {-5.8, 20}}, color = {0, 0, 127}, thickness = 0.5));
+  connect(absolutePosition.r, sampleVectorizedAndClocked.u) annotation(
+          Line(points = {{-37, -52}, {-7, -52}}, color = {0, 0, 127}, thickness = 0.5));
+  connect(idealMagnetometer.b, sample11.u) annotation(
+          Line(points = {{-37.6, -20}, {-5.6, -20}}, color = {0, 0, 127}, thickness = 0.5));
+  connect(clock1.y, sampleVectorizedAndClocked.clock) annotation(
+          Line(points = {{-23.4, -86}, {22.6, -86}, {22.6, -60}, {2.6, -60}}, color = {175, 175, 175}));
+  connect(clock1.y, sample1.clock) annotation(
+          Line(points = {{-23.4, -86}, {22.6, -86}, {22.6, 12}, {2.6, 12}}, color = {175, 175, 175}));
+  connect(periodicExactClock.y, sample11.clock) annotation(
+          Line(points = {{-13.4, -36}, {1.6, -36}, {1.6, -28}}, color = {175, 175, 175}));
+  connect(attitudeEstimation.q_est, eul_est.q) annotation(
+          Line(points = {{103, -5}, {129, -5}, {129, -10}, {120, -10}}, color = {0, 0, 127}, thickness = 0.5));
+  connect(sample1.y, resample.u) annotation(
+          Line(points = {{8, 20}, {38, 20}}, color = {0, 0, 127}, thickness = 0.5));
+  connect(resample.y, attitudeEstimation.w_meas_degs) annotation(
+          Line(points = {{62, 20}, {80, 20}, {80, -2}}, color = {0, 0, 127}, thickness = 0.5));
+  connect(sampleVectorizedAndClocked.y, resample2.u) annotation(
+          Line(points = {{8, -52}, {38, -52}, {38, -50}}, color = {0, 0, 127}, thickness = 0.5));
+  connect(resample2.y, attitudeEstimation.r_0_est) annotation(
+          Line(points = {{62, -50}, {80, -50}, {80, -18}}, color = {0, 0, 127}, thickness = 0.5));
+  connect(resample1.y, attitudeEstimation.b_meas_nt) annotation(
+          Line(points = {{62, -10}, {80, -10}}, color = {0, 0, 127}, thickness = 0.5));
+  connect(sample11.y, resample1.u) annotation(
+          Line(points = {{8, -20}, {38, -20}, {38, -10}}, color = {0, 0, 127}, thickness = 0.5));
+        annotation(
+          Icon(coordinateSystem(grid = {2, 0})));
+      end DifferentSampleFreqNotWorking;
+      
+      model DifferentSampleFreqWorking
+      RocketControl.Tests.MotionFrame motionFrame(v0 = {100, 0, 0}, w(each displayUnit = "deg/s") = {0.03490658503988657, 0.05235987755982988, 0.06981317007977318})  annotation(
+          Placement(visible = true, transformation(origin = {-90, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      RocketControl.Math.Blocks.Quaternion2Euler eul_real annotation(
+          Placement(visible = true, transformation(origin = {-10, 90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      RocketControl.Math.Blocks.Quaternion quaternion annotation(
+          Placement(visible = true, transformation(origin = {-50, 90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      RocketControl.Components.Sensors.IdealMagnetometer idealMagnetometer annotation(
+          Placement(visible = true, transformation(origin = {-48, -20}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      RocketControl.Components.Sensors.IdealGyroscope idealGyroscope annotation(
+          Placement(visible = true, transformation(origin = {-48, 20}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      RocketControl.GNC.Navigation.AttitudeEstimation attitudeEstimation(elevation0 = 0, heading0 = 0, samplingPeriodMs = 60, sigma_b = 1, sigma_u = 1, sigma_v = 1)  annotation(
+          Placement(visible = true, transformation(origin = {50, -10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      Modelica.Mechanics.MultiBody.Sensors.AbsolutePosition absolutePosition annotation(
+          Placement(visible = true, transformation(origin = {-48, -52}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      Modelica.Clocked.ClockSignals.Clocks.PeriodicExactClock clock1(factor = 100)  annotation(
+          Placement(visible = true, transformation(origin = {-30, -86}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
+      Modelica.Clocked.RealSignals.Sampler.SampleVectorizedAndClocked sample1(n = 3)  annotation(
+          Placement(visible = true, transformation(origin = {2, 20}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
+      Modelica.Clocked.RealSignals.Sampler.SampleVectorizedAndClocked sampleVectorizedAndClocked(n = 3) annotation(
+          Placement(visible = true, transformation(origin = {2, -52}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
+      Modelica.Clocked.RealSignals.Sampler.SampleVectorizedAndClocked sample11(n = 3)  annotation(
+          Placement(visible = true, transformation(origin = {2, -20}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
+      Modelica.Clocked.ClockSignals.Clocks.PeriodicExactClock periodicExactClock(factor = 60) annotation(
+          Placement(visible = true, transformation(origin = {-20, -36}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
+      RocketControl.Math.Blocks.Quaternion2Euler eul_est annotation(
+          Placement(visible = true, transformation(origin = {90, -14}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      equation
+        connect(motionFrame.frame_b, quaternion.frame_a) annotation(
+          Line(points = {{-80, 0}, {-72, 0}, {-72, 90}, {-60, 90}}));
+        connect(quaternion.q, eul_real.q) annotation(
+          Line(points = {{-40, 90}, {-22, 90}}, color = {0, 0, 127}, thickness = 0.5));
+      connect(idealMagnetometer.frame_a, motionFrame.frame_b) annotation(
+          Line(points = {{-58, -20}, {-72, -20}, {-72, 0}, {-80, 0}}, color = {95, 95, 95}));
+      connect(idealGyroscope.frame_a, motionFrame.frame_b) annotation(
+          Line(points = {{-58, 20}, {-59, 20}, {-59, 0}, {-80, 0}}, color = {95, 95, 95}));
+      connect(absolutePosition.frame_a, motionFrame.frame_b) annotation(
+          Line(points = {{-58, -52}, {-72, -52}, {-72, 0}, {-80, 0}}, color = {95, 95, 95}));
+      connect(idealGyroscope.w, sample1.u) annotation(
+          Line(points = {{-37.8, 20}, {-5.8, 20}}, color = {0, 0, 127}, thickness = 0.5));
+      connect(sample1.y, attitudeEstimation.w_meas_degs) annotation(
+          Line(points = {{8.6, 20}, {38, 20}, {38, -2}}, color = {0, 0, 127}, thickness = 0.5));
+      connect(absolutePosition.r, sampleVectorizedAndClocked.u) annotation(
+          Line(points = {{-37, -52}, {-7, -52}}, color = {0, 0, 127}, thickness = 0.5));
+      connect(sampleVectorizedAndClocked.y, attitudeEstimation.r_0_est) annotation(
+          Line(points = {{8.6, -52}, {38.6, -52}, {38.6, -18}, {38, -18}}, color = {0, 0, 127}, thickness = 0.5));
+      connect(idealMagnetometer.b, sample11.u) annotation(
+          Line(points = {{-37.6, -20}, {-5.6, -20}}, color = {0, 0, 127}, thickness = 0.5));
+      connect(sample11.y, attitudeEstimation.b_meas_nt) annotation(
+          Line(points = {{8.6, -20}, {28.6, -20}, {28.6, -10}, {38, -10}}, color = {0, 0, 127}, thickness = 0.5));
+      connect(clock1.y, sampleVectorizedAndClocked.clock) annotation(
+          Line(points = {{-23.4, -86}, {22.6, -86}, {22.6, -60}, {2.6, -60}}, color = {175, 175, 175}));
+      connect(clock1.y, sample1.clock) annotation(
+          Line(points = {{-23.4, -86}, {22.6, -86}, {22.6, 12}, {2.6, 12}}, color = {175, 175, 175}));
+      connect(periodicExactClock.y, sample11.clock) annotation(
+          Line(points = {{-13.4, -36}, {1.6, -36}, {1.6, -28}}, color = {175, 175, 175}));
+  connect(attitudeEstimation.q_est, eul_est.q) annotation(
+          Line(points = {{62, -4}, {68, -4}, {68, -14}, {78, -14}}, color = {0, 0, 127}, thickness = 0.5));
+        annotation(
+          Icon(coordinateSystem(grid = {2, 0})));
+      end DifferentSampleFreqWorking;
       annotation(
         Icon(coordinateSystem(grid = {2, 0})));
     end Sensors;
 
     package World
-      model wgs84
-        parameter NonSI.Angle_deg lat = 0;
-        parameter NonSI.Angle_deg lon = 0;
-        parameter SI.Distance alt = 0;
-        SI.Position pos_ecef[3];
-        SI.Position pos_ned[3];
-        NonSI.Angle_deg res_lat;
-        NonSI.Angle_deg res_lon;
-        SI.Position res_alt;
-        Modelica.Mechanics.MultiBody.Frames.Orientation Rned;
-        Real nadir[3];
-      algorithm
-        pos_ecef := RocketControl.World.MyWorld.WGS84.lla2ecef(lat, lon, alt);
-        (res_lat, res_lon, res_alt) := RocketControl.World.MyWorld.WGS84.ecef2lla(pos_ecef);
-        nadir := RocketControl.World.MyWorld.WGS84.getNadir(pos_ecef);
-        Rned := RocketControl.World.MyWorld.NEDOrientation(pos_ecef);
-        pos_ned := Modelica.Mechanics.MultiBody.Frames.resolve2(Rned, pos_ecef);
-        annotation(
-          Icon(coordinateSystem(grid = {2, 0})));
-      end wgs84;
 
       model MagneticField
         RocketControl.World.MyWorld world(altitude_0 = 100, latitude_0 = 45, longitude_0 = 8) annotation(
@@ -300,325 +287,7 @@ package Tests
       annotation(
         Icon(coordinateSystem(grid = {2, 0})));
     end World;
-
-    package Frames
-      model Ecef
-        inner RocketControl.World.MyWorld world annotation(
-          Placement(visible = true, transformation(origin = {-90, 70}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-        Modelica.Mechanics.MultiBody.Frames.Orientation R;
-        RocketControl.Components.Frames.ECEF ecef annotation(
-          Placement(visible = true, transformation(origin = {-72, 2}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-        Modelica.Mechanics.MultiBody.Parts.FixedTranslation fixedTranslation(r = {6378137, 0, 0}) annotation(
-          Placement(visible = true, transformation(origin = {-22, 2}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-        Modelica.Mechanics.MultiBody.Sensors.AbsoluteAngularVelocity absoluteAngularVelocity annotation(
-          Placement(visible = true, transformation(origin = {74, 38}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-        Modelica.Mechanics.MultiBody.Sensors.AbsoluteVelocity absoluteVelocity(resolveInFrame = Modelica.Mechanics.MultiBody.Types.ResolveInFrameA.world) annotation(
-          Placement(visible = true, transformation(origin = {74, 2}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-        Real v2[3];
-      equation
-        v2 = RocketControl.World.MyWorld.eci2ecef(fixedTranslation.frame_b.r_0, time);
-        R = RocketControl.World.MyWorld.eci2ecefOrientation(time);
-        connect(ecef.frame_b, fixedTranslation.frame_a) annotation(
-          Line(points = {{-62, 2}, {-32, 2}}, color = {95, 95, 95}));
-        connect(fixedTranslation.frame_b, absoluteAngularVelocity.frame_a) annotation(
-          Line(points = {{-12, 2}, {16, 2}, {16, 38}, {64, 38}}));
-        connect(fixedTranslation.frame_b, absoluteVelocity.frame_a) annotation(
-          Line(points = {{-12, 2}, {64, 2}}, color = {95, 95, 95}));
-        annotation(
-          Icon(coordinateSystem(grid = {2, 0})));
-      end Ecef;
-
-      model Frames
-        RocketControl.Components.Frames.ECEF ecef annotation(
-          Placement(visible = true, transformation(origin = {-70, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-        RocketControl.Components.Frames.EarthSurfaceTranslation earthSurfaceTranslation(altitude = 309, latitude = 45.691049, longitude = 8.490597) annotation(
-          Placement(visible = true, transformation(origin = {-10, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-        inner RocketControl.World.MyWorld world annotation(
-          Placement(visible = true, transformation(origin = {-90, 90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-        RocketControl.Components.Frames.ecef2ned ecef2ned annotation(
-          Placement(visible = true, transformation(origin = {48, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-      equation
-        connect(ecef.frame_b, earthSurfaceTranslation.frame_a) annotation(
-          Line(points = {{-60, 0}, {-20, 0}}, color = {95, 95, 95}));
-        connect(earthSurfaceTranslation.frame_b, ecef2ned.frame_a) annotation(
-          Line(points = {{0, 0}, {38, 0}}));
-      protected
-        annotation(
-          Icon(coordinateSystem(grid = {2, 0})));
-      end Frames;
-      annotation(
-        Icon(coordinateSystem(grid = {2, 0})));
-    end Frames;
-
-    package Forces
-      model ConnectionFlange
-        Modelica.Mechanics.MultiBody.Parts.Body body(m = 20, r_CM = {0, 0, 0}) annotation(
-          Placement(visible = true, transformation(origin = {72, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-        RocketControl.Components.Forces.ConnectionFlange connectionFlange(c = 30000, d = 500, diameter = 0.09) annotation(
-          Placement(visible = true, transformation(origin = {0, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-        Modelica.Mechanics.MultiBody.Parts.FixedTranslation fixedTranslation(r = {1, 0, 0}) annotation(
-          Placement(visible = true, transformation(origin = {36, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-        inner Modelica.Mechanics.MultiBody.World world(gravityType = Modelica.Mechanics.MultiBody.Types.GravityTypes.UniformGravity) annotation(
-          Placement(visible = true, transformation(origin = {-90, -90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-        Modelica.Mechanics.MultiBody.Parts.Body body1(m = 20, r_0(start = {100000, 100000, 100000}), r_CM = {0, 0, 0}) annotation(
-          Placement(visible = true, transformation(origin = {-80, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 180)));
-        Modelica.Mechanics.MultiBody.Parts.FixedTranslation fixedTranslation1(r = {1, 0, 0}) annotation(
-          Placement(visible = true, transformation(origin = {-42, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-        Modelica.Mechanics.MultiBody.Sensors.RelativePosition relativePosition annotation(
-          Placement(visible = true, transformation(origin = {0, 80}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-        Modelica.Mechanics.MultiBody.Sensors.RelativeAngles relativeAngles annotation(
-          Placement(visible = true, transformation(origin = {0, 40}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-        Modelica.Mechanics.MultiBody.Joints.FreeMotionScalarInit freeMotionScalarInit(angle_1(fixed = true, start = 0), angle_2(fixed = true, start = 0), angle_3(fixed = true, start = 0), angle_d_1(fixed = true), angle_d_2(fixed = true), angle_d_3(fixed = true), r_rel_a_1(fixed = true, start = 2.001), r_rel_a_2(fixed = true), r_rel_a_3(fixed = true), use_angle = true, use_angle_d = true, use_r = true, use_v = true, v_rel_a_1(fixed = true), v_rel_a_2(fixed = true), v_rel_a_3(fixed = true)) annotation(
-          Placement(visible = true, transformation(origin = {2, -40}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-      equation
-        connect(connectionFlange.frame_b, fixedTranslation.frame_a) annotation(
-          Line(points = {{10, 0}, {26, 0}}, color = {95, 95, 95}));
-        connect(fixedTranslation.frame_b, body.frame_a) annotation(
-          Line(points = {{46, 0}, {62, 0}}));
-        connect(fixedTranslation1.frame_b, connectionFlange.frame_a) annotation(
-          Line(points = {{-32, 0}, {-10, 0}}, color = {95, 95, 95}));
-        connect(body1.frame_a, fixedTranslation1.frame_a) annotation(
-          Line(points = {{-70, 0}, {-52, 0}}));
-        connect(relativePosition.frame_a, body1.frame_a) annotation(
-          Line(points = {{-10, 80}, {-70, 80}, {-70, 0}}));
-        connect(relativePosition.frame_b, body.frame_a) annotation(
-          Line(points = {{10, 80}, {62, 80}, {62, 0}}, color = {95, 95, 95}));
-        connect(relativeAngles.frame_a, body1.frame_a) annotation(
-          Line(points = {{-10, 40}, {-70, 40}, {-70, 0}}, color = {95, 95, 95}));
-        connect(relativeAngles.frame_b, body.frame_a) annotation(
-          Line(points = {{10, 40}, {62, 40}, {62, 0}}, color = {95, 95, 95}));
-        connect(freeMotionScalarInit.frame_b, body.frame_a) annotation(
-          Line(points = {{12, -40}, {54, -40}, {54, 0}, {62, 0}}));
-        connect(body1.frame_a, freeMotionScalarInit.frame_a) annotation(
-          Line(points = {{-70, 0}, {-60, 0}, {-60, -40}, {-8, -40}}, color = {95, 95, 95}));
-        annotation(
-          Icon(coordinateSystem(grid = {2, 0})));
-      end ConnectionFlange;
-      annotation(
-        Icon(coordinateSystem(grid = {2, 0})));
-    end Forces;
-
-    package Launchpad
-      model RelativeInit
-        Modelica.Mechanics.MultiBody.Parts.Fixed fixed annotation(
-          Placement(visible = true, transformation(origin = {-90, 10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-        Modelica.Mechanics.MultiBody.Parts.Body body(m = 1, r_CM = {0, 0, 0}) annotation(
-          Placement(visible = true, transformation(origin = {78, 10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-        inner Modelica.Mechanics.MultiBody.World world annotation(
-          Placement(visible = true, transformation(origin = {-90, -90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-        RocketControl.Components.LaunchPad.RelativePositionInit relativePositionInit(rel_angle_1(displayUnit = "rad") = 0, rel_angle_2(displayUnit = "rad") = 0, rel_angle_3(displayUnit = "rad") = 0, rel_pos_x = 1, rel_pos_y = 1, rel_pos_z = 1) annotation(
-          Placement(visible = true, transformation(origin = {0, 10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-        Modelica.Mechanics.MultiBody.Sensors.AbsoluteAngles absoluteAngles annotation(
-          Placement(visible = true, transformation(origin = {50, -30}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-        Modelica.Mechanics.MultiBody.Sensors.AbsolutePosition absolutePosition annotation(
-          Placement(visible = true, transformation(origin = {50, -52}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-        Modelica.Mechanics.MultiBody.Sensors.RelativePosition relativePosition annotation(
-          Placement(visible = true, transformation(origin = {10, 60}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-        Modelica.Mechanics.MultiBody.Sensors.RelativeAngles relativeAngles annotation(
-          Placement(visible = true, transformation(origin = {10, 88}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-        Modelica.Mechanics.MultiBody.Parts.FixedRotation fixedRotation(angles = {20, 30, 40}, r = {10, 10, 10}) annotation(
-          Placement(visible = true, transformation(origin = {-50, 10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-      equation
-        connect(relativePositionInit.frame_b, body.frame_a) annotation(
-          Line(points = {{10, 10}, {68, 10}}, color = {95, 95, 95}));
-        connect(fixed.frame_b, fixedRotation.frame_a) annotation(
-          Line(points = {{-80, 10}, {-60, 10}}, color = {95, 95, 95}));
-        connect(fixedRotation.frame_b, relativePositionInit.frame_a) annotation(
-          Line(points = {{-40, 10}, {-10, 10}}, color = {95, 95, 95}));
-        connect(relativePosition.frame_a, fixedRotation.frame_b) annotation(
-          Line(points = {{0, 60}, {-40, 60}, {-40, 10}}));
-        connect(relativePosition.frame_b, body.frame_a) annotation(
-          Line(points = {{20, 60}, {68, 60}, {68, 10}}, color = {95, 95, 95}));
-        connect(relativeAngles.frame_a, fixedRotation.frame_b) annotation(
-          Line(points = {{0, 88}, {-40, 88}, {-40, 10}}));
-        connect(relativeAngles.frame_b, body.frame_a) annotation(
-          Line(points = {{20, 88}, {68, 88}, {68, 10}}));
-        connect(absoluteAngles.frame_a, relativePositionInit.frame_b) annotation(
-          Line(points = {{40, -30}, {10, -30}, {10, 10}}, color = {95, 95, 95}));
-        connect(absolutePosition.frame_a, relativePositionInit.frame_b) annotation(
-          Line(points = {{40, -52}, {10, -52}, {10, 10}}, color = {95, 95, 95}));
-      protected
-        annotation(
-          Icon(coordinateSystem(grid = {2, 0})));
-      end RelativeInit;
-      annotation(
-        Icon(coordinateSystem(grid = {2, 0})));
-    end Launchpad;
     annotation(
       Icon(coordinateSystem(grid = {2, 0})));
   end Components;
-  model Clocked
-  //Real int;
-    Modelica.Blocks.Sources.Sine sine(f = 1) annotation(
-      Placement(visible = true, transformation(origin = {-86, 10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-    Modelica.Clocked.ClockSignals.Clocks.PeriodicExactClock periodicClock1(factor = 10) annotation(
-      Placement(visible = true, transformation(origin = {-88, -48}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
-    inner Modelica.Blocks.Noise.GlobalSeed globalSeed annotation(
-      Placement(visible = true, transformation(origin = {-64, 76}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-    RocketControl.Components.Sensors.Internal.SampleClockedWithADeffects sample1(bias = 1, biased = true, limited = true, noisy = false, sigma = 0.3, yMax = 1.5) annotation(
-      Placement(visible = true, transformation(origin = {-20, 10}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
-  equation
-    connect(sine.y, sample1.u) annotation(
-      Line(points = {{-74, 10}, {-27, 10}}, color = {0, 0, 127}));
-    connect(periodicClock1.y, sample1.clock) annotation(
-      Line(points = {{-82, -48}, {-20, -48}, {-20, 3}}, color = {175, 175, 175}));
-//  int = interval(add.y);
-  protected
-    annotation(
-      Icon(coordinateSystem(grid = {2, 0})),
-      Diagram);
-  end Clocked;
-
-  model MyNoise
-    Modelica.Blocks.Interfaces.RealOutput y annotation(
-      Placement(visible = true, transformation(origin = {104, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {102, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-    replaceable Modelica.Blocks.Noise.UniformNoise noise annotation(
-      Placement(visible = true, transformation(origin = {-2, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  equation
-    connect(noise.y, y) annotation(
-      Line(points = {{9, 0}, {104, 0}}, color = {0, 0, 127}));
-    annotation(
-      Icon(coordinateSystem(grid = {2, 0}), graphics = {Text(origin = {0, -2}, extent = {{-88, 92}, {88, -92}}, textString = "N")}));
-  end MyNoise;
-
-  model TestADA
-    parameter SI.Time T = 1000 / 60;
-    Modelica.Blocks.Sources.Sine sine(amplitude = 1000, f = 0.1, offset = 4000) annotation(
-      Placement(visible = true, transformation(origin = {-86, 62}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-    Modelica.Clocked.ClockSignals.Clocks.PeriodicExactClock periodicClock1(factor = 20, useSolver = true) annotation(
-      Placement(visible = true, transformation(origin = {-90, 10}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
-    RocketControl.Rockets.Lynx.Estimators.DiscreteKalmanFilter discreteKalmanFilter(A = [1, 0.05, 0.0025 / 2; 0, 1, 0.05; 0, 0, 1], C = [1, 0, 0], Q = [1, 0, 0; 0, 1, 0; 0, 0, 1], R = [1], m = 0, n = 3, p = 1, x0 = {4000, 0, 0}) annotation(
-      Placement(visible = true, transformation(origin = {86, 38}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-    SampleClockedStart sample1(u(fixed = true)) annotation(
-      Placement(visible = true, transformation(origin = {-46, 46}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
-    Real h;
-    RocketControl.Rockets.Lynx.Estimators.Resample resample(nu = 1, samplePeriodMs = 70) annotation(
-      Placement(visible = true, transformation(origin = {24, 46}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  equation
-    h = hold(sample1.y);
-    connect(sine.y, sample1.u) annotation(
-      Line(points = {{-74, 62}, {-54, 62}, {-54, 46}}, color = {0, 0, 127}));
-    connect(periodicClock1.y, sample1.clock) annotation(
-      Line(points = {{-84, 10}, {-46, 10}, {-46, 38}}, color = {175, 175, 175}));
-    connect(sample1.y, resample.u[1]) annotation(
-      Line(points = {{-40, 46}, {14, 46}}, color = {0, 0, 127}));
-    connect(resample.u_rs, discreteKalmanFilter.y_meas) annotation(
-      Line(points = {{34, 46}, {55, 46}, {55, 44}, {76, 44}}, color = {0, 0, 127}, thickness = 0.5));
-    annotation(
-      Icon(coordinateSystem(grid = {2, 0})));
-  end TestADA;
-
-  model ResampleTest
-  Modelica.Clocked.ClockSignals.Clocks.PeriodicExactClock periodicClock1(factor = 10, resolution = Modelica.Clocked.Types.Resolution.ms)  annotation(
-      Placement(visible = true, transformation(origin = {-74, -50}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
-  RocketControl.Components.Sensors.Internal.Resample resample(nu = 2, samplePeriodMS = 100)  annotation(
-      Placement(visible = true, transformation(origin = {58, 10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Blocks.Sources.Sine sine(amplitude = 1, f = 0.2, offset = 3) annotation(
-      Placement(visible = true, transformation(origin = {-88, 4}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Clocked.RealSignals.Sampler.SampleClocked sample1 annotation(
-      Placement(visible = true, transformation(origin = {-42, 4}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
-  Modelica.Blocks.Sources.Sine sine1(amplitude = 1, f = 0.1, offset = 3) annotation(
-      Placement(visible = true, transformation(origin = {-92, 50}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Clocked.RealSignals.Sampler.SampleClocked sampleClocked annotation(
-      Placement(visible = true, transformation(origin = {-40, 50}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
-  equation
-    connect(sine.y, sample1.u) annotation(
-      Line(points = {{-77, 4}, {-50, 4}}, color = {0, 0, 127}));
-  connect(sine1.y, sampleClocked.u) annotation(
-      Line(points = {{-81, 50}, {-47, 50}}, color = {0, 0, 127}));
-  connect(sampleClocked.y, resample.u[1]) annotation(
-      Line(points = {{-33, 50}, {46, 50}, {46, 10}}, color = {0, 0, 127}));
-  connect(sample1.y, resample.u[2]) annotation(
-      Line(points = {{-36, 4}, {46, 4}, {46, 10}}, color = {0, 0, 127}));
-  connect(sampleClocked.clock, periodicClock1.y) annotation(
-      Line(points = {{-40, 43}, {-68, 43}, {-68, -50}}, color = {175, 175, 175}));
-  connect(periodicClock1.y, sample1.clock) annotation(
-      Line(points = {{-68, -50}, {-42, -50}, {-42, -4}}, color = {175, 175, 175}));
-    annotation(
-      Icon(coordinateSystem(grid = {2, 0})));
-  end ResampleTest;
-
-  model StartCondition
-    parameter Real startcond;
-    Modelica.Blocks.Interfaces.RealInput u annotation(
-      Placement(visible = true, transformation(origin = {-108, 0}, extent = {{-20, -20}, {20, 20}}, rotation = 0), iconTransformation(origin = {-100, 0}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
-    Modelica.Blocks.Interfaces.RealOutput y(start = startcond) annotation(
-      Placement(visible = true, transformation(origin = {106, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {104, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  equation
-    connect(u, y) annotation(
-      Line(points = {{-108, 0}, {106, 0}}, color = {0, 0, 127}));
-    annotation(
-      Icon(coordinateSystem(grid = {2, 0}), graphics = {Text(extent = {{-80, 82}, {80, -82}}, textString = "SC")}));
-  end StartCondition;
-
-  block SampleClockedStart "Sample the continuous-time, Real input signal and provide it as clocked output signal. The clock is provided as input signal"
-    extends Modelica.Clocked.RealSignals.Interfaces.SamplerIcon;
-    Modelica.Blocks.Interfaces.RealInput u(start = 4000) "Connector of continuous-time, Real input signal" annotation(
-      Placement(transformation(extent = {{-140, -20}, {-100, 20}})));
-    Modelica.Blocks.Interfaces.RealOutput y "Connector of clocked, Real output signal" annotation(
-      Placement(transformation(extent = {{100, -10}, {120, 10}})));
-    Modelica.Clocked.ClockSignals.Interfaces.ClockInput clock "Output signal y is associated with this clock input" annotation(
-      Placement(transformation(extent = {{-20, -20}, {20, 20}}, rotation = 90, origin = {0, -120})));
-  equation
-    y = sample(u, clock);
-    annotation(
-      defaultComponentName = "sample1",
-      Icon(coordinateSystem(preserveAspectRatio = true, extent = {{-100, -100}, {100, 100}}, initialScale = 0.06), graphics = {Line(points = {{0, -100}, {0, 18}}, color = {175, 175, 175}, pattern = LinePattern.Dot, thickness = 0.5), Text(extent = {{-150, 90}, {150, 50}}, textString = "%name", textColor = {0, 0, 255})}),
-      Documentation(info = "<html>
-  <p>
-  This block is similar to the
-  <a href=\"modelica://Modelica.Clocked.RealSignals.Sampler.Sample\">Sample</a>
-  block. The only difference is that a clock signal is provided via a second
-  input and the output is associated to this clock.
-  </p>
-  
-  <p>
-  Note, it does not make much sense to vectorize this block, because then
-  also the clock input is vectorized. Instead, if the input signal is a vector, use block
-  <a href=\"modelica://Modelica.Clocked.RealSignals.Sampler.SampleVectorizedAndClocked\">SampleVectorizedAndClocked</a>
-  that has a <strong>vector</strong> Real input and output, as well as a <strong>scalar</strong> clock input.
-  </p>
-  
-  <h4>Example</h4>
-  
-  <p>
-  The following
-  <a href=\"modelica://Modelica.Clocked.Examples.Elementary.RealSignals.SampleClocked\">example</a>
-  samples a sine signal with a periodic clock of 20 ms period:<br>
-  </p>
-  
-  <table border=\"0\" cellspacing=\"0\" cellpadding=\"2\">
-  <tr><td width=\"50\"></td>
-      <td valign=\"bottom\"><img src=\"modelica://Modelica/Resources/Images/Clocked/RealSignals/SampleClocked_Model.png\" alt=\"SampleClocked_Model.png\"></td>
-      <td valign=\"bottom\">&nbsp;&nbsp;&nbsp;
-                          <img src=\"modelica://Modelica/Resources/Images/Clocked/RealSignals/SampleClocked_Result.png\" alt=\"SampleClocked_Result.png\"></td>
-      </tr>
-  <tr><td></td>
-      <td align=\"center\">model</td>
-      <td align=\"center\">simulation result<br></td>
-     </tr>
-  </table>
-  </html>"));
-  end SampleClockedStart;
-
-  model ClockTest
-  Real y(start = 4);
-    //Clock c = Clock(1, 1000);
-    Clock c1 = Clock(50, 1000);
-    Clock ct = Clock(70, 1000);
-    Clock c2 = shiftSample(ct, 1);
-    //Clock c3 = shiftSample(c2, 1, 1000);
-    Real ys;
-    Real yh(start = 3);
-    Real yrs;
-  equation
-    y = sin(2 * 3.14 * 0.1 * time) + 4;
-    ys = sample(y, c1);
-    yh = hold(ys);
-    when c2 then
-      yrs = sample(yh);
-    end when;
-    annotation(
-      Icon(coordinateSystem(grid = {2, 0})));
-  end ClockTest;
 end Tests;
