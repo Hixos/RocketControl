@@ -14,7 +14,7 @@ package World
     parameter NanoTesla g11 = -1450.9 "IGRF gauss coefficient (n=1, m=1)";
     parameter NanoTesla h11 = 4652.5 "IGRF gauss coefficient (n=1, m=1)";
     parameter SI.Position x_0_ecef[3] = lla2ecef(latitude_0, longitude_0, altitude_0) "Coordinates of the origin of the NED (world) frame in the ecef frame";
-    final parameter Real T[3, 3] = ecef2nedMatrix(x_0_ecef) "Transformation matrix from world frame to ned frame";
+    final parameter Real T[3, 3] = ecef2nedMatrix(x_0_ecef) "Transformation matrix from world frame to ned frame" annotation(Evaluate = true);
   //    final parameter Real rpole[3] = Coordinates.lla2ecef(pole_lat, pole_lon, 0) "Magnetic north dipole pole coordinates in ecef frame (IGRF 2020)";
     //    final parameter Real m[3] = -rpole / norm(rpole) "Magnetic dipole axis in ecef frame (IGRF 2020)";
     final parameter SI.Length R = 6371200 "IGRF Earth radius";
@@ -90,7 +90,7 @@ package World
         annotation(Inline = true,
           Icon(coordinateSystem(grid = {2, 0})));
       end ecef2nedMatrix;
-    //  class Coordinates
+      //  class Coordinates
   //    function ecef2nedMatrix
   //      input SI.Position x_ecef[3] "Position in ECEF coordinates";
   //      output Real T[3, 3];
@@ -111,9 +111,9 @@ package World
   ////  R := Modelica.Mechanics.MultiBody.Frames.from_T(T, {0,0,0});
   //      annotation(Inline = true,
   //        Icon(coordinateSystem(grid = {2, 0})));
-  //    end ecef2nedMatrix;
 
-//    function ecef2ned
+//    end ecef2nedMatrix;
+  //    function ecef2ned
   //      input SI.Position v_ecef[3];
   //      output SI.Position v_ned[3];
   //    algorithm
@@ -123,9 +123,9 @@ package World
   //        Icon(coordinateSystem(grid = {2, 0})));
   //    end ecef2ned;
   //    function lla2ecef
-  //      input NonSI.Angle_deg lat;
 
-//      input NonSI.Angle_deg lon;
+//      input NonSI.Angle_deg lat;
+  //      input NonSI.Angle_deg lon;
   //      input SI.Distance alt;
   //      output SI.Position[3] x_ecef;
   //    protected
@@ -143,9 +143,9 @@ package World
   //    function ned2ecefPosition "Converts a position from the NED frame to the ECEF frame"
   //      input SI.Position x_ned[3];
   //      output SI.Position x_ecef[3];
-  //    algorithm
 
-//      x_ecef := x_0_ecef + transpose(T) * x_ned;
+//    algorithm
+  //      x_ecef := x_0_ecef + transpose(T) * x_ned;
   //      annotation(
   //        Icon(coordinateSystem(grid = {2, 0})));
   //    end ned2ecefPosition;
@@ -154,9 +154,9 @@ package World
   //      output Real n[3] "Unit vector pointing in the nadir direction";
   //    algorithm
   //      n := -x / norm(x);
-  //      annotation(
 
-//        Icon(coordinateSystem(grid = {2, 0})));
+//      annotation(
+  //        Icon(coordinateSystem(grid = {2, 0})));
   //    end getNadir;
   //    function getEast
   //      input Real nadir[3];
@@ -165,22 +165,21 @@ package World
   //      if abs(nadir * {0, 0, 1}) > 1 - 1e-10 then
   //        east := {0, 1, 0};
   //      else
-  //        east := cross(nadir, {0, 0, 1});
 
-//        east := east / norm(east);
+//        east := cross(nadir, {0, 0, 1});
+  //        east := east / norm(east);
   //      end if;
   //      annotation(
   //        Icon(coordinateSystem(grid = {2, 0})));
   //    end getEast;
   //    annotation(
   //      Icon(coordinateSystem(grid = {2, 0})));
-  //  end Coordinates;
+    //  end Coordinates;
   equation
   
   end MyWorld;
 
   model Atmosphere
-    outer MyWorld world;
     import Modelica.Constants.R;
     import RocketControl.Types.LapseRate;
     parameter SI.Temperature T0 = 288.15;
@@ -189,6 +188,7 @@ package World
     parameter SI.Density rho0 = 1.2250;
     parameter SI.MolarMass M = 0.0289644;
     parameter SI.Acceleration g0 = 9.80665;
+    parameter SI.Velocity[3] wind_speed = {0,0,0};
 
     function density
       input SI.Position h;
@@ -230,13 +230,37 @@ package World
 //if r_0[3] < -1000 then
 //windSpeed := {0, 30, 0};
 //else
-      windSpeed := {0, 0, 0};
+      windSpeed := wind_speed;
 //  end if;
     end windSpeed;
+
+    package Blocks
+      model Density
+      extends Icon;
+      outer RocketControl.World.Atmosphere atmosphere;
+      Modelica.Blocks.Interfaces.RealInput h annotation(
+          Placement(visible = true, transformation(origin = {-120, 0}, extent = {{-20, -20}, {20, 20}}, rotation = 0), iconTransformation(origin = {-120, 0}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
+  Modelica.Blocks.Interfaces.RealOutput rho annotation(
+          Placement(visible = true, transformation(origin = {110, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {110, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      equation
+  rho = atmosphere.density(h);
+        annotation(
+          Icon(graphics = {Text(origin = {1, 11}, extent = {{-65, 67}, {65, -67}}, textString = "rho"), Text(origin = {-121, -42}, textColor = {102, 102, 102}, extent = {{-21, 22}, {21, -22}}, textString = "h"), Text(origin = {0, -223},textColor = {0, 0, 255}, extent = {{-119, 124}, {119, 84}}, textString = "%name")}));
+      end Density;
+
+      model Icon
+      equation
+
+        annotation(
+          Icon(coordinateSystem(grid = {2, 0}), graphics = {Rectangle(fillColor = {228, 251, 255}, fillPattern = FillPattern.Solid, extent = {{-100, 100}, {100, -100}}, radius = 20)}));
+      end Icon;
+      annotation(
+        Icon(coordinateSystem(grid = {2, 0})));
+    end Blocks;
   equation
 
     annotation(
-      Icon(graphics = {Ellipse(origin = {-53, -46}, lineColor = {255, 255, 255}, fillColor = {195, 195, 195}, fillPattern = FillPattern.Sphere, extent = {{-37, 36}, {37, -36}}, endAngle = 360), Ellipse(origin = {-19, 0}, lineColor = {255, 255, 255}, fillColor = {195, 195, 195}, fillPattern = FillPattern.Sphere, extent = {{-37, 36}, {37, -36}}, endAngle = 360), Ellipse(origin = {-3, -58}, lineColor = {255, 255, 255}, fillColor = {195, 195, 195}, fillPattern = FillPattern.Sphere, extent = {{-37, 36}, {37, -36}}, endAngle = 360), Ellipse(origin = {61, -44}, lineColor = {255, 255, 255}, fillColor = {195, 195, 195}, fillPattern = FillPattern.Sphere, extent = {{-37, 36}, {37, -36}}, endAngle = 360), Ellipse(origin = {43, -10}, lineColor = {255, 255, 255}, fillColor = {195, 195, 195}, fillPattern = FillPattern.Sphere, extent = {{-37, 36}, {37, -36}}, endAngle = 360), Ellipse(origin = {-65, 56}, lineColor = {255, 255, 255}, fillColor = {255, 255, 0}, fillPattern = FillPattern.Sphere, extent = {{-21, 20}, {21, -20}}, endAngle = 360), Line(origin = {-63.0786, 24.1207}, points = {{6, 9}, {12, -9}}, color = {255, 255, 0}, thickness = 1), Line(origin = {-85.3258, 26.8173}, points = {{6, 9}, {-6, -9}}, color = {255, 255, 0}, thickness = 1), Line(origin = {-74.2022, 23.1095}, points = {{6, 9}, {2, -9}}, color = {255, 255, 0}, thickness = 1), Line(origin = {-44.2022, 45.3567}, points = {{6, 9}, {24, 5}}, color = {255, 255, 0}, thickness = 1), Line(origin = {-49.2584, 30.5252}, points = {{6, 9}, {18, -5}}, color = {255, 255, 0}, thickness = 1), Line(origin = {-46.5617, 59.514}, points = {{6, 9}, {26, 11}}, color = {255, 255, 0}, thickness = 1), Text(origin = {4, -4}, lineColor = {0, 0, 255}, extent = {{-132, 76}, {129, 124}}, textString = "%name")}));
+      Icon(graphics = {Ellipse(origin = {-53, -46}, lineColor = {255, 255, 255}, fillColor = {195, 195, 195}, pattern = LinePattern.None, fillPattern = FillPattern.Sphere, extent = {{-37, 36}, {37, -36}}), Ellipse(origin = {-19, 0}, lineColor = {255, 255, 255}, fillColor = {195, 195, 195}, pattern = LinePattern.None, fillPattern = FillPattern.Sphere, extent = {{-37, 36}, {37, -36}}), Ellipse(origin = {-3, -58}, lineColor = {255, 255, 255}, fillColor = {195, 195, 195}, pattern = LinePattern.None, fillPattern = FillPattern.Sphere, extent = {{-37, 36}, {37, -36}}), Ellipse(origin = {61, -44}, lineColor = {255, 255, 255}, fillColor = {195, 195, 195}, pattern = LinePattern.None, fillPattern = FillPattern.Sphere, extent = {{-37, 36}, {37, -36}}), Ellipse(origin = {43, -10}, lineColor = {255, 255, 255}, fillColor = {195, 195, 195}, pattern = LinePattern.None, fillPattern = FillPattern.Sphere, extent = {{-37, 36}, {37, -36}}), Ellipse(origin = {-65, 56}, lineColor = {255, 255, 255}, fillColor = {255, 255, 0}, fillPattern = FillPattern.Sphere, extent = {{-21, 20}, {21, -20}}), Line(origin = {-63.08, 24.12}, points = {{6, 9}, {12, -9}}, color = {255, 255, 0}, arrowSize = 1), Line(origin = {-85.33, 26.82}, points = {{6, 9}, {-6, -9}}, color = {255, 255, 0}, arrowSize = 1), Line(origin = {-74.2, 23.11}, points = {{6, 9}, {2, -9}}, color = {255, 255, 0}, arrowSize = 1), Line(origin = {-44.2, 45.36}, points = {{6, 9}, {24, 5}}, color = {255, 255, 0}), Line(origin = {-49.26, 30.53}, points = {{6, 9}, {18, -5}}, color = {255, 255, 0}), Line(origin = {-46.56, 59.51}, points = {{6, 9}, {26, 11}}, color = {255, 255, 0}), Text(origin = {4, 10}, lineColor = {0, 0, 255}, extent = {{-132, 76}, {129, 124}}, textString = "%name")}));
   end Atmosphere;
 
   package Interfaces
