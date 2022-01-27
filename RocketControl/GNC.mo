@@ -1076,6 +1076,22 @@ a = RocketControl.Math.quat2euler(q);
         annotation(
           Icon(graphics = {Rectangle(lineColor = {255, 85, 0}, fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid, extent = {{-100, 100}, {100, -100}}, radius = 20), Text(origin = {77, -1}, lineColor = {102, 102, 102}, extent = {{-21, 19}, {21, -19}}, textString = "C"), Text(origin = {-79, -75}, lineColor = {102, 102, 102}, extent = {{-21, 19}, {21, -19}}, textString = "q"), Text(origin = {-2, -250}, lineColor = {0, 0, 255}, extent = {{-150, 150}, {150, 110}}, textString = "%name"), Text(origin = {7, -2}, extent = {{-73, 62}, {73, -62}}, textString = "C")}));
       end OutputNedVelSimpl;
+      
+      model RollAndRatesOutput
+        Modelica.Blocks.Interfaces.RealOutput C[1, 6] annotation(
+          Placement(visible = true, transformation(origin = {110, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {110, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+        Modelica.Blocks.Interfaces.RealInput q[4] annotation(
+          Placement(visible = true, transformation(origin = {-120, 0}, extent = {{-20, -20}, {20, 20}}, rotation = 0), iconTransformation(origin = {-120, 0}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
+        Real a[3] "Euler angles";
+      equation
+        a = RocketControl.Math.quat2euler(q);
+        C = [0, 0, 0, 1, sin(a[3]) * tan(a[2]), cos(a[3]) * tan(a[2]);
+             0, 0, 0, 0,                     1,                     0;
+             0, 0, 0, 0,                     0,                     1];
+      
+        annotation(
+          Icon(graphics = {Rectangle(lineColor = {255, 85, 0}, fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid, extent = {{-100, 100}, {100, -100}}, radius = 20), Text(origin = {77, -1}, lineColor = {102, 102, 102}, extent = {{-21, 19}, {21, -19}}, textString = "C"), Text(origin = {-79, 1}, lineColor = {102, 102, 102}, extent = {{-21, 19}, {21, -19}}, textString = "q"), Text(origin = {-2, -250}, lineColor = {0, 0, 255}, extent = {{-150, 150}, {150, 110}}, textString = "%name"), Text(origin = {7, -2}, extent = {{-73, 62}, {73, -62}}, textString = "C")}));
+      end RollAndRatesOutput;
       annotation(
         Icon(coordinateSystem(grid = {2, 0})));
     end LinearLQ;
@@ -1492,14 +1508,14 @@ a = RocketControl.Math.quat2euler(q);
     
   Modelica.Blocks.Interfaces.RealOutput w_ref[3] annotation(
         Placement(visible = true, transformation(origin = {110, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {110, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Blocks.Interfaces.RealInput v_ref annotation(
+  Modelica.Blocks.Interfaces.RealInput v_ref[3] annotation(
         Placement(visible = true, transformation(origin = {-120, 0}, extent = {{-20, -20}, {20, 20}}, rotation = 0), iconTransformation(origin = {-120, 0}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
     
   RocketControl.Components.Interfaces.AvionicsBus bus annotation(
         Placement(visible = true, transformation(origin = {-100, 100}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-100, 100}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
     SI.Angle angle_err;
     Real rotation_vector[3];
-    SI.AngularVelocity w_body;
+    SI.AngularVelocity[3] w_body;
     equation
     if norm(bus.v_est) > 1 then
     angle_err = acos(bus.v_est*v_ref/(norm(bus.v_est)*norm(v_ref)));
@@ -1530,10 +1546,13 @@ a = RocketControl.Math.quat2euler(q);
     SI.Velocity v_horiz[3];
     SI.Velocity v_horiz_min;
     SI.Velocity v_horiz_ref[3];
-    
+      Modelica.Blocks.Interfaces.RealOutput v_ref[3] annotation(
+        Placement(visible = true, transformation(origin = {110, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {110, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Components.Interfaces.AvionicsBus bus annotation(
+        Placement(visible = true, transformation(origin = {-100, 100}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-100, 100}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
     protected
     final parameter Real z[3] = {0,0,1};
-    final parameter Real dir_horiz[3] = {cos(track_ref), sin(track_reg), 0};
+    final parameter Real dir_horiz[3] = {cos(track_ref), sin(track_ref), 0};
     equation
     v_horiz = bus.v_est - (bus.v_est*z)*z;
       v_horiz_min = norm(bus.v_est)*cos(climbangle_max);
@@ -1541,7 +1560,7 @@ a = RocketControl.Math.quat2euler(q);
       
       v_ref = v_horiz_ref + sqrt(norm(bus.v_est)^2 - norm(v_horiz_ref)^2)*z*sign(bus.v_est*z);
       annotation(
-        Icon(coordinateSystem(grid = {2, 0})));
+        Icon(graphics = {Text(origin = {-4, 11}, extent = {{-82, 55}, {82, -55}}, textString = "v_ref")}));
     end VelocityRef;
     annotation(
       Icon(coordinateSystem(grid = {2, 0})));
