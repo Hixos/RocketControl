@@ -10,10 +10,10 @@ extends Internal.Icons.AerodynamicsIcon;
   type C = Coefficients;
   outer World.Atmosphere atmosphere;
   outer World.MyWorld world;
-  parameter Modelica.Units.SI.Angle max_alpha = from_deg(75);
-  parameter Modelica.Units.SI.Angle min_alpha = from_deg(-75);
-  parameter Modelica.Units.SI.Angle max_beta = from_deg(75);
-  parameter Modelica.Units.SI.Angle min_beta = from_deg(-75);
+  parameter Modelica.Units.SI.Angle max_alpha = from_deg(10);
+  parameter Modelica.Units.SI.Angle min_alpha = from_deg(-10);
+  parameter Modelica.Units.SI.Angle max_beta = from_deg(10);
+  parameter Modelica.Units.SI.Angle min_beta = from_deg(-10);
   parameter Modelica.Units.SI.Length d = 0.15;
   parameter Modelica.Units.SI.Area S = pi * (0.15 / 2) ^ 2;
   
@@ -40,8 +40,8 @@ equation
 //  assert(aeroState.alpha <= max_alpha and aeroState.alpha >= min_alpha, "Angle of attack out of range");
 //  assert(aeroState.beta <= max_beta and aeroState.beta >= min_beta, "Sideslip angle out of range");
 // TODO: alpha0 / beta0 should be the nearest grid points in the case of nearest neighbour interpolation
-  alpha0 = aeroState.alpha;
-  beta0 = aeroState.beta;
+  alpha0 = max(min(aeroState.alpha,max_alpha), min_alpha);
+  beta0 = max(min(aeroState.beta,max_beta), min_beta);
   
   v_norm = norm(aeroState.v);
   q_v = 0.5 * atmosphere.density(world.altitude(frame_b.r_0)) * v_norm;

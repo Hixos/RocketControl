@@ -261,7 +261,7 @@ package Simulations
       Placement(visible = true, transformation(origin = {-10, 10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
     Rockets.Lynx.AerodynamicsWithCanards.Aerodynamics aerodynamics annotation(
       Placement(visible = true, transformation(origin = {90, 30}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  RocketControl.Rockets.Lynx.ControllersLQIHeading controllersLQ annotation(
+  RocketControl.Rockets.Lynx.ControllersLQIU controllersLQ annotation(
       Placement(visible = true, transformation(origin = {-4, -68}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   inner RocketControl.World.Atmosphere atmosphere(wind_speed = {0, 0, 0})  annotation(
       Placement(visible = true, transformation(origin = {-90, 90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));

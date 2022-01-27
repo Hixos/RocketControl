@@ -680,4 +680,43 @@ package Tests
     annotation(
       Icon(coordinateSystem(grid = {2, 0})));
   end Math;
+
+  model angularvelocity
+  Modelica.Mechanics.MultiBody.Parts.Body body(m = 1, r_CM = {0, 0, 0})  annotation(
+      Placement(visible = true, transformation(origin = {-10, -6}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Mechanics.MultiBody.Joints.FreeMotionScalarInit freeMotionScalarInit(r_rel_a_1(fixed = true), r_rel_a_2(fixed = true), r_rel_a_3(fixed = true), use_r = true,use_v = true, use_w = true, v_rel_a_1(fixed = true, start = v[1]), v_rel_a_2(fixed = true, start = v[2]), v_rel_a_3(fixed = true, start = v[3]), w_rel_b_1(fixed = true, start = w[1]), w_rel_b_2(fixed = true, start = w[2]), w_rel_b_3(fixed = true, start = w[3]))  annotation(
+      Placement(visible = true, transformation(origin = {-64, -6}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Mechanics.MultiBody.Parts.Fixed fixed annotation(
+      Placement(visible = true, transformation(origin = {-112, -6}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  inner Modelica.Mechanics.MultiBody.World world(gravityType = Modelica.Mechanics.MultiBody.Types.GravityTypes.NoGravity)  annotation(
+      Placement(visible = true, transformation(origin = {-90, 90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Mechanics.MultiBody.Sensors.AbsoluteVelocity absoluteVelocity(resolveInFrame = Modelica.Mechanics.MultiBody.Types.ResolveInFrameA.frame_a)  annotation(
+      Placement(visible = true, transformation(origin = {-10, 60}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      
+      parameter Real w[3] = {0,0,1};
+      parameter Real v[3] = {1,0,0};
+      
+      Real v_body_calc[3];
+      
+      Real acc_calc[3];
+      Real acc_meas[3];
+      
+      Real Abw[3,3];
+      Real t[3];
+  equation
+    t = min({1, 2, 3}, {1.5,1.5,1});
+     Abw = body.frame_a.R.T;
+     v_body_calc = Abw*v;
+     
+     acc_meas = der(absoluteVelocity.v);
+     acc_calc = cross(w, absoluteVelocity.v);
+    connect(fixed.frame_b, freeMotionScalarInit.frame_a) annotation(
+      Line(points = {{-102, -6}, {-74, -6}}, color = {95, 95, 95}));
+    connect(freeMotionScalarInit.frame_b, body.frame_a) annotation(
+      Line(points = {{-54, -6}, {-20, -6}}, color = {95, 95, 95}));
+  connect(absoluteVelocity.frame_a, body.frame_a) annotation(
+      Line(points = {{-20, 60}, {-28, 60}, {-28, -6}, {-20, -6}}, color = {95, 95, 95}));
+    annotation(
+      Icon(coordinateSystem(grid = {2, 0})));
+  end angularvelocity;
 end Tests;
