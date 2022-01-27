@@ -2028,6 +2028,102 @@ package Rockets
       annotation(
         Icon(coordinateSystem(grid = {2, 0})));
     end AccGuidance;
+    
+    model ControllersLQIRates
+      RocketControl.Components.Interfaces.AvionicsBus avionicsBus annotation(
+        Placement(visible = true, transformation(origin = {100, 100}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {98, 76}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      Modelica.Blocks.Interfaces.RealOutput fin[4] annotation(
+        Placement(visible = true, transformation(origin = {110, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {110, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+    RocketControl.GNC.Control.LinearLQ.SystemMatrices systemMatrices(CA0 = 0.4200, CA_a = -0.0277, CA_b = -0.0277, CA_dp = 0.4001, CA_dr = 0.5739, CA_ds = 0.8899, CA_dy = 0.4001, CLL_dr = 2.3963, CLM_a = -37.2959, CLM_dp = 21.8445, CLN_b = 37.2959, CLN_dy = 21.8445, CN_a = 24.0744, CN_dp = 3.4045, CY_b = -24.0744, CY_dy = 3.4045, Is = 6.437, Ix = 0.06, S = pi * 0.15 ^ 2 / 4, c = 0.15, m = 22) annotation(
+        Placement(visible = true, transformation(origin = {-50, 80}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+    RocketControl.Math.Blocks.Matrix.MatrixConstant Q(n = 7, val = diagonal({0, 0, 0, 0, 0, 1000, 1000}))  annotation(
+        Placement(visible = true, transformation(origin = {-10, 40}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+    RocketControl.Math.Blocks.Matrix.MatrixConstant R(n = 3, val = diagonal({100, 100, 100} * 0.1))  annotation(
+        Placement(visible = true, transformation(origin = {-10, 16}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+    RocketControl.GNC.Control.ContinuousLQR continuousLQR(g = -1,m = 3, n = 7, useEnablePort = true)  annotation(
+        Placement(visible = true, transformation(origin = {40, 48}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+    RocketControl.Math.Blocks.Vector.VectorConcatenate x_base(n1 = 2)  annotation(
+        Placement(visible = true, transformation(origin = {-68, -10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+    RocketControl.Math.Blocks.Vector.VectorConstant vectorConstant(k = {0, 0, 0, 0}, n = 4)  annotation(
+        Placement(visible = true, transformation(origin = {134, -24}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+    Modelica.Blocks.Math.Gain gain(k = -1)  annotation(
+        Placement(visible = true, transformation(origin = {-91, 71}, extent = {{-3, -3}, {3, 3}}, rotation = 0)));
+    RocketControl.World.Atmosphere.Blocks.Density density annotation(
+        Placement(visible = true, transformation(origin = {-73, 71}, extent = {{-5, -5}, {5, 5}}, rotation = 0)));
+    RocketControl.Components.Blocks.ned2body ned2body annotation(
+        Placement(visible = true, transformation(origin = {-20, 120}, extent = {{-10, -10}, {10, 10}}, rotation = 180)));
+    RocketControl.GNC.Control.Control2Deflection control2Deflection annotation(
+        Placement(visible = true, transformation(origin = {74, 48}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+    RocketControl.GNC.Control.FinSaturation finSaturation annotation(
+        Placement(visible = true, transformation(origin = {84, 6.66134e-16}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
+    RocketControl.GNC.Control.ErrorState errorState(m = 3, n = 5, p = 2)  annotation(
+        Placement(visible = true, transformation(origin = {-10, 68}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+    RocketControl.Math.Blocks.Vector.VectorConcatenate vectorConcatenate1(n1 = 5, n2 = 2) annotation(
+        Placement(visible = true, transformation(origin = {-10, -8}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+    RocketControl.GNC.Control.LinearLQ.RollHeadingOutput rollHeadingOutput annotation(
+        Placement(visible = true, transformation(origin = {-50, 54}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  RocketControl.GNC.Guidance.AngularRateGuidance angularRateGuidance annotation(
+        Placement(visible = true, transformation(origin = {-30, -90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  RocketControl.GNC.Guidance.VelocityReference velocityReference annotation(
+        Placement(visible = true, transformation(origin = {-90, -90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Blocks.Sources.Constant roll_rate_ref(k = from_deg(-72)) annotation(
+        Placement(visible = true, transformation(origin = {-41, -45}, extent = {{-7, -7}, {7, 7}}, rotation = 0)));
+  Components.Blocks.EulerRates eulerRates annotation(
+        Placement(visible = true, transformation(origin = {-76, -60}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  RocketControl.GNC.Control.FeedbackIntegrator feedbackIntegrator(n = 3)  annotation(
+        Placement(visible = true, transformation(origin = {10, -50}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+    equation
+  connect(avionicsBus.w_est, x_base.v2) annotation(
+        Line(points = {{100, 100}, {-100, 100}, {-100, -14}, {-80, -14}}, thickness = 0.5));
+  connect(avionicsBus.w_est, systemMatrices.ang_vel) annotation(
+        Line(points = {{100, 100}, {-100, 100}, {-100, 80}, {-62, 80}}, thickness = 0.5));
+  connect(avionicsBus.x_est[3], gain.u) annotation(
+        Line(points = {{100, 100}, {-100, 100}, {-100, 71}, {-95, 71}}, color = {0, 0, 127}));
+  connect(density.rho, systemMatrices.rho) annotation(
+        Line(points = {{-67.5, 71}, {-62, 71}, {-62, 74}}, color = {0, 0, 127}));
+  connect(gain.y, density.h) annotation(
+        Line(points = {{-88, 71}, {-79, 71}}, color = {0, 0, 127}));
+  connect(avionicsBus.q_est, ned2body.q_bw) annotation(
+        Line(points = {{100, 100}, {16, 100}, {16, 126}, {-8, 126}}, thickness = 0.5));
+  connect(avionicsBus.v_est, ned2body.x_w) annotation(
+        Line(points = {{100, 100}, {48, 100}, {48, 114}, {-8, 114}}, thickness = 0.5));
+  connect(ned2body.x_b, systemMatrices.vel) annotation(
+        Line(points = {{-31, 120}, {-84, 120}, {-84, 86}, {-62, 86}}, color = {0, 0, 127}, thickness = 0.5));
+  connect(avionicsBus.liftoff, continuousLQR.enable) annotation(
+        Line(points = {{100, 100}, {40, 100}, {40, 57}}, color = {255, 0, 255}));
+  connect(continuousLQR.u, control2Deflection.u) annotation(
+        Line(points = {{51, 48}, {62, 48}}, color = {0, 0, 127}, thickness = 0.5));
+  connect(ned2body.x_b[2:3], x_base.v1) annotation(
+        Line(points = {{-31, 120}, {-80, 120}, {-80, -6}}, color = {0, 0, 127}, thickness = 0.5));
+  connect(errorState.Aaug, continuousLQR.A) annotation(
+        Line(points = {{1, 73}, {20, 73}, {20, 56}, {28, 56}}, color = {0, 0, 127}, thickness = 0.5));
+  connect(errorState.Baug, continuousLQR.B) annotation(
+        Line(points = {{1, 63}, {18, 63}, {18, 52}, {28, 52}}, color = {0, 0, 127}, thickness = 0.5));
+  connect(systemMatrices.A, errorState.A) annotation(
+        Line(points = {{-39, 85}, {-30, 85}, {-30, 76}, {-22, 76}}, color = {0, 0, 127}, thickness = 0.5));
+  connect(systemMatrices.B, errorState.B) annotation(
+        Line(points = {{-39, 75}, {-28.5, 75}, {-28.5, 71}, {-22, 71}}, color = {0, 0, 127}, thickness = 0.5));
+  connect(x_base.vc, vectorConcatenate1.v1) annotation(
+        Line(points = {{-57, -10}, {-40.5, -10}, {-40.5, -4}, {-22, -4}}, color = {0, 0, 127}, thickness = 0.5));
+  connect(rollHeadingOutput.C, errorState.C) annotation(
+        Line(points = {{-39, 54}, {-22, 54}, {-22, 65}}, color = {0, 0, 127}, thickness = 0.5));
+  connect(avionicsBus.q_est, rollHeadingOutput.q) annotation(
+        Line(points = {{100, 100}, {-100, 100}, {-100, 54}, {-62, 54}}, thickness = 0.5));
+      connect(finSaturation.fin_sat, fin) annotation(
+        Line(points = {{90, 0}, {110, 0}}, color = {0, 0, 127}, thickness = 0.5));
+  connect(control2Deflection.deflection, finSaturation.fin) annotation(
+        Line(points = {{86, 48}, {94, 48}, {94, 20}, {72, 20}, {72, 0}, {76, 0}}, color = {0, 0, 127}, thickness = 0.5));
+  connect(Q.k, continuousLQR.Q) annotation(
+        Line(points = {{1, 40}, {10, 40}, {10, 48}, {28, 48}}, color = {0, 0, 127}, thickness = 0.5));
+  connect(R.k, continuousLQR.R) annotation(
+        Line(points = {{1, 16}, {12, 16}, {12, 44}, {28, 44}}, color = {0, 0, 127}, thickness = 0.5));
+  connect(velocityReference.v_ref, angularRateGuidance.v_ref) annotation(
+        Line(points = {{-79, -90}, {-42, -90}}, color = {0, 0, 127}));
+  connect(feedbackIntegrator.err_int, vectorConcatenate1.v2) annotation(
+        Line(points = {{22, -50}, {44, -50}, {44, -26}, {-32, -26}, {-32, -12}, {-22, -12}}, color = {0, 0, 127}, thickness = 0.5));
+      annotation(
+        Icon(graphics = {Ellipse(fillColor = {76, 114, 124}, fillPattern = FillPattern.Sphere, extent = {{60, 60}, {-60, -60}}), Text(origin = {0, -130}, lineColor = {0, 0, 255}, extent = {{-160, 30}, {160, -30}}, textString = "%name")}, coordinateSystem(grid = {2, 0})));
+    end ControllersLQIRates;
     annotation(
       Icon(coordinateSystem(grid = {2, 0})));
   end Lynx;

@@ -1483,4 +1483,44 @@ a = RocketControl.Math.quat2euler(q);
     annotation(
       Icon(coordinateSystem(grid = {2, 0})));
   end Internal;
+
+  package Guidance
+    model AngularRateVelocityTrack
+    extends Icon;
+    
+    parameter Real k;
+    
+  Modelica.Blocks.Interfaces.RealOutput w_ref[3] annotation(
+        Placement(visible = true, transformation(origin = {110, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {110, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Blocks.Interfaces.RealInput v_ref annotation(
+        Placement(visible = true, transformation(origin = {-120, 0}, extent = {{-20, -20}, {20, 20}}, rotation = 0), iconTransformation(origin = {-120, 0}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
+    
+  RocketControl.Components.Interfaces.AvionicsBus bus annotation(
+        Placement(visible = true, transformation(origin = {-100, 100}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-100, 100}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+    SI.Angle angle_err;
+    Real rotation_vector[3];
+    SI.AngularVelocity w_body;
+    equation
+    if norm(bus.v_est) > 1 then
+    angle_err = acos(bus.v_est*v_ref/(norm(bus.v_est)*norm(v_ref)));
+    else
+    angle_err = 0;
+    end if;
+    
+    rotation_vector = cross(bus.v_est, v_ref)/norm(cross(bus.v_est, v_ref));
+    w_body = k*Modelica.Mechanics.MultiBody.Frames.Quaternions.resolve2(bus.q_est, rotation_vector);
+    w_ref = cat(1, {0}, w_body[2:3]);
+      annotation(
+        Icon(graphics = {Text(origin = {1, 6}, extent = {{-79, 52}, {79, -52}}, textString = "w_ref")}));
+    end AngularRateVelocityTrack;
+
+    model Icon
+    equation
+
+      annotation(
+        Icon(coordinateSystem(grid = {2, 0}), graphics = {Text(origin = {0, -10}, lineColor = {0, 0, 255}, extent = {{-150, 150}, {150, 110}}, textString = "%name"), Rectangle(fillColor = {207, 223, 231}, fillPattern = FillPattern.Solid, extent = {{-100, 100}, {100, -100}}, radius = 30)}));
+    end Icon;
+    annotation(
+      Icon(coordinateSystem(grid = {2, 0})));
+  end Guidance;
 end GNC;
