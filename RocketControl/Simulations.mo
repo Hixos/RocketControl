@@ -14,7 +14,7 @@ package Simulations
     parameter SI.ModulusOfElasticity d_z = 2 * sqrt(c_z * m) * 4;
     Modelica.Mechanics.MultiBody.Parts.Fixed fixed(r = {0, 0, -1.2}) annotation(
       Placement(visible = true, transformation(origin = {-90, 10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-    RocketControl.Components.Parts.LaunchPad.LaunchRail launchRail(azimuth(displayUnit = "deg") = 2.268928027592628, c_x = c_x, c_y = c_y, c_z = c_z, d_x = d_x, d_y = d_y, d_z = d_z, elevation(displayUnit = "deg") = 1.570796326794897, lug_length = 0.04, r_rel = {0, 0, 0.04}, rail_length = 4) annotation(
+    RocketControl.Components.Parts.LaunchPad.LaunchRail launchRail(azimuth(displayUnit = "deg") = 2.268928027592628, c_x = c_x, c_y = c_y, c_z = c_z, d_x = d_x, d_y = d_y, d_z = d_z, elevation(displayUnit = "deg") = 1.466076571675237, lug_length = 0.04, r_rel = {0, 0, 0.04}, rail_length = 4) annotation(
       Placement(visible = true, transformation(origin = {-50, 10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
     inner World.MyWorld world(altitude_0 = 100, latitude_0 = 45.691051, longitude_0 = 8.490499, n = {0, 0, 1}) annotation(
       Placement(visible = true, transformation(origin = {-90, -90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
@@ -182,7 +182,7 @@ package Simulations
       Placement(visible = true, transformation(origin = {-10, 10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
     Rockets.Lynx.AerodynamicsWithCanards.Aerodynamics aerodynamics annotation(
       Placement(visible = true, transformation(origin = {90, 30}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  RocketControl.Rockets.Lynx.ControllersLQIRates controllersLQ annotation(
+  RocketControl.Rockets.Lynx.ControllersLQ controllersLQ annotation(
       Placement(visible = true, transformation(origin = {-4, -68}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   inner RocketControl.World.Atmosphere atmosphere(wind_speed = {0, 0, 0})  annotation(
       Placement(visible = true, transformation(origin = {-90, 90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
