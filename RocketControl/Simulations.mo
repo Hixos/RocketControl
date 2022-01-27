@@ -14,7 +14,7 @@ package Simulations
     parameter SI.ModulusOfElasticity d_z = 2 * sqrt(c_z * m) * 4;
     Modelica.Mechanics.MultiBody.Parts.Fixed fixed(r = {0, 0, -1.2}) annotation(
       Placement(visible = true, transformation(origin = {-90, 10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-    RocketControl.Components.Parts.LaunchPad.LaunchRail launchRail(azimuth(displayUnit = "deg") = 2.268928027592628, c_x = c_x, c_y = c_y, c_z = c_z, d_x = d_x, d_y = d_y, d_z = d_z, elevation(displayUnit = "deg") = 1.48352986419518, lug_length = 0.04, r_rel = {0, 0, 0.04}, rail_length = 4) annotation(
+    RocketControl.Components.Parts.LaunchPad.LaunchRail launchRail(azimuth(displayUnit = "deg") = 2.268928027592628, c_x = c_x, c_y = c_y, c_z = c_z, d_x = d_x, d_y = d_y, d_z = d_z, elevation(displayUnit = "deg") = 1.570796326794897, lug_length = 0.04, r_rel = {0, 0, 0.04}, rail_length = 4) annotation(
       Placement(visible = true, transformation(origin = {-50, 10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
     inner World.MyWorld world(altitude_0 = 100, latitude_0 = 45.691051, longitude_0 = 8.490499, n = {0, 0, 1}) annotation(
       Placement(visible = true, transformation(origin = {-90, -90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
@@ -32,8 +32,6 @@ package Simulations
       Placement(visible = true, transformation(origin = {30, -50}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   RocketControl.Rockets.Lynx.Sensors sensors annotation(
       Placement(visible = true, transformation(origin = {-30, -60}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Components.Blocks.EulerRates eulerRates annotation(
-      Placement(visible = true, transformation(origin = {18, 52}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Rockets.Lynx.SensorsIdealCont sensorsIdealCont annotation(
       Placement(visible = true, transformation(origin = {-48, 88}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   equation
@@ -49,20 +47,16 @@ package Simulations
       Line(points = {{0, 10}, {10, 10}, {10, -12}, {-52, -12}, {-52, -28}, {-40, -28}}, color = {95, 95, 95}));
     connect(lynxAirframe.ref_center, aerodynamics.frame_b) annotation(
       Line(points = {{0, 10}, {60, 10}, {60, 50}, {80, 50}}, color = {95, 95, 95}));
-  connect(errors.frame_a, lynxAirframe.ref_center) annotation(
+    connect(errors.frame_a, lynxAirframe.ref_center) annotation(
       Line(points = {{20, -50}, {10, -50}, {10, 10}, {0, 10}}, color = {95, 95, 95}));
-  connect(sensors.frame_a, lynxAirframe.ref_center) annotation(
+    connect(sensors.frame_a, lynxAirframe.ref_center) annotation(
       Line(points = {{-40, -60}, {-52, -60}, {-52, -12}, {10, -12}, {10, 10}, {0, 10}}, color = {95, 95, 95}));
-  connect(sensors.bus, estimators.bus) annotation(
+    connect(sensors.bus, estimators.bus) annotation(
       Line(points = {{-20, -60}, {-6, -60}, {-6, -90}, {-20, -90}}, thickness = 0.5));
-  connect(sensors.bus, errors.avionicsBus) annotation(
+    connect(sensors.bus, errors.avionicsBus) annotation(
       Line(points = {{-20, -60}, {2, -60}, {2, -44}, {20, -44}}, thickness = 0.5));
-  connect(sensorsIdealCont.frame_a, lynxAirframe.ref_center) annotation(
+    connect(sensorsIdealCont.frame_a, lynxAirframe.ref_center) annotation(
       Line(points = {{-58, 88}, {-66, 88}, {-66, -12}, {10, -12}, {10, 10}, {0, 10}}, color = {95, 95, 95}));
-  connect(sensorsIdealCont.bus.w_est, eulerRates.w) annotation(
-      Line(points = {{-38, 88}, {-4, 88}, {-4, 58}, {6, 58}}, thickness = 0.5));
-  connect(sensorsIdealCont.bus.q_est, eulerRates.q) annotation(
-      Line(points = {{-38, 88}, {-4, 88}, {-4, 46}, {6, 46}}, thickness = 0.5));
     annotation(
       experiment(StartTime = 0, StopTime = 100, Tolerance = 0.0001, Interval = 0.01),
       Icon(graphics = {Polygon(fillColor = {29, 163, 125}, fillPattern = FillPattern.Solid, lineThickness = 1.5, points = {{-80, 80}, {-80, -80}, {80, 0}, {-80, 80}})}));

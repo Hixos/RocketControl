@@ -1085,7 +1085,8 @@ a = RocketControl.Math.quat2euler(q);
         Real a[3] "Euler angles";
       equation
         a = RocketControl.Math.quat2euler(q);
-        C = [0, 0, 0, 1, sin(a[3]) * tan(a[2]), cos(a[3]) * tan(a[2]);
+      
+        C = [0, 0, 0, 1,                     0,                     0; //0, 0, 0, 1, sin(a[3]) * tan(a[2]), cos(a[3]) * tan(a[2]);
              0, 0, 0, 0,                     1,                     0;
              0, 0, 0, 0,                     0,                     1];
       
@@ -1413,6 +1414,7 @@ a = RocketControl.Math.quat2euler(q);
         Placement(visible = true, transformation(origin = {0, -120}, extent = {{-20, -20}, {20, 20}}, rotation = 90), iconTransformation(origin = {0, -120}, extent = {{-20, -20}, {20, 20}}, rotation = 90)));
     equation
     if enable then
+    //err_int = zeros(n);
     der(err_int) = ref - feedback;
     else
     err_int = zeros(n);
@@ -1512,25 +1514,35 @@ a = RocketControl.Math.quat2euler(q);
     
     parameter Real k;
     
-  Modelica.Blocks.Interfaces.RealOutput w_ref[3] annotation(
+  Modelica.Blocks.Interfaces.RealOutput w_ref[3](each final unit="rad/s", each final quantity="AngularVelocity", each displayUnit="deg/s") annotation(
         Placement(visible = true, transformation(origin = {110, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {110, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Blocks.Interfaces.RealInput v_ref[3] annotation(
+  Modelica.Blocks.Interfaces.RealInput v_ref[3](each final unit="m/s", each final quantity="Velocity") annotation(
         Placement(visible = true, transformation(origin = {-120, 0}, extent = {{-20, -20}, {20, 20}}, rotation = 0), iconTransformation(origin = {-120, 0}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
     
   RocketControl.Components.Interfaces.AvionicsBus bus annotation(
         Placement(visible = true, transformation(origin = {-100, 100}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-100, 100}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
     SI.Angle angle_err;
     Real rotation_vector[3];
+    Real rotation_versor[3];
     SI.AngularVelocity[3] w_body;
     equation
-    if norm(bus.v_est) > 1 then
+    
+    
+    if norm(bus.v_est) > 1 and norm(v_ref) > 1 then
     angle_err = acos(bus.v_est*v_ref/(norm(bus.v_est)*norm(v_ref)));
+    rotation_vector = cross(bus.v_est, v_ref);
+    if norm(rotation_vector) > 1e-6 then
+     rotation_versor = rotation_vector/norm(rotation_vector);
+     else
+     rotation_versor = {0,0,0}; // Singularity: no rotation. TODO: Handle case where velocities are opposing
+     end if;
     else
     angle_err = 0;
+    rotation_vector = {0,0,0};
+    rotation_versor = {0,0,0};
     end if;
     
-    rotation_vector = cross(bus.v_est, v_ref)/norm(cross(bus.v_est, v_ref));
-    w_body = k*Modelica.Mechanics.MultiBody.Frames.Quaternions.resolve2(bus.q_est, rotation_vector);
+    w_body = k*Modelica.Mechanics.MultiBody.Frames.Quaternions.resolve2(bus.q_est, rotation_versor)*angle_err;
     w_ref = cat(1, {0}, w_body[2:3]);
       annotation(
         Icon(graphics = {Text(origin = {1, 6}, extent = {{-79, 52}, {79, -52}}, textString = "w_ref")}));
@@ -1545,29 +1557,48 @@ a = RocketControl.Math.quat2euler(q);
 
     model VelocityRef
     extends Icon;
-    parameter SI.Angle track_ref;
-    parameter SI.Angle climbangle_max = from_deg(84);
+    parameter SI.Angle track_ref(displayUnit="deg");
+    parameter SI.Angle climbangle_max(displayUnit="deg") = from_deg(84);
     
     
-    SI.Velocity v_horiz[3];
-    SI.Velocity v_horiz_min;
-    SI.Velocity v_horiz_ref[3];
-      Modelica.Blocks.Interfaces.RealOutput v_ref[3] annotation(
+    
+      Modelica.Blocks.Interfaces.RealOutput v_ref[3](each final unit="m/s", each final quantity="Velocity") annotation(
         Placement(visible = true, transformation(origin = {110, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {110, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Components.Interfaces.AvionicsBus bus annotation(
         Placement(visible = true, transformation(origin = {-100, 100}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-100, 100}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+    
+    SI.Velocity v_horiz;
+    SI.Velocity v_horiz_min;
+    SI.Velocity v_horiz_ref[3];
+    
     protected
     final parameter Real z[3] = {0,0,1};
     final parameter Real dir_horiz[3] = {cos(track_ref), sin(track_ref), 0};
     equation
-    v_horiz = bus.v_est - (bus.v_est*z)*z;
+    v_horiz = norm(bus.v_est - (bus.v_est*z)*z);
       v_horiz_min = norm(bus.v_est)*cos(climbangle_max);
-      v_horiz_ref = min(norm(v_horiz), v_horiz_min)*dir_horiz;
+      v_horiz_ref = max(v_horiz, v_horiz_min)*dir_horiz;
       
+      if norm(bus.v_est) > 1 then
       v_ref = v_horiz_ref + sqrt(norm(bus.v_est)^2 - norm(v_horiz_ref)^2)*z*sign(bus.v_est*z);
+      
+      else
+       v_ref = bus.v_est;
+       end if;
       annotation(
         Icon(graphics = {Text(origin = {-4, 11}, extent = {{-82, 55}, {82, -55}}, textString = "v_ref")}));
     end VelocityRef;
+
+    model AngularRateGuidance
+    Components.Interfaces.AvionicsBus bus annotation(
+        Placement(visible = true, transformation(origin = {-100, 100}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-100, 100}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+    Modelica.Blocks.Interfaces.RealOutput w_ref(displayUnit = "deg/s", quantity = "AngularVelocity", unit = "rad/s") annotation(
+        Placement(visible = true, transformation(origin = {110, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {110, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+    equation
+
+      annotation(
+        Icon(coordinateSystem(grid = {2, 0})));
+    end AngularRateGuidance;
     annotation(
       Icon(coordinateSystem(grid = {2, 0})));
   end Guidance;
