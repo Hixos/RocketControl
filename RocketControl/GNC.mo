@@ -1520,6 +1520,29 @@ a = RocketControl.Math.quat2euler(q);
       annotation(
         Icon(coordinateSystem(grid = {2, 0}), graphics = {Text(origin = {0, -10}, lineColor = {0, 0, 255}, extent = {{-150, 150}, {150, 110}}, textString = "%name"), Rectangle(fillColor = {207, 223, 231}, fillPattern = FillPattern.Solid, extent = {{-100, 100}, {100, -100}}, radius = 30)}));
     end Icon;
+
+    model VelocityRef
+    extends Icon;
+    parameter SI.Angle track_ref;
+    parameter SI.Angle climbangle_max = from_deg(84);
+    
+    
+    SI.Velocity v_horiz[3];
+    SI.Velocity v_horiz_min;
+    SI.Velocity v_horiz_ref[3];
+    
+    protected
+    final parameter Real z[3] = {0,0,1};
+    final parameter Real dir_horiz[3] = {cos(track_ref), sin(track_reg), 0};
+    equation
+    v_horiz = bus.v_est - (bus.v_est*z)*z;
+      v_horiz_min = norm(bus.v_est)*cos(climbangle_max);
+      v_horiz_ref = min(norm(v_horiz), v_horiz_min)*dir_horiz;
+      
+      v_ref = v_horiz_ref + sqrt(norm(bus.v_est)^2 - norm(v_horiz_ref)^2)*z*sign(bus.v_est*z);
+      annotation(
+        Icon(coordinateSystem(grid = {2, 0})));
+    end VelocityRef;
     annotation(
       Icon(coordinateSystem(grid = {2, 0})));
   end Guidance;
