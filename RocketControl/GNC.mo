@@ -446,7 +446,7 @@ package GNC
         Evaluate = true);
       
       parameter Integer maxiter(min = 1) = 50;
-      parameter Real tol(min = 0) = 1e-10;
+      parameter Real tol(min = 0) = 1e-13;
       parameter Real g = -1;
     
     Modelica.Blocks.Interfaces.RealInput A[n,n] annotation(

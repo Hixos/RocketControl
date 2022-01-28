@@ -174,21 +174,19 @@ package Simulations
       Placement(visible = true, transformation(origin = {-90, -90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
     Modelica.Mechanics.MultiBody.Parts.Fixed fixed(r = {0, 0, -1.2}) annotation(
       Placement(visible = true, transformation(origin = {-90, 10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-    Components.Parts.LaunchPad.LaunchRail launchRail(azimuth(displayUnit = "deg") = 2.268928027592628, c_x = c_x, c_y = c_y, c_z = c_z, d_x = d_x, d_y = d_y, d_z = d_z, elevation(displayUnit = "deg") = 1.466076571675237, lug_length = 0.04, r_rel = {0, 0, 0.04}, rail_length = 4) annotation(
+    Components.Parts.LaunchPad.LaunchRail launchRail(azimuth(displayUnit = "deg") = 0, c_x = c_x, c_y = c_y, c_z = c_z, d_x = d_x, d_y = d_y, d_z = d_z, elevation(displayUnit = "deg") = 1.466076571675237, lug_length = 0.04, r_rel = {0, 0, 0.04}, rail_length = 4) annotation(
       Placement(visible = true, transformation(origin = {-50, 10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-    Components.Parts.LandDetector landDetector(groundlevel = 0)  annotation(
-      Placement(visible = true, transformation(origin = {90, -90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
     Rockets.Lynx.LynxAirframe lynxAirframe annotation(
       Placement(visible = true, transformation(origin = {-10, 10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
     Rockets.Lynx.AerodynamicsWithCanards.Aerodynamics aerodynamics annotation(
       Placement(visible = true, transformation(origin = {90, 30}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   RocketControl.Rockets.Lynx.ControllersLQ controllersLQ annotation(
       Placement(visible = true, transformation(origin = {-4, -68}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  inner RocketControl.World.Atmosphere atmosphere(wind_speed = {0, 0, 0})  annotation(
+  inner RocketControl.World.Atmosphere atmosphere(wind_speed = {10, 0, 0})  annotation(
       Placement(visible = true, transformation(origin = {-90, 90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   RocketControl.Rockets.Lynx.SensorsIdealCont sensorsIdealCont annotation(
       Placement(visible = true, transformation(origin = {-20, -36}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Blocks.Sources.BooleanExpression booleanExpression(y = time > 1)  annotation(
+  Modelica.Blocks.Sources.BooleanExpression booleanExpression(y = time > 1 and time < 8)  annotation(
       Placement(visible = true, transformation(origin = {-78, -20}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Components.Blocks.Track track annotation(
       Placement(visible = true, transformation(origin = {30, 74}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
@@ -198,6 +196,8 @@ package Simulations
       Placement(visible = true, transformation(origin = {30, 106}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Components.Blocks.EulerRates eulerRates annotation(
       Placement(visible = true, transformation(origin = {-36, 66}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  RocketControl.Components.Parts.DescentDetector descentDetector annotation(
+      Placement(visible = true, transformation(origin = {88, -88}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   equation
     connect(fixed.frame_b, launchRail.frame_a) annotation(
       Line(points = {{-80, 10}, {-60, 10}}, color = {95, 95, 95}));
@@ -205,28 +205,28 @@ package Simulations
       Line(points = {{-40, 16}, {-20, 16}}));
     connect(launchRail.frame_b_lug_aft, lynxAirframe.frame_a1) annotation(
       Line(points = {{-40, 4}, {-20, 4}}, color = {95, 95, 95}));
-    connect(lynxAirframe.ref_center, landDetector.frame_a) annotation(
-      Line(points = {{0, 10}, {60, 10}, {60, -90}, {80, -90}}, color = {95, 95, 95}));
     connect(lynxAirframe.ref_center, aerodynamics.frame_b) annotation(
       Line(points = {{0, 10}, {60, 10}, {60, 30}, {80, 30}}));
-  connect(sensorsIdealCont.bus, controllersLQ.avionicsBus) annotation(
+    connect(sensorsIdealCont.bus, controllersLQ.avionicsBus) annotation(
       Line(points = {{-10, -36}, {20, -36}, {20, -60}, {6, -60}}, thickness = 0.5));
-  connect(controllersLQ.fin, aerodynamics.finDeflection) annotation(
+    connect(controllersLQ.fin, aerodynamics.finDeflection) annotation(
       Line(points = {{7, -68}, {72, -68}, {72, 24}, {80, 24}}, color = {0, 0, 127}, thickness = 0.5));
-  connect(lynxAirframe.ref_center, sensorsIdealCont.frame_a) annotation(
+    connect(lynxAirframe.ref_center, sensorsIdealCont.frame_a) annotation(
       Line(points = {{0, 10}, {14, 10}, {14, -24}, {-50, -24}, {-50, -36}, {-30, -36}}, color = {95, 95, 95}));
-  connect(booleanExpression.y, sensorsIdealCont.bus.liftoff) annotation(
+    connect(booleanExpression.y, sensorsIdealCont.bus.liftoff) annotation(
       Line(points = {{-67, -20}, {-8, -20}, {-8, -36}, {-10, -36}}, color = {255, 0, 255}));
-  connect(sensorsIdealCont.bus.v_est, glideAngle.v) annotation(
+    connect(sensorsIdealCont.bus.v_est, glideAngle.v) annotation(
       Line(points = {{-10, -36}, {10, -36}, {10, 42}, {18, 42}}, thickness = 0.5));
-  connect(sensorsIdealCont.bus.v_est, track.v) annotation(
+    connect(sensorsIdealCont.bus.v_est, track.v) annotation(
       Line(points = {{-10, -36}, {10, -36}, {10, 74}, {18, 74}}, thickness = 0.5));
-  connect(downrange.x, sensorsIdealCont.bus.x_est) annotation(
+    connect(downrange.x, sensorsIdealCont.bus.x_est) annotation(
       Line(points = {{18, 106}, {10, 106}, {10, -36}, {-10, -36}}, color = {0, 0, 127}, thickness = 0.5));
-  connect(eulerRates.w, sensorsIdealCont.bus.w_est) annotation(
+    connect(eulerRates.w, sensorsIdealCont.bus.w_est) annotation(
       Line(points = {{-48, 72}, {-60, 72}, {-60, -56}, {-10, -56}, {-10, -36}}, color = {0, 0, 127}, thickness = 0.5));
-  connect(eulerRates.q, sensorsIdealCont.bus.q_est) annotation(
+    connect(eulerRates.q, sensorsIdealCont.bus.q_est) annotation(
       Line(points = {{-48, 60}, {-60, 60}, {-60, -56}, {-10, -56}, {-10, -36}}, color = {0, 0, 127}, thickness = 0.5));
+  connect(lynxAirframe.ref_center, descentDetector.frame_a) annotation(
+      Line(points = {{0, 10}, {64, 10}, {64, -88}, {78, -88}}, color = {95, 95, 95}));
     annotation(
       experiment(StartTime = 0, StopTime = 60, Tolerance = 0.0001, Interval = 0.01),
       Icon(graphics = {Polygon(fillColor = {29, 163, 125}, fillPattern = FillPattern.Solid, lineThickness = 1.5, points = {{-80, 80}, {-80, -80}, {80, 0}, {-80, 80}})}));
