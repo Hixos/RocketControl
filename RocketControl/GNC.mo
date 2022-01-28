@@ -1487,6 +1487,23 @@ a = RocketControl.Math.quat2euler(q);
       annotation(
         Icon(graphics = {Rectangle(lineColor = {0, 0, 127}, fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid, extent = {{-100, -100}, {100, 100}}), Line(visible = false, points = {{50, 70}, {80, 70}}, color = {255, 0, 0}), Line(visible = false, points = {{-80, -70}, {-50, -70}}, color = {255, 0, 0}), Ellipse(origin = {-50, 0}, extent = {{-24, 24}, {24, -24}}), Text(origin = {40, -14}, extent = {{-26, 26}, {26, -26}}, textString = "s"), Rectangle(origin = {40, 0}, extent = {{-40, 40}, {40, -40}}), Text(origin = {40, 20}, extent = {{-26, 26}, {26, -26}}, textString = "1"), Line(origin = {39.72, -2.6}, points = {{-19.8536, 2.20711}, {20.1464, 2.20711}}), Line(origin = {-35.75, -18.42}, points = {{-19.8536, 2.20711}, {-5.8536, 2.20711}}), Line(origin = {-49.88, -2.21}, points = {{-19.8536, 2.20711}, {-5.8536, 2.20711}}), Line(origin = {-43.18, 4.73}, points = {{-19.8536, 2.20711}, {-19.8536, -11.7929}}), Line(origin = {-87, 0}, points = {{-13, 0}, {13, 0}}, arrow = {Arrow.None, Arrow.Filled}, arrowSize = 6), Line(origin = {-25, -62}, points = {{25, -38}, {25, -18}, {-25, -18}, {-25, 38}}, arrow = {Arrow.None, Arrow.Filled}, arrowSize = 6), Line(origin = {-12.5967, -0.168941}, points = {{-13, 0}, {13, 0}}, arrow = {Arrow.None, Arrow.Filled}, arrowSize = 6), Line(origin = {90, 0}, points = {{-10, 0}, {10, 0}})}, coordinateSystem(grid = {2, 0})));
     end FeedbackIntegratorBody;
+
+    model Ramp
+    parameter Real deadband = 1e-5;
+    parameter Real ramp_der = 1;
+    Modelica.Blocks.Interfaces.RealInput u annotation(
+        Placement(visible = true, transformation(origin = {-120, 0}, extent = {{-20, -20}, {20, 20}}, rotation = 0), iconTransformation(origin = {-100, 0}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
+  Modelica.Blocks.Interfaces.RealOutput y annotation(
+        Placement(visible = true, transformation(origin = {110, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {110, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+    equation
+if abs(u-y) < deadband then
+    der(y) = 0;
+    else
+    der(y) = sign(u-y)*ramp_der;
+    end if;
+      annotation(
+        Icon(graphics = {Rectangle(lineColor = {0, 0, 127}, fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid, extent = {{-100, -100}, {100, 100}}), Line(points = {{-90, -80}, {82, -80}}, color = {192, 192, 192}), Text(visible = false, extent = {{-28, -62}, {94, -86}}, textString = "reset"), Polygon(lineColor = {192, 192, 192}, fillColor = {192, 192, 192}, fillPattern = FillPattern.Solid, points = {{90, -80}, {68, -72}, {68, -88}, {90, -80}}), Line(visible = false, points = {{60, -100}, {60, -80}}, color = {255, 0, 255}, pattern = LinePattern.Dot), Line(points = {{-80, -80}, {80, 80}}, color = {0, 0, 127}), Polygon(lineColor = {192, 192, 192}, fillColor = {192, 192, 192}, fillPattern = FillPattern.Solid, points = {{-80, 90}, {-88, 68}, {-72, 68}, {-80, 90}}), Line(points = {{-80, 78}, {-80, -90}}, color = {192, 192, 192}), Text(origin = {-1, -118}, lineColor = {0, 0, 255}, extent = {{-161, 20}, {161, -20}}, textString = "%name")}));
+    end Ramp;
     annotation(
       Icon(coordinateSystem(grid = {2, 0})));
   end Control;

@@ -510,6 +510,18 @@ package Tests
         annotation(
           Icon(coordinateSystem(grid = {2, 0})));
       end AngularRateReferenceTest;
+
+      model RampTest
+      RocketControl.GNC.Control.Ramp ramp annotation(
+          Placement(visible = true, transformation(origin = {-2, -8}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Blocks.Sources.Constant const(k = 10)  annotation(
+          Placement(visible = true, transformation(origin = {-74, -4}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      equation
+        connect(const.y, ramp.u) annotation(
+          Line(points = {{-62, -4}, {-12, -4}, {-12, -8}}, color = {0, 0, 127}));
+        annotation(
+          Icon(coordinateSystem(grid = {2, 0})));
+      end RampTest;
       annotation(
         Icon(coordinateSystem(grid = {2, 0})));
     end Control;

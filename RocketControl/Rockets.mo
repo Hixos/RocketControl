@@ -2059,6 +2059,8 @@ package Rockets
     SI.Acceleration acc_max;
     
     SI.Acceleration g[3];
+    
+    RocketControl.GNC.Control.Ramp[2] ramp(each ramp_der  = ramp_der);
     equation
     g = Modelica.Mechanics.MultiBody.Frames.Quaternions.resolve2(bus.q_est, {0,0,9.80665});
     
@@ -2070,7 +2072,7 @@ package Rockets
     acc_target = k*V_err_body[2:3];
     
     acc_max = 0.5*atmosphere.density(-bus.x_est[3])*norm(bus.v_est)^2*(3.14*0.15^2/4)*24*from_deg(4)/22;
-    
+     
     if noEvent(acc_max < norm(acc_target)) then 
       acc_target_sat = acc_target_sat/norm(acc_target)*acc_max;
     else
@@ -2080,9 +2082,9 @@ package Rockets
     acc_meas = bus.a_meas[2:3] + g[2:3];
     
     acc_err = acc_target_sat - acc_meas;
-    
+    ramp.u = acc_err;
     if noEvent(enable) then
-    der(acc_err_int) = acc_err;
+    der(acc_err_int) = ramp.y;
     else
     der(acc_err_int) = {0,0};
     end if;
