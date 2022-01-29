@@ -1093,6 +1093,96 @@ a = RocketControl.Math.quat2euler(q);
         annotation(
           Icon(graphics = {Rectangle(lineColor = {255, 85, 0}, fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid, extent = {{-100, 100}, {100, -100}}, radius = 20), Text(origin = {77, -1}, lineColor = {102, 102, 102}, extent = {{-21, 19}, {21, -19}}, textString = "C"), Text(origin = {-79, 1}, lineColor = {102, 102, 102}, extent = {{-21, 19}, {21, -19}}, textString = "q"), Text(origin = {-2, -250}, lineColor = {0, 0, 255}, extent = {{-150, 150}, {150, 110}}, textString = "%name"), Text(origin = {7, -2}, extent = {{-73, 62}, {73, -62}}, textString = "C")}));
       end RollAndRatesOutput;
+      
+      model RocketAndActuator
+        extends RocketControl.Math.Blocks.Matrix.Internal.MatrixIcon;
+        
+        outer RocketControl.World.Atmosphere atmosphere;
+        parameter Real CA0;
+        parameter Real CA_a;
+        parameter Real CA_b;
+        parameter Real CA_dy;
+        parameter Real CA_dp;
+        parameter Real CA_dr;
+        parameter Real CA_ds;
+        parameter Real CN_a;
+        parameter Real CN_dp;
+        parameter Real CY_b;
+        parameter Real CY_dy;
+        parameter Real CLL_dr;
+        parameter Real CLM_a;
+        parameter Real CLM_dp;
+        parameter Real CLN_b;
+        parameter Real CLN_dy;
+        parameter Real S;
+        parameter Real c;
+        parameter Real m;
+        parameter Real Ix;
+        parameter Real Is;
+        parameter Real wa;
+        
+        Modelica.Blocks.Interfaces.RealOutput A[9, 9] annotation(
+          Placement(visible = true, transformation(origin = {110, 40}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {110, 50}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+        Modelica.Blocks.Interfaces.RealOutput B[9, 3] annotation(
+          Placement(visible = true, transformation(origin = {110, -40}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {110, -50}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+       
+        SI.Velocity v_body[3];
+        
+        SI.Velocity  u;
+        SI.Velocity  v;
+        SI.Velocity  w;
+        SI.AngularVelocity p;
+        SI.AngularVelocity q;
+        SI.AngularVelocity r;
+        
+        SI.Angle dys;
+        SI.Angle dps;
+        SI.Angle drs;
+        
+        SI.Density rho;
+        
+  RocketControl.Components.Interfaces.AvionicsBus bus annotation(
+          Placement(visible = true, transformation(origin = {-100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-94, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      equation
+        v_body = Modelica.Mechanics.MultiBody.Frames.Quaternions.resolve2(bus.q_est, bus.v_est);
+        rho = atmosphere.density(-bus.x_est[3]);
+        u = v_body[1];
+        v = v_body[2];
+        w = v_body[3];
+        p = bus.w_est[1];
+        q = bus.w_est[2];
+        r = bus.w_est[3];
+        
+        dys = bus.control_cmd[1];
+        dps = bus.control_cmd[2];
+        drs = bus.control_cmd[3];
+        
+        
+        A = [                              -(CA0*S*rho*u)/m,     r - (CA_b*S*rho*v)/m,   - q - (CA_a*S*rho*w)/m,             0,            -w,             v,                           0,                           0,                           0;
+           (CY_b*S*rho*v)/(2*m) - r + (CY_dy*S*dys*rho*u)/m,     (CY_b*S*rho*u)/(2*m),                        p,             w,             0,            -u,     (CY_dy*S*rho*u^2)/(2*m),                           0,                           0;
+           q - (CN_a*S*rho*w)/(2*m) - (CN_dp*S*dps*rho*u)/m,                       -p,    -(CN_a*S*rho*u)/(2*m),            -v,             u,             0,                           0,    -(CN_dp*S*rho*u^2)/(2*m),                           0;
+                                  (CLL_dr*S*c*drs*rho*u)/Ix,                        0,                        0,             0,             0,             0,                           0,                           0, (CLL_dr*S*c*rho*u^2)/(2*Ix);
+       (CLM_a*S*c*rho*w)/(2*Is) + (CLM_dp*S*c*dps*rho*u)/Is,                        0, (CLM_a*S*c*rho*u)/(2*Is), r - (Ix*r)/Is,             0, p - (Ix*p)/Is,                           0, (CLM_dp*S*c*rho*u^2)/(2*Is),                           0;
+       (CLN_b*S*c*rho*v)/(2*Is) + (CLN_dy*S*c*dys*rho*u)/Is, (CLN_b*S*c*rho*u)/(2*Is),                        0, (Ix*q)/Is - q, (Ix*p)/Is - p,             0, (CLN_dy*S*c*rho*u^2)/(2*Is),                           0,                           0;
+                                                          0,                        0,                        0,             0,             0,             0,                         -wa,                           0,                           0;
+                                                          0,                        0,                        0,             0,             0,             0,                           0,                         -wa,                           0;
+                                                          0,                        0,                        0,             0,             0,             0,                           0,                           0,                         -wa];
+       
+       
+       
+        B = [   0,    0,    0;
+                0,    0,    0;
+                0,    0,    0;
+                0,    0,    0;
+                0,    0,    0;
+                0,    0,    0;
+               wa,    0,    0;
+                0,   wa,    0;
+                0,    0,   wa];
+        annotation(
+          Icon(graphics = {Text(origin = {7, -2}, extent = {{-73, 62}, {73, -62}}, textString = "A,B"), Text(origin = {-2, -250}, lineColor = {0, 0, 255}, extent = {{-150, 150}, {150, 110}}, textString = "%name"), Text(origin = {77, 49}, lineColor = {102, 102, 102}, extent = {{-21, 19}, {21, -19}}, textString = "A"), Text(origin = {79, -47}, lineColor = {102, 102, 102}, extent = {{-21, 19}, {21, -19}}, textString = "B")}),
+          Diagram);
+      end RocketAndActuator;
       annotation(
         Icon(coordinateSystem(grid = {2, 0})));
     end LinearLQ;
@@ -1493,10 +1583,10 @@ a = RocketControl.Math.quat2euler(q);
     parameter Real ramp_der = 1;
     Modelica.Blocks.Interfaces.RealInput u annotation(
         Placement(visible = true, transformation(origin = {-120, 0}, extent = {{-20, -20}, {20, 20}}, rotation = 0), iconTransformation(origin = {-100, 0}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
-  Modelica.Blocks.Interfaces.RealOutput y annotation(
+  Modelica.Blocks.Interfaces.RealOutput y(start = 0) annotation(
         Placement(visible = true, transformation(origin = {110, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {110, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
     equation
-if abs(u-y) < deadband then
+if noEvent(abs(u-y) < deadband) then
     der(y) = 0;
     else
     der(y) = sign(u-y)*ramp_der;
