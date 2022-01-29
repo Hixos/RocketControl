@@ -185,7 +185,7 @@ package Simulations
   inner RocketControl.World.Atmosphere atmosphere(wind_speed = {10, 0, 0})  annotation(
       Placement(visible = true, transformation(origin = {-90, 90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   RocketControl.Rockets.Lynx.SensorsIdealCont sensorsIdealCont annotation(
-      Placement(visible = true, transformation(origin = {-20, -36}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      Placement(visible = true, transformation(origin = {-18, -38}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Blocks.Sources.BooleanExpression booleanExpression(y = time > 1 and time < 8)  annotation(
       Placement(visible = true, transformation(origin = {-78, -20}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Components.Blocks.Track track annotation(
@@ -197,7 +197,21 @@ package Simulations
   Components.Blocks.EulerRates eulerRates annotation(
       Placement(visible = true, transformation(origin = {-36, 66}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   RocketControl.Components.Parts.DescentDetector descentDetector annotation(
-      Placement(visible = true, transformation(origin = {88, -88}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      Placement(visible = true, transformation(origin = {90, -90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  RocketControl.GNC.Control.Deflection2Control deflection2Control annotation(
+      Placement(visible = true, transformation(origin = {188, -20}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  RocketControl.GNC.Control.FinSaturation finSaturation annotation(
+      Placement(visible = true, transformation(origin = {84, -30}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Blocks.Continuous.TransferFunction transferFunction3(a = {0.07692, 1}, b = {0, 1}, initType = Modelica.Blocks.Types.Init.InitialOutput) annotation(
+      Placement(visible = true, transformation(origin = {51, -95}, extent = {{-5, -5}, {5, 5}}, rotation = 0)));
+  Modelica.Blocks.Continuous.TransferFunction transferFunction2(a = {0.07692, 1}, b = {0, 1}, initType = Modelica.Blocks.Types.Init.InitialOutput) annotation(
+      Placement(visible = true, transformation(origin = {51, -79}, extent = {{-5, -5}, {5, 5}}, rotation = 0)));
+  Modelica.Blocks.Continuous.TransferFunction transferFunction(a = {0.07692, 1}, b = {0, 1}, initType = Modelica.Blocks.Types.Init.InitialOutput) annotation(
+      Placement(visible = true, transformation(origin = {51, -41}, extent = {{-5, -5}, {5, 5}}, rotation = 0)));
+  Modelica.Blocks.Continuous.TransferFunction transferFunction1(a = {0.07692, 1}, b = {0, 1}, initType = Modelica.Blocks.Types.Init.InitialOutput) annotation(
+      Placement(visible = true, transformation(origin = {51, -61}, extent = {{-5, -5}, {5, 5}}, rotation = 0)));
+  Components.Parts.FinServoMotor finServoMotor annotation(
+      Placement(visible = true, transformation(origin = {46, -10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   equation
     connect(fixed.frame_b, launchRail.frame_a) annotation(
       Line(points = {{-80, 10}, {-60, 10}}, color = {95, 95, 95}));
@@ -208,25 +222,41 @@ package Simulations
     connect(lynxAirframe.ref_center, aerodynamics.frame_b) annotation(
       Line(points = {{0, 10}, {60, 10}, {60, 30}, {80, 30}}));
     connect(sensorsIdealCont.bus, controllersLQ.avionicsBus) annotation(
-      Line(points = {{-10, -36}, {20, -36}, {20, -60}, {6, -60}}, thickness = 0.5));
-    connect(controllersLQ.fin, aerodynamics.finDeflection) annotation(
-      Line(points = {{7, -68}, {72, -68}, {72, 24}, {80, 24}}, color = {0, 0, 127}, thickness = 0.5));
+      Line(points = {{-8, -38}, {20, -38}, {20, -60}, {6, -60}}, thickness = 0.5));
     connect(lynxAirframe.ref_center, sensorsIdealCont.frame_a) annotation(
-      Line(points = {{0, 10}, {14, 10}, {14, -24}, {-50, -24}, {-50, -36}, {-30, -36}}, color = {95, 95, 95}));
+      Line(points = {{0, 10}, {14, 10}, {14, -24}, {-50, -24}, {-50, -38}, {-28, -38}}, color = {95, 95, 95}));
     connect(booleanExpression.y, sensorsIdealCont.bus.liftoff) annotation(
-      Line(points = {{-67, -20}, {-8, -20}, {-8, -36}, {-10, -36}}, color = {255, 0, 255}));
+      Line(points = {{-67, -20}, {-8, -20}, {-8, -38}}, color = {255, 0, 255}));
     connect(sensorsIdealCont.bus.v_est, glideAngle.v) annotation(
-      Line(points = {{-10, -36}, {10, -36}, {10, 42}, {18, 42}}, thickness = 0.5));
+      Line(points = {{-8, -38}, {10, -38}, {10, 42}, {18, 42}}, thickness = 0.5));
     connect(sensorsIdealCont.bus.v_est, track.v) annotation(
-      Line(points = {{-10, -36}, {10, -36}, {10, 74}, {18, 74}}, thickness = 0.5));
+      Line(points = {{-8, -38}, {10, -38}, {10, 74}, {18, 74}}, thickness = 0.5));
     connect(downrange.x, sensorsIdealCont.bus.x_est) annotation(
-      Line(points = {{18, 106}, {10, 106}, {10, -36}, {-10, -36}}, color = {0, 0, 127}, thickness = 0.5));
+      Line(points = {{18, 106}, {10, 106}, {10, -38}, {-8, -38}}, color = {0, 0, 127}, thickness = 0.5));
     connect(eulerRates.w, sensorsIdealCont.bus.w_est) annotation(
-      Line(points = {{-48, 72}, {-60, 72}, {-60, -56}, {-10, -56}, {-10, -36}}, color = {0, 0, 127}, thickness = 0.5));
+      Line(points = {{-48, 72}, {-60, 72}, {-60, -56}, {-8, -56}, {-8, -38}}, color = {0, 0, 127}, thickness = 0.5));
     connect(eulerRates.q, sensorsIdealCont.bus.q_est) annotation(
-      Line(points = {{-48, 60}, {-60, 60}, {-60, -56}, {-10, -56}, {-10, -36}}, color = {0, 0, 127}, thickness = 0.5));
-  connect(lynxAirframe.ref_center, descentDetector.frame_a) annotation(
-      Line(points = {{0, 10}, {64, 10}, {64, -88}, {78, -88}}, color = {95, 95, 95}));
+      Line(points = {{-48, 60}, {-60, 60}, {-60, -56}, {-8, -56}, {-8, -38}}, color = {0, 0, 127}, thickness = 0.5));
+    connect(finSaturation.fin_sat, aerodynamics.finDeflection) annotation(
+      Line(points = {{96, -30}, {122, -30}, {122, 2}, {70, 2}, {70, 24}, {80, 24}}, color = {0, 0, 127}, thickness = 0.5));
+    connect(finSaturation.fin_sat, deflection2Control.u) annotation(
+      Line(points = {{96, -30}, {176, -30}, {176, -20}}, color = {0, 0, 127}, thickness = 0.5));
+    connect(transferFunction3.y, finSaturation.fin[4]) annotation(
+      Line(points = {{56, -94}, {72, -94}, {72, -30}}, color = {0, 0, 127}));
+    connect(controllersLQ.fin[4], transferFunction3.u) annotation(
+      Line(points = {{8, -68}, {40, -68}, {40, -95}, {45, -95}}, color = {0, 0, 127}));
+    connect(transferFunction2.y, finSaturation.fin[3]) annotation(
+      Line(points = {{56, -78}, {72, -78}, {72, -30}}, color = {0, 0, 127}));
+    connect(controllersLQ.fin[3], transferFunction2.u) annotation(
+      Line(points = {{8, -68}, {46, -68}, {46, -78}}, color = {0, 0, 127}));
+    connect(transferFunction.y, finSaturation.fin[1]) annotation(
+      Line(points = {{56, -40}, {64, -40}, {64, -30}, {72, -30}}, color = {0, 0, 127}));
+    connect(transferFunction1.y, finSaturation.fin[2]) annotation(
+      Line(points = {{56, -60}, {72, -60}, {72, -30}}, color = {0, 0, 127}));
+    connect(controllersLQ.fin[2], transferFunction1.u) annotation(
+      Line(points = {{8, -68}, {45, -68}, {45, -61}}, color = {0, 0, 127}));
+    connect(controllersLQ.fin[1], transferFunction.u) annotation(
+      Line(points = {{8, -68}, {32, -68}, {32, -41}, {45, -41}}, color = {0, 0, 127}));
     annotation(
       experiment(StartTime = 0, StopTime = 60, Tolerance = 0.0001, Interval = 0.01),
       Icon(graphics = {Polygon(fillColor = {29, 163, 125}, fillPattern = FillPattern.Solid, lineThickness = 1.5, points = {{-80, 80}, {-80, -80}, {80, 0}, {-80, 80}})}));

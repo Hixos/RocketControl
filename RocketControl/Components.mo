@@ -1709,6 +1709,32 @@ package Components
       annotation(
         Icon(graphics = {Rectangle(lineColor = {0, 170, 255}, fillColor = {170, 255, 255}, fillPattern = FillPattern.HorizontalCylinder, extent = {{-100, 100}, {100, -100}}, radius = 20),Polygon(origin = {10, -10}, fillColor = {0, 170, 255}, fillPattern = FillPattern.Solid, points = {{-6, -42}, {18, -34}, {6, -24}, {-16, 38}, {-24, 48}, {-24, 34}, {-4, -28}, {-6, -42}}), Polygon(origin = {38, 61}, fillColor = {255, 170, 0}, fillPattern = FillPattern.Solid, points = {{-32, 25}, {20, -35}, {28, -25}, {32, -7}, {28, 13}, {18, 29}, {0, 35}, {-20, 33}, {-32, 25}}), Line(origin = {6.18874, 57.3515}, points = {{-0.188744, 28.6485}, {-12.1887, -29.3515}, {11.8113, 14.6485}, {11.8113, 14.6485}}), Line(origin = {18.3124, 43.2299}, points = {{11.6876, 14.7701}, {-24.3124, -15.2299}, {23.6876, 0.770139}}), Line(origin = {26.4447, 31.0503}, points = {{21.5553, 6.94969}, {-32.4447, -3.05031}, {31.5553, -5.05031}, {31.5553, -5.05031}}), Text(origin = {6, -204}, lineColor = {0, 0, 255}, extent = {{-150, 110}, {150, 70}}, textString = "%name"), Text(origin = {9, 131}, fillColor = {170, 255, 255}, extent = {{-131, 31}, {131, -31}}, textString = "vz > %descent_rate"), Line(origin = {39, -74}, points = {{-17, 20}, {17, -20}}, color = {255, 0, 0}, thickness = 0.5, arrow = {Arrow.None, Arrow.Filled}, arrowSize = 15)}));
     end DescentDetector;
+
+    block FinServoMotor
+      parameter Real b[:]={1}
+        "Numerator coefficients of transfer function (e.g., 2*s+3 is specified as {2,3})";
+      parameter Real a[:]={1}
+        "Denominator coefficients of transfer function (e.g., 5*s+6 is specified as {5,6})";
+        
+      parameter SI.Angle saturation_angle = from_deg(10);
+      Modelica.Blocks.Interfaces.RealInput setpoint annotation(
+        Placement(visible = true, transformation(origin = {-120, 0}, extent = {{-20, -20}, {20, 20}}, rotation = 0), iconTransformation(origin = {-120, 0}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
+  Modelica.Blocks.Interfaces.RealOutput servo_pos annotation(
+        Placement(visible = true, transformation(origin = {110, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {110, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Blocks.Continuous.TransferFunction servoResponse(a = a, b = b, initType = Modelica.Blocks.Types.Init.InitialOutput) annotation(
+        Placement(visible = true, transformation(origin = {-62, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Blocks.Nonlinear.Limiter servoSaturation annotation(
+        Placement(visible = true, transformation(origin = {32, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      equation
+  connect(setpoint, servoResponse.u) annotation(
+        Line(points = {{-120, 0}, {-74, 0}}, color = {0, 0, 127}));
+  connect(servoResponse.y, servoSaturation.u) annotation(
+        Line(points = {{-50, 0}, {20, 0}}, color = {0, 0, 127}));
+  connect(servoSaturation.y, servo_pos) annotation(
+        Line(points = {{44, 0}, {110, 0}}, color = {0, 0, 127}));
+      annotation(
+        Icon(graphics = {Rectangle(fillColor = {238, 238, 238}, fillPattern = FillPattern.Solid, extent = {{-100, 100}, {100, -100}}), Polygon(origin = {45, 0}, fillColor = {93, 255, 147}, fillPattern = FillPattern.Forward, points = {{-35, 62}, {-35, -62}, {35, -36}, {35, 20}, {-35, 62}}), Polygon(origin = {-28, 0}, fillColor = {203, 203, 203}, fillPattern = FillPattern.HorizontalCylinder, points = {{38, 8}, {0, 8}, {0, 40}, {-38, 40}, {-38, -40}, {0, -40}, {0, -8}, {38, -8}, {38, 8}}), Line(origin = {-7.28, -1.55}, points = {{8.7929, 18}, {4.79289, 30}, {-5.20711, 30}, {-11.2071, 18}, {-11.2071, -4}, {-11.2071, -18}, {-5.20711, -30}, {4.79289, -30}, {8.79289, -18}, {8.79289, -18}}, color = {255, 0, 0}, arrow = {Arrow.Filled, Arrow.None}, arrowSize = 10), Text(origin = {0, -125}, lineColor = {0, 0, 255}, extent = {{-140, 25}, {140, -25}}, textString = "%name")}));
+    end FinServoMotor;
     annotation(
       Icon(coordinateSystem(grid = {2, 0})));
   end Parts;

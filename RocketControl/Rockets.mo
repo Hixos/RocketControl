@@ -698,27 +698,29 @@ package Rockets
         Placement(visible = true, transformation(origin = {110, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {110, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   RocketControl.GNC.Control.LinearLQ.RocketAndActuator systemMatrices(CA0 = 0.4200, CA_a = -0.0277, CA_b = -0.0277, CA_dp = 0.4001, CA_dr = 0.5739, CA_ds = 0.8899, CA_dy = 0.4001, CLL_dr = 2.3963, CLM_a = -37.2959, CLM_dp = 21.8445, CLN_b = 37.2959, CLN_dy = 21.8445, CN_a = 24.0744, CN_dp = 3.4045, CY_b = -24.0744, CY_dy = 3.4045, Is = 6.437, Ix = 0.06, S = pi * 0.15 ^ 2 / 4, c = 0.15, m = 22, wa = 13) annotation(
         Placement(visible = true, transformation(origin = {-50, 56}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  RocketControl.Math.Blocks.Matrix.MatrixConstant Q(n = 6, val = diagonal({0, 10, 10, 100, 0, 0, 0, 0, 0}))  annotation(
+  RocketControl.Math.Blocks.Matrix.MatrixConstant Q(n = 9, val = diagonal({0, 10, 10, 100, 0, 0, 0, 0, 0} * 100))  annotation(
         Placement(visible = true, transformation(origin = {-50, 10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   RocketControl.Math.Blocks.Matrix.MatrixConstant R(n = 3, val = diagonal({1, 1, 0.4} * 20))  annotation(
-        Placement(visible = true, transformation(origin = {-50, -30}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  RocketControl.GNC.Control.ContinuousLQR continuousLQR(g = -1,m = 3, n = 12, useEnablePort = true)  annotation(
+        Placement(visible = true, transformation(origin = {-50, -16}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  RocketControl.GNC.Control.ContinuousLQR continuousLQR(g = -1,m = 3, n = 9, useEnablePort = true)  annotation(
         Placement(visible = true, transformation(origin = {8, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   RocketControl.Math.Blocks.Vector.VectorConcatenate vectorConcatenate(n1 = 3)  annotation(
-        Placement(visible = true, transformation(origin = {-50, -58}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+        Placement(visible = true, transformation(origin = {-70, -56}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   RocketControl.Components.Blocks.ned2body ned2body annotation(
         Placement(visible = true, transformation(origin = {-16, 80}, extent = {{-10, -10}, {10, 10}}, rotation = 180)));
   RocketControl.GNC.Control.Control2Deflection control2Deflection annotation(
         Placement(visible = true, transformation(origin = {44, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  RocketControl.GNC.Control.FinSaturation finSaturation annotation(
-        Placement(visible = true, transformation(origin = {70, 6.66134e-16}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
   Math.Blocks.Vector.VectorConstant vectorConstant(k = {0, 0, 0, 0}, n = 4)  annotation(
         Placement(visible = true, transformation(origin = {86, -46}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  AccGuidance accGuidance(useEnablePort = true)  annotation(
-        Placement(visible = true, transformation(origin = {-24, -86}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  RocketControl.Rockets.Lynx.AccGuidance accGuidance(useEnablePort = true)  annotation(
+        Placement(visible = true, transformation(origin = {-10, -98}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  RocketControl.Math.Blocks.Vector.VectorConcatenate vectorConcatenate1(n1 = 6) annotation(
+        Placement(visible = true, transformation(origin = {-30, -70}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  RocketControl.Math.Blocks.Vector.VectorConstant vectorConstant1(k = {0, 0, 0}, n = 3) annotation(
+        Placement(visible = true, transformation(origin = {-180, 64}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
     equation
       connect(avionicsBus.w_est, vectorConcatenate.v2) annotation(
-        Line(points = {{100, 100}, {-100, 100}, {-100, -62}, {-62, -62}}, thickness = 0.5));
+        Line(points = {{100, 100}, {-100, 100}, {-100, -60}, {-82, -60}}, thickness = 0.5));
       connect(systemMatrices.A, continuousLQR.A) annotation(
         Line(points = {{-39, 61}, {-10, 61}, {-10, 8}, {-4, 8}}, color = {0, 0, 127}, thickness = 0.5));
       connect(systemMatrices.B, continuousLQR.B) annotation(
@@ -726,35 +728,43 @@ package Rockets
       connect(Q.k, continuousLQR.Q) annotation(
         Line(points = {{-38, 10}, {-18, 10}, {-18, 0}, {-4, 0}}, color = {0, 0, 127}, thickness = 0.5));
       connect(R.k, continuousLQR.R) annotation(
-        Line(points = {{-38, -30}, {-14, -30}, {-14, -4}, {-4, -4}}, color = {0, 0, 127}, thickness = 0.5));
-      connect(vectorConcatenate.vc, continuousLQR.x) annotation(
-        Line(points = {{-39, -58}, {-10, -58}, {-10, -8}, {-4, -8}}, color = {0, 0, 127}, thickness = 0.5));
+        Line(points = {{-39, -16}, {-14, -16}, {-14, -4}, {-4, -4}}, color = {0, 0, 127}, thickness = 0.5));
       connect(avionicsBus.q_est, ned2body.q_bw) annotation(
         Line(points = {{100, 100}, {16, 100}, {16, 86}, {-4, 86}}, thickness = 0.5));
       connect(avionicsBus.v_est, ned2body.x_w) annotation(
         Line(points = {{100, 100}, {16, 100}, {16, 74}, {-4, 74}}, thickness = 0.5));
       connect(avionicsBus.liftoff, continuousLQR.enable) annotation(
         Line(points = {{100, 100}, {8, 100}, {8, 10}}, color = {255, 0, 255}));
-      connect(control2Deflection.deflection, finSaturation.fin) annotation(
-        Line(points = {{55, 0}, {63, 0}}, color = {0, 0, 127}, thickness = 0.5));
       connect(continuousLQR.u, control2Deflection.u) annotation(
         Line(points = {{20, 0}, {32, 0}}, color = {0, 0, 127}, thickness = 0.5));
       connect(ned2body.x_b[1], vectorConcatenate.v1[1]) annotation(
-        Line(points = {{-26, 80}, {-84, 80}, {-84, -54}, {-62, -54}}, color = {0, 0, 127}, thickness = 0.5));
+        Line(points = {{-26, 80}, {-82, 80}, {-82, -52}}, color = {0, 0, 127}, thickness = 0.5));
       connect(avionicsBus, accGuidance.bus) annotation(
-        Line(points = {{100, 100}, {-100, 100}, {-100, -86}, {-34, -86}}, thickness = 0.5));
+        Line(points = {{100, 100}, {-100, 100}, {-100, -98}, {-20, -98}}, thickness = 0.5));
       connect(accGuidance.acc_err_int[1], vectorConcatenate.v1[2]) annotation(
-        Line(points = {{-12, -86}, {10, -86}, {10, -46}, {-84, -46}, {-84, -54}, {-62, -54}}, color = {0, 0, 127}, thickness = 0.5));
+        Line(points = {{1, -98}, {10, -98}, {10, -46}, {-82, -46}, {-82, -52}}, color = {0, 0, 127}, thickness = 0.5));
       connect(accGuidance.acc_err_int[2], vectorConcatenate.v1[3]) annotation(
-        Line(points = {{-12, -86}, {10, -86}, {10, -46}, {-84, -46}, {-84, -54}, {-62, -54}}, color = {0, 0, 127}, thickness = 0.5));
+        Line(points = {{1, -98}, {10, -98}, {10, -46}, {-82, -46}, {-82, -52}}, color = {0, 0, 127}, thickness = 0.5));
       connect(avionicsBus.liftoff, accGuidance.enable) annotation(
-        Line(points = {{100, 100}, {-24, 100}, {-24, -76}}, color = {255, 0, 255}));
-      connect(finSaturation.fin_sat, fin) annotation(
-        Line(points = {{76, 0}, {110, 0}}, color = {0, 0, 127}, thickness = 0.5));
+        Line(points = {{100, 100}, {-10, 100}, {-10, -89}}, color = {255, 0, 255}));
       connect(continuousLQR.u, avionicsBus.control_cmd) annotation(
         Line(points = {{20, 0}, {26, 0}, {26, 100}, {100, 100}}, color = {0, 0, 127}, thickness = 0.5));
-  connect(avionicsBus, systemMatrices.bus) annotation(
-        Line(points = {{100, 100}, {-100, 100}, {-100, 56}, {-60, 56}}, thickness = 0.5));
+      connect(vectorConcatenate.vc, vectorConcatenate1.v1) annotation(
+        Line(points = {{-58, -56}, {-52, -56}, {-52, -66}, {-42, -66}}, color = {0, 0, 127}, thickness = 0.5));
+      connect(vectorConcatenate1.vc, continuousLQR.x) annotation(
+        Line(points = {{-18, -70}, {-12, -70}, {-12, -8}, {-4, -8}}, color = {0, 0, 127}, thickness = 0.5));
+      connect(avionicsBus.control_cmd, vectorConcatenate1.v2) annotation(
+        Line(points = {{100, 100}, {-100, 100}, {-100, -74}, {-42, -74}}, thickness = 0.5));
+      connect(ned2body.x_b, systemMatrices.vel) annotation(
+        Line(points = {{-26, 80}, {-82, 80}, {-82, 66}, {-62, 66}}, color = {0, 0, 127}, thickness = 0.5));
+      connect(avionicsBus.w_est, systemMatrices.ang_vel) annotation(
+        Line(points = {{100, 100}, {-100, 100}, {-100, 60}, {-62, 60}}, thickness = 0.5));
+      connect(avionicsBus.x_est, systemMatrices.x_est) annotation(
+        Line(points = {{100, 100}, {-100, 100}, {-100, 54}, {-62, 54}}, thickness = 0.5));
+      connect(vectorConstant1.v, systemMatrices.control_cmd) annotation(
+        Line(points = {{-168, 64}, {-134, 64}, {-134, 48}, {-62, 48}}, color = {0, 0, 127}, thickness = 0.5));
+  connect(control2Deflection.deflection, fin) annotation(
+        Line(points = {{56, 0}, {110, 0}}, color = {0, 0, 127}, thickness = 0.5));
       annotation(
         Icon(graphics = {Ellipse(fillColor = {76, 114, 124}, fillPattern = FillPattern.Sphere, extent = {{60, 60}, {-60, -60}}), Text(origin = {0, -130}, lineColor = {0, 0, 255}, extent = {{-160, 30}, {160, -30}}, textString = "%name")}));
     end ControllersLQ;

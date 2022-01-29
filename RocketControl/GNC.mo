@@ -438,7 +438,7 @@ package GNC
         Icon(graphics = {Text(extent = {{-100, 100}, {100, -100}}, textString = "f2c")}));
     end Fin2Control;
 
-    model ContinuousLQR
+    block ContinuousLQR
       extends RocketControl.Components.Interfaces.PartialConditionalEnablePort;
      parameter Integer n(min = 1) = 1 annotation(
         Evaluate = true);
@@ -457,7 +457,7 @@ package GNC
         Placement(visible = true, transformation(origin = {-120, 0}, extent = {{-20, -20}, {20, 20}}, rotation = 0), iconTransformation(origin = {-120, 0}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
   Modelica.Blocks.Interfaces.RealInput R[m,m] annotation(
         Placement(visible = true, transformation(origin = {-120, -40}, extent = {{-20, -20}, {20, 20}}, rotation = 0), iconTransformation(origin = {-120, -40}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
-  Modelica.Blocks.Interfaces.RealOutput u[m] annotation(
+  Modelica.Blocks.Interfaces.RealOutput u[m](start = zeros(m)) annotation(
         Placement(visible = true, transformation(origin = {110, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {110, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Blocks.Interfaces.RealInput x[n] annotation(
         Placement(visible = true, transformation(origin = {-120, -80}, extent = {{-20, -20}, {20, 20}}, rotation = 0), iconTransformation(origin = {-120, -80}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
@@ -472,7 +472,7 @@ package GNC
     (P, niter) = RocketControl.Math.sdaCare(A, B, R, Q, g, tol, maxiter);
   K = Modelica.Math.Matrices.solve2(R, transpose(B)*P);
       u = -K*x;
-      assert(niter < maxiter, "sdaCare maximum number of iterations reached", level = AssertionLevel.warning);
+    //  assert(niter < maxiter, "sdaCare maximum number of iterations reached", level = AssertionLevel.warning);
 //      when niter == maxiter then
 //       terminate("Too many iterations");
 //      end when;
@@ -1094,7 +1094,7 @@ a = RocketControl.Math.quat2euler(q);
           Icon(graphics = {Rectangle(lineColor = {255, 85, 0}, fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid, extent = {{-100, 100}, {100, -100}}, radius = 20), Text(origin = {77, -1}, lineColor = {102, 102, 102}, extent = {{-21, 19}, {21, -19}}, textString = "C"), Text(origin = {-79, 1}, lineColor = {102, 102, 102}, extent = {{-21, 19}, {21, -19}}, textString = "q"), Text(origin = {-2, -250}, lineColor = {0, 0, 255}, extent = {{-150, 150}, {150, 110}}, textString = "%name"), Text(origin = {7, -2}, extent = {{-73, 62}, {73, -62}}, textString = "C")}));
       end RollAndRatesOutput;
       
-      model RocketAndActuator
+      block RocketAndActuator
         extends RocketControl.Math.Blocks.Matrix.Internal.MatrixIcon;
         
         outer RocketControl.World.Atmosphere atmosphere;
@@ -1126,7 +1126,6 @@ a = RocketControl.Math.quat2euler(q);
         Modelica.Blocks.Interfaces.RealOutput B[9, 3] annotation(
           Placement(visible = true, transformation(origin = {110, -40}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {110, -50}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
        
-        SI.Velocity v_body[3];
         
         SI.Velocity  u;
         SI.Velocity  v;
@@ -1139,23 +1138,28 @@ a = RocketControl.Math.quat2euler(q);
         SI.Angle dps;
         SI.Angle drs;
         
-        SI.Density rho;
-        
-  RocketControl.Components.Interfaces.AvionicsBus bus annotation(
-          Placement(visible = true, transformation(origin = {-100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-94, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+        SI.Density rho(displayUnit="kg/m3");
+  Modelica.Blocks.Interfaces.RealInput vel[3] annotation(
+          Placement(visible = true, transformation(origin = {-120, 90}, extent = {{-20, -20}, {20, 20}}, rotation = 0), iconTransformation(origin = {-120, 92}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
+  Modelica.Blocks.Interfaces.RealInput x_est[3] annotation(
+          Placement(visible = true, transformation(origin = {-120, -30}, extent = {{-20, -20}, {20, 20}}, rotation = 0), iconTransformation(origin = {-120, -20}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
+  Modelica.Blocks.Interfaces.RealInput ang_vel[3] annotation(
+          Placement(visible = true, transformation(origin = {-120, 30}, extent = {{-20, -20}, {20, 20}}, rotation = 0), iconTransformation(origin = {-120, 40}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
+  Modelica.Blocks.Interfaces.RealInput control_cmd[3] annotation(
+          Placement(visible = true, transformation(origin = {-120, -92}, extent = {{-20, -20}, {20, 20}}, rotation = 0), iconTransformation(origin = {-120, -80}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
       equation
-        v_body = Modelica.Mechanics.MultiBody.Frames.Quaternions.resolve2(bus.q_est, bus.v_est);
-        rho = atmosphere.density(-bus.x_est[3]);
-        u = v_body[1];
-        v = v_body[2];
-        w = v_body[3];
-        p = bus.w_est[1];
-        q = bus.w_est[2];
-        r = bus.w_est[3];
+      
+        rho = atmosphere.density(-x_est[3]);
+        u = vel[1];
+        v = vel[2];
+        w = vel[3];
+        p = ang_vel[1];
+        q = ang_vel[2];
+        r = ang_vel[3];
         
-        dys = bus.control_cmd[1];
-        dps = bus.control_cmd[2];
-        drs = bus.control_cmd[3];
+        dys = control_cmd[1];
+        dps = control_cmd[2];
+        drs = control_cmd[3];
         
         
         A = [                              -(CA0*S*rho*u)/m,     r - (CA_b*S*rho*v)/m,   - q - (CA_a*S*rho*w)/m,             0,            -w,             v,                           0,                           0,                           0;
@@ -1594,6 +1598,23 @@ if noEvent(abs(u-y) < deadband) then
       annotation(
         Icon(graphics = {Rectangle(lineColor = {0, 0, 127}, fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid, extent = {{-100, -100}, {100, 100}}), Line(points = {{-90, -80}, {82, -80}}, color = {192, 192, 192}), Text(visible = false, extent = {{-28, -62}, {94, -86}}, textString = "reset"), Polygon(lineColor = {192, 192, 192}, fillColor = {192, 192, 192}, fillPattern = FillPattern.Solid, points = {{90, -80}, {68, -72}, {68, -88}, {90, -80}}), Line(visible = false, points = {{60, -100}, {60, -80}}, color = {255, 0, 255}, pattern = LinePattern.Dot), Line(points = {{-80, -80}, {80, 80}}, color = {0, 0, 127}), Polygon(lineColor = {192, 192, 192}, fillColor = {192, 192, 192}, fillPattern = FillPattern.Solid, points = {{-80, 90}, {-88, 68}, {-72, 68}, {-80, 90}}), Line(points = {{-80, 78}, {-80, -90}}, color = {192, 192, 192}), Text(origin = {-1, -118}, lineColor = {0, 0, 255}, extent = {{-161, 20}, {161, -20}}, textString = "%name")}));
     end Ramp;
+    
+    model Deflection2Control
+     
+    final parameter Real M[4,4] = [-0.5, 0, 0.5, 0;
+                                      0, 0.5, 0, -0.5;
+                                      -0.25, -0.25, -0.25, -0.25;
+                                      -0.25, 0.25, -0.25, 0.25] annotation(Evaluate = true);
+    Modelica.Blocks.Interfaces.RealInput u[4] annotation(
+        Placement(visible = true, transformation(origin = {-120, 0}, extent = {{-20, -20}, {20, 20}}, rotation = 0), iconTransformation(origin = {-120, 0}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
+    Modelica.Blocks.Interfaces.RealOutput control[4] annotation(
+        Placement(visible = true, transformation(origin = {110, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {110, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+    
+    equation
+      control = M*u;
+      annotation(
+        Icon(graphics = {Text(extent = {{-100, 100}, {100, -100}}, textString = "f2c")}));
+    end Deflection2Control;
     annotation(
       Icon(coordinateSystem(grid = {2, 0})));
   end Control;
