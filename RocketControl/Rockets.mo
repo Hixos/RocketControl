@@ -150,6 +150,85 @@ extends Internal.Icon;
         Icon(coordinateSystem(grid = {2, 0})));
     end LynxWithCanardsRocket;
 
+    package GNC
+    extends RocketControl.GNC.Internal.Icons.Navigation;
+      package Navigation
+      extends RocketControl.GNC.Internal.Icons.Navigation;
+
+        model LynxIdealNavigation
+        extends Rockets.Internal.PartialNavigationSystem;
+        equation
+  connect(bus.a_est, bus.a_meas);
+          connect(bus.w_est, bus.w_meas);
+          
+          connect(bus.x_est, bus.x_meas);
+          connect(bus.v_est, bus.v_meas);
+          
+          annotation(
+            Icon(coordinateSystem(grid = {2, 0})));
+        end LynxIdealNavigation;
+        annotation(
+          Icon(coordinateSystem(grid = {2, 0})));
+      end Navigation;
+
+      package Sensors
+      extends Modelica.Icons.SensorsPackage;
+      model LynxIdealSensors
+      extends Rockets.Internal.PartialSensorsPackage;
+        RocketControl.Components.Sensors.IdealSensors.IdealGyroscope idealGyroscope annotation(
+          Placement(visible = true, transformation(origin = {0, 80}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+        RocketControl.Components.Sensors.IdealSensors.IdealAccelerometer idealAccelerometer annotation(
+          Placement(visible = true, transformation(origin = {0, 40}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+        RocketControl.Components.Sensors.IdealSensors.IdealMagnetometer idealMagnetometer annotation(
+          Placement(visible = true, transformation(origin = {0, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+        RocketControl.Components.Sensors.IdealSensors.IdealBarometer idealBarometer annotation(
+          Placement(visible = true, transformation(origin = {0, -40}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+        RocketControl.Components.Sensors.IdealSensors.IdealGNSS idealGNSS annotation(
+          Placement(visible = true, transformation(origin = {0, -80}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  RocketControl.Components.Sensors.IdealSensors.IdealAsset idealAsset annotation(
+            Placement(visible = true, transformation(origin = {0, -18}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  RocketControl.Aerodynamics.AeroStateSensor aeroStateSensor annotation(
+            Placement(visible = true, transformation(origin = {-58, 90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      equation
+        connect(frame_a, idealGyroscope.frame_a) annotation(
+          Line(points = {{-100, 0}, {-40, 0}, {-40, 80}, {-10, 80}}));
+      connect(frame_a, idealAccelerometer.frame_a) annotation(
+          Line(points = {{-100, 0}, {-40, 0}, {-40, 40}, {-10, 40}}));
+      connect(frame_a, idealMagnetometer.frame_a) annotation(
+          Line(points = {{-100, 0}, {-10, 0}}));
+      connect(frame_a, idealBarometer.frame_a) annotation(
+          Line(points = {{-100, 0}, {-40, 0}, {-40, -40}, {-10, -40}}));
+      connect(frame_a, idealGNSS.frame_a) annotation(
+          Line(points = {{-100, 0}, {-40, 0}, {-40, -80}, {-10, -80}}));
+      connect(idealGyroscope.w, bus.w_meas) annotation(
+          Line(points = {{10, 80}, {60, 80}, {60, 0}, {100, 0}}, color = {0, 0, 127}, thickness = 0.5));
+      connect(idealAccelerometer.a, bus.a_meas) annotation(
+          Line(points = {{10, 40}, {60, 40}, {60, 0}, {100, 0}}, color = {0, 0, 127}, thickness = 0.5));
+      connect(idealMagnetometer.b, bus.b_meas) annotation(
+          Line(points = {{10, 0}, {100, 0}}, color = {0, 0, 127}, thickness = 0.5));
+      connect(idealBarometer.p, bus.p_meas) annotation(
+          Line(points = {{10, -40}, {60, -40}, {60, 0}, {100, 0}}, color = {0, 0, 127}));
+      connect(idealGNSS.x, bus.x_meas) annotation(
+          Line(points = {{12, -76}, {60, -76}, {60, 0}, {100, 0}}, color = {0, 0, 127}, thickness = 0.5));
+      connect(idealGNSS.v, bus.v_meas) annotation(
+          Line(points = {{12, -84}, {60, -84}, {60, 0}, {100, 0}}, color = {0, 0, 127}, thickness = 0.5));
+  connect(frame_a, idealAsset.frame_a) annotation(
+            Line(points = {{-100, 0}, {-40, 0}, {-40, -18}, {-10, -18}}));
+  connect(idealAsset.q, bus.q_est) annotation(
+            Line(points = {{12, -18}, {60, -18}, {60, 0}, {100, 0}}, color = {0, 0, 127}, thickness = 0.5));
+  connect(aeroStateSensor.frame_a, frame_a) annotation(
+            Line(points = {{-68, 90}, {-80, 90}, {-80, 0}, {-100, 0}}, color = {95, 95, 95}));
+        annotation(
+          Icon(coordinateSystem(grid = {2, 0})));
+      end LynxIdealSensors;
+      
+        annotation(
+          Icon(coordinateSystem(grid = {2, 0})));
+      end Sensors;
+      annotation(
+        Icon(coordinateSystem(grid = {2, 0})));
+    end GNC;
+
     package OLD
       model LynxAirframe
         extends RocketControl.Rockets.Internal.PartialAirframe;
@@ -2253,44 +2332,11 @@ extends Internal.Icon;
       annotation(
         Icon(coordinateSystem(grid = {2, 0})));
     end OLD;
-
-    model LynxIdealSensors
-      extends RocketControl.Rockets.Internal.PartialSensors;
-  RocketControl.Components.Sensors.IdealSensors.IdealGyroscope idealGyroscope annotation(
-        Placement(visible = true, transformation(origin = {0, 80}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Components.Sensors.IdealSensors.IdealAccelerometer idealAccelerometer annotation(
-        Placement(visible = true, transformation(origin = {-6, 36}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Components.Sensors.IdealSensors.IdealMagnetometer idealMagnetometer annotation(
-        Placement(visible = true, transformation(origin = {-20, -24}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Components.Sensors.IdealSensors.IdealBarometer idealBarometer annotation(
-        Placement(visible = true, transformation(origin = {-34, -58}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Components.Sensors.IdealSensors.IdealGNSS idealGNSS annotation(
-        Placement(visible = true, transformation(origin = {18, -94}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-    equation
-
-      annotation(
-        Icon(coordinateSystem(grid = {2, 0})));
-    end LynxIdealSensors;
-
-    package GNC
-      package Navigation
-        model dsa
-        equation
-
-          annotation(
-            Icon(coordinateSystem(grid = {2, 0})));
-        end dsa;
-        annotation(
-          Icon(coordinateSystem(grid = {2, 0})));
-      end Navigation;
-      annotation(
-        Icon(coordinateSystem(grid = {2, 0})));
-    end GNC;
     annotation(
       Icon(coordinateSystem(grid = {2, 0})));
   end Lynx;
   package Internal
-    model PartialRocket
+    partial model PartialRocket
       extends PartialRocketBody;
   RocketControl.Interfaces.AvionicsBus avionicsBus annotation(
         Placement(visible = true, transformation(origin = {100, 98}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {100, 100}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
@@ -2300,7 +2346,7 @@ extends Internal.Icon;
         Icon(graphics = {Line(origin = {46, 47}, points = {{46, 47}, {-46, -47}}, color = {0, 255, 0}), Line(origin = {-1, -7}, points = {{-11, 61}, {15, 61}, {1, 61}, {1, -61}, {-15, -61}, {1, -61}, {1, -23}, {15, -23}, {1, -23}, {1, 7}, {-13, 7}}, color = {85, 255, 0})}));
     end PartialRocket;
 
-    model PartialRocketBody
+    partial model PartialRocketBody
     extends Icon;
     extends Interfaces.PartialLaunchMount;
     Modelica.Mechanics.MultiBody.Interfaces.Frame_a ref_center annotation(
@@ -2318,15 +2364,27 @@ extends Internal.Icon;
         Icon(coordinateSystem(grid = {2, 0}), graphics = {Polygon(lineColor = {60, 60, 61}, fillColor = {97, 183, 229}, fillPattern = FillPattern.VerticalCylinder, points = {{-20, 60}, {0, 100}, {20, 60}, {20, -60}, {40, -100}, {-40, -100}, {-20, -60}, {-20, 60}})}));
     end Icon;
 
-    model PartialSensors
-    extends Modelica.Mechanics.MultiBody.Sensors.Internal.PartialAbsoluteSensor;
-  RocketControl.Interfaces.AvionicsBus bus annotation(
+    partial model PartialSensorsPackage
+  extends Modelica.Icons.SensorsPackage;
+      RocketControl.Interfaces.AvionicsBus bus annotation(
         Placement(visible = true, transformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {102, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Mechanics.MultiBody.Interfaces.Frame_a frame_a annotation(
+        Placement(visible = true, transformation(origin = {-100, 0}, extent = {{-16, -16}, {16, 16}}, rotation = 0), iconTransformation(origin = {-100, 2}, extent = {{-16, -16}, {16, 16}}, rotation = 0)));
     equation
 
       annotation(
-        Icon(graphics = {Line(origin = {81, 0}, points = {{-11, 0}, {11, 0}}), Text(origin = {-10, -254}, lineColor = {0, 0, 255}, extent = {{-115, 155}, {115, 105}}, textString = "%name")}));
-    end PartialSensors;
+        Icon(graphics = {Text(origin = {-10, -254}, lineColor = {0, 0, 255}, extent = {{-115, 155}, {115, 105}}, textString = "%name")}));
+    end PartialSensorsPackage;
+
+    partial block PartialNavigationSystem
+    extends RocketControl.GNC.Internal.Icons.Navigation;
+  RocketControl.Interfaces.AvionicsBus avionicsBus annotation(
+        Placement(visible = true, transformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+    equation
+
+      annotation(
+        Icon(coordinateSystem(grid = {2, 0})));
+    end PartialNavigationSystem;
     annotation(
       Icon(coordinateSystem(grid = {2, 0})));
   end Internal;
