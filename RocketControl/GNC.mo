@@ -459,6 +459,108 @@ extends Internal.Icons.Navigation;
       annotation(
         Icon(graphics = {Text(origin = {-130, 70}, lineColor = {102, 102, 102}, extent = {{-30, 20}, {30, -20}}, textString = "q"), Text(origin = {-126, 6}, lineColor = {102, 102, 102}, extent = {{-30, 20}, {30, -20}}, textString = "acc"), Text(origin = {-126, -62}, lineColor = {102, 102, 102}, extent = {{-30, 20}, {30, -20}}, textString = "pos"), Text(origin = {-130, -128}, lineColor = {102, 102, 102}, extent = {{-30, 20}, {30, -20}}, textString = "vel"), Text(origin = {110, 18}, lineColor = {102, 102, 102}, extent = {{-30, 20}, {30, -20}}, textString = "pos_est"), Text(origin = {110, -64}, lineColor = {102, 102, 102}, extent = {{-30, 20}, {30, -20}}, textString = "vel_est"), Text(origin = {0, -76}, fillColor = {102, 102, 102}, extent = {{-100, 18}, {100, -18}}, textString = "pos/vel")}));
     end PositionEstimation;
+    
+    package FlightPathBlocks
+  
+    model Track
+      extends Icon;
+      Modelica.Blocks.Interfaces.RealInput v[3] annotation(
+        Placement(visible = true, transformation(origin = {-120, 0}, extent = {{-20, -20}, {20, 20}}, rotation = 0), iconTransformation(origin = {-120, 0}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
+      Modelica.Blocks.Interfaces.RealOutput track(final quantity = "Angle", final unit = "rad", displayUnit = "deg") annotation(
+        Placement(visible = true, transformation(origin = {110, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {110, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      Real track_signed = 0;
+    equation
+      if noEvent(abs(v[1]) > 1e-3) then
+        track = atan2(v[2], v[1]);
+      else
+        track = sign(v[2]) * pi / 2;
+      end if;
+      annotation(
+        Icon(graphics = {Line(origin = {-15.86, -16.41}, points = {{-44, 85}, {-46, -45}, {76, -45}}, arrow = {Arrow.Filled, Arrow.Filled}, arrowSize = 10), Line(origin = {13.72, 25.15}, points = {{-73, 44}, {47, 44}, {47, -86}}, pattern = LinePattern.Dash), Line(origin = {-15.86, -16.41}, points = {{-46, -45}, {76, 85}}, color = {170, 0, 255}, arrow = {Arrow.None, Arrow.Filled}, arrowSize = 10), Line(origin = {-34.104, 15.4601}, points = {{-25.1708, 30.1708}, {-15.1708, 30.1708}, {-3.17082, 26.1708}, {4.82918, 22.1708}, {12.8292, 16.1708}, {22.8292, 6.17082}, {34.8292, -9.82918}}, color = {255, 0, 0}, thickness = 1, arrow = {Arrow.None, Arrow.Filled}, arrowSize = 14), Ellipse(origin = {-60, -60}, fillColor = {0, 85, 255}, fillPattern = FillPattern.Solid, extent = {{-12, 12}, {12, -12}}), Text(origin = {-130, -32}, lineColor = {120, 120, 120}, extent = {{-50, 20}, {50, -20}}, textString = "v"), Text(origin = {120, -26}, lineColor = {120, 120, 120}, extent = {{-50, 20}, {50, -20}}, textString = "track")}));
+    end Track;
+  
+    model ClimbAngle
+      extends Icon;
+      parameter SI.Velocity v_small = 1e-5;
+      Modelica.Blocks.Interfaces.RealInput v[3] annotation(
+        Placement(visible = true, transformation(origin = {-120, 0}, extent = {{-20, -20}, {20, 20}}, rotation = 0), iconTransformation(origin = {-120, 0}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
+      Modelica.Blocks.Interfaces.RealOutput angle(displayUnit = "deg", quantity = "Angle", unit = "rad") annotation(
+        Placement(visible = true, transformation(origin = {110, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {110, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      SI.Velocity vnorm;
+    equation
+      vnorm = norm(v);
+      if noEvent(vnorm > v_small) then
+        angle = asin(v[3] / vnorm);
+      else
+        angle = 0;
+      end if;
+      annotation(
+        Icon(graphics = {Ellipse(origin = {-60, 68}, fillColor = {0, 85, 255}, fillPattern = FillPattern.Solid, extent = {{-12, 12}, {12, -12}}), Line(origin = {-15.86, -16.41}, points = {{76, 85}, {-44, 85}, {-44, -45}}, arrow = {Arrow.Filled, Arrow.Filled}, arrowSize = 10), Line(origin = {15.36, 4.44}, points = {{45, 64}, {45, -66}, {-75, -66}}, pattern = LinePattern.Dash), Line(origin = {91.73, -9.79}, points = {{-152, 79}, {-32, -51}}, color = {170, 0, 255}, arrow = {Arrow.None, Arrow.Filled}, arrowSize = 10), Line(origin = {10.1974, 19.1998}, points = {{0.8292, 48.1708}, {2.8292, 40.1708}, {2.82918, 30.1708}, {0.82918, 20.1708}, {-3.1708, 10.1708}, {-11.1708, 0.17082}, {-17.1708, -5.82918}}, color = {255, 0, 0}, thickness = 1, arrow = {Arrow.None, Arrow.Filled}, arrowSize = 14), Text(origin = {120, -26}, lineColor = {120, 120, 120}, extent = {{-50, 20}, {50, -20}}, textString = "glideSlope"), Text(origin = {-130, -32}, lineColor = {120, 120, 120}, extent = {{-50, 20}, {50, -20}}, textString = "v")}));
+    end ClimbAngle;
+  
+    model Downrange
+      extends Icon;
+      Modelica.Blocks.Interfaces.RealInput x[3] annotation(
+        Placement(visible = true, transformation(origin = {-120, 0}, extent = {{-20, -20}, {20, 20}}, rotation = 0), iconTransformation(origin = {-120, 0}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
+      Modelica.Blocks.Interfaces.RealOutput d_downrange annotation(
+        Placement(visible = true, transformation(origin = {110, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {110, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+    equation
+      d_downrange = sqrt(x[1] ^ 2 + x[2] ^ 2);
+      annotation(
+        Icon(graphics = {Ellipse(origin = {58, 56}, fillColor = {0, 85, 255}, fillPattern = FillPattern.Solid, extent = {{-12, 12}, {12, -12}}), Line(origin = {-2.48, -6.47}, points = {{-46, -45}, {50, 53}}, color = {170, 0, 255}, arrow = {Arrow.None, Arrow.Filled}, arrowSize = 10), Line(origin = {-2.86, -6.47}, points = {{-46, 17}, {-46, -45}, {14, -45}}, arrow = {Arrow.Filled, Arrow.Filled}, arrowSize = 10), Text(origin = {-130, -40}, lineColor = {102, 102, 102}, extent = {{-30, 20}, {30, -20}}, textString = "pos")}));
+    end Downrange;
+  
+    block HeadingRate
+      extends Icon;
+      Modelica.Blocks.Interfaces.RealInput w[3] annotation(
+        Placement(visible = true, transformation(origin = {-120, 60}, extent = {{-20, -20}, {20, 20}}, rotation = 0), iconTransformation(origin = {-120, 60}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
+      Modelica.Blocks.Interfaces.RealInput q[4] annotation(
+        Placement(visible = true, transformation(origin = {-120, -60}, extent = {{-20, -20}, {20, 20}}, rotation = 0), iconTransformation(origin = {-120, -60}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
+      Modelica.Blocks.Interfaces.RealOutput heading_rate(final unit = "rad/s", final quantity = "AngularVelocity", displayUnit = "deg/s") annotation(
+        Placement(visible = true, transformation(origin = {110, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {110, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      SI.AngularVelocity w_yz[3];
+      SI.AngularVelocity w_w[3];
+    equation
+      w_yz = cat(1, {0}, w[2:3]);
+      w_w = Modelica.Mechanics.MultiBody.Frames.Quaternions.resolve1(q, w_yz);
+      heading_rate = w_w[3];
+      annotation(
+        Icon(graphics = {Line(origin = {11.7976, 8.19235}, points = {{-25.1708, 30.1708}, {-15.1708, 30.1708}, {-3.17082, 26.1708}, {4.82918, 22.1708}, {12.8292, 16.1708}, {22.8292, 6.17082}, {32.8292, -17.8292}}, color = {255, 0, 0}, thickness = 1, arrow = {Arrow.None, Arrow.Filled}, arrowSize = 14), Ellipse(origin = {-40, -60}, fillColor = {0, 85, 255}, fillPattern = FillPattern.Solid, extent = {{-12, 12}, {12, -12}}), Line(origin = {-15.86, -16.41}, points = {{-16, -33}, {76, 85}}, color = {170, 0, 255}, arrow = {Arrow.None, Arrow.Filled}, arrowSize = 10), Text(origin = {-79, 60}, lineColor = {120, 120, 120}, extent = {{-21, 20}, {21, -20}}, textString = "w"), Text(origin = {-79, -60}, lineColor = {120, 120, 120}, extent = {{-21, 20}, {21, -20}}, textString = "q")}));
+    end HeadingRate;
+  
+    block EulerRates
+      extends Icon;
+      Modelica.Blocks.Interfaces.RealInput w[3] annotation(
+        Placement(visible = true, transformation(origin = {-120, 60}, extent = {{-20, -20}, {20, 20}}, rotation = 0), iconTransformation(origin = {-120, 60}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
+      Modelica.Blocks.Interfaces.RealInput q[4] annotation(
+        Placement(visible = true, transformation(origin = {-120, -60}, extent = {{-20, -20}, {20, 20}}, rotation = 0), iconTransformation(origin = {-120, -60}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
+      Modelica.Blocks.Interfaces.RealOutput euler_rates[3](each displayUnit = "deg/s", each final quantity = "AngularVelocity", each final unit = "rad/s") annotation(
+        Placement(visible = true, transformation(origin = {110, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {110, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+    protected
+      Real M[3, 3];
+      Real a[3];
+    equation
+      a = RocketControl.Math.quat2euler(q);
+      if noEvent(abs(abs(a[2]) - Modelica.Constants.pi / 2) < 1e-3) then
+        M = [0, sin(a[3]) / cos(1e-3 * sign(a[2])), cos(a[3]) / cos(1e-3 * sign(a[2])); 0, cos(a[3]), -sin(a[3]); 1, sin(a[3]) * tan(1e-3 * sign(a[2])), cos(a[3]) * tan(1e-3 * sign(a[2]))];
+      else
+        M = [0, sin(a[3]) / cos(a[2]), cos(a[3]) / cos(a[2]); 0, cos(a[3]), -sin(a[3]); 1, sin(a[3]) * tan(a[2]), cos(a[3]) * tan(a[2])];
+      end if;
+      euler_rates = M * w;
+      annotation(
+        Icon(graphics = {Line(origin = {9, 15.34}, points = {{-46, 29}, {-46, -45}, {20, -75}}, arrow = {Arrow.Filled, Arrow.Filled}, arrowSize = 10), Line(origin = {-2.8, 6.6}, points = {{-34, -35}, {36, 17}}, arrow = {Arrow.None, Arrow.Filled}, arrowSize = 10), Ellipse(origin = {-36, -28}, fillColor = {0, 85, 255}, fillPattern = FillPattern.Solid, extent = {{-12, 12}, {12, -12}}), Line(origin = {33.22, 23.49}, points = {{-29.1708, 16.1708}, {-17.1708, 20.1708}, {-3.17082, 20.1708}, {8.82918, 16.1708}, {16.8292, 8.1708}, {22.8292, -3.82918}, {22.8292, -27.8292}}, color = {255, 0, 0}, arrow = {Arrow.None, Arrow.Filled}, arrowSize = 14), Line(origin = {22.56, -59.08}, rotation = -90, points = {{-29.1708, 16.1708}, {-17.1708, 20.1708}, {-3.17082, 20.1708}, {8.82918, 16.1708}, {16.8292, 8.1708}, {22.8292, -3.82918}, {22.8292, -27.8292}}, color = {255, 0, 0}, arrow = {Arrow.None, Arrow.Filled}, arrowSize = 14), Line(origin = {-35.14, 35.84}, rotation = -90, points = {{-29.1708, 16.1708}, {-17.1708, 20.1708}, {-3.17082, 20.1708}, {8.82918, 16.1708}, {16.8292, 8.1708}, {22.8292, -3.82918}, {22.8292, -27.8292}}, color = {255, 0, 0}, arrow = {Arrow.None, Arrow.Filled}, arrowSize = 14), Text(origin = {-74, 61}, lineColor = {102, 102, 102}, extent = {{-26, 19}, {26, -19}}, textString = "w"), Text(origin = {-74, -59}, lineColor = {102, 102, 102}, extent = {{-26, 19}, {26, -19}}, textString = "q")}));
+    end EulerRates;
+  
+    model Icon
+    equation
+  
+      annotation(
+        Icon(graphics = {Rectangle(lineColor = {255, 0, 0}, fillColor = {170, 255, 255}, fillPattern = FillPattern.Solid, lineThickness = 0.5, extent = {{-100, 100}, {100, -100}}), Rectangle(lineColor = {255, 0, 0}, fillColor = {170, 255, 255}, fillPattern = FillPattern.Solid, extent = {{-100, 100}, {100, -100}}), Text(origin = {4, -129}, lineColor = {0, 0, 255}, extent = {{-180, 29}, {180, -29}}, textString = "%name")}));
+    end Icon;
+    annotation(
+      Icon(coordinateSystem(grid = {2, 0})));
+  end FlightPathBlocks;
+  
     annotation(
       Icon(coordinateSystem(grid = {2, 0})));
   end Navigation;

@@ -165,13 +165,21 @@ extends Internal.Icon;
         extends Rockets.Internal.PartialNavigationSystem;
   RocketControl.Interfaces.AvionicsBus bus annotation(
             Placement(visible = true, transformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {102, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  RocketControl.Blocks.Math.Quaternion2Euler quaternion2Euler annotation(
+            Placement(visible = true, transformation(origin = {10, 10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  RocketControl.GNC.Navigation.FlightPathBlocks.Track track annotation(
+            Placement(visible = true, transformation(origin = {10, -20}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  RocketControl.GNC.Navigation.FlightPathBlocks.ClimbAngle climbAngle annotation(
+            Placement(visible = true, transformation(origin = {10, -50}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  RocketControl.GNC.Navigation.FlightPathBlocks.Downrange downrange annotation(
+            Placement(visible = true, transformation(origin = {10, -80}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
         protected
         Modelica.Blocks.Interfaces.RealInput v_est[3] annotation(
-                  Placement(visible = true, transformation(extent = {{-8, 72}, {8, 88}}, rotation = 0), iconTransformation(extent = {{-58, 12}, {-42, 28}}, rotation = 0)));
+                  Placement(visible = true, transformation(extent = {{-8, 72}, {8, 88}}, rotation = 0)));
   Modelica.Blocks.Interfaces.RealInput x_est[3] annotation(
-            Placement(visible = true, transformation(extent = {{-8, 52}, {8, 68}}, rotation = 0), iconTransformation(extent = {{-48, 22}, {-32, 38}}, rotation = 0)));
+            Placement(visible = true, transformation(extent = {{-8, 52}, {8, 68}}, rotation = 0)));
   Modelica.Blocks.Interfaces.RealInput w_est[3] annotation(
-            Placement(visible = true, transformation(extent = {{-8, 32}, {8, 48}}, rotation = 0), iconTransformation(extent = {{-38, 32}, {-22, 48}}, rotation = 0)));
+            Placement(visible = true, transformation(extent = {{-8, 32}, {8, 48}}, rotation = 0)));
         equation
           connect(bus.v_meas, v_est) annotation(
             Line(points = {{100, 0}, {100, 100}, {-100, 100}, {-100, 80}, {0, 80}}, thickness = 0.5));
@@ -185,6 +193,14 @@ extends Internal.Icon;
             Line(points = {{100, 0}, {100, 100}, {-100, 100}, {-100, 40}, {0, 40}}, thickness = 0.5));
   connect(w_est, bus.w_est) annotation(
             Line(points = {{0, 40}, {60, 40}, {60, 0}, {100, 0}}, color = {0, 0, 127}, thickness = 0.5));
+  connect(bus.v_est, track.v) annotation(
+            Line(points = {{100, 0}, {100, 100}, {-100, 100}, {-100, -20}, {-2, -20}}, thickness = 0.5));
+  connect(bus.q_est, quaternion2Euler.q) annotation(
+            Line(points = {{100, 0}, {100, 100}, {-100, 100}, {-100, 10}, {-2, 10}}, thickness = 0.5));
+  connect(track.v, climbAngle.v) annotation(
+            Line(points = {{-2, -20}, {-14, -20}, {-14, -50}, {-2, -50}}, color = {0, 0, 127}, thickness = 0.5));
+  connect(climbAngle.v, downrange.x) annotation(
+            Line(points = {{-2, -50}, {-14, -50}, {-14, -80}, {-2, -80}}, color = {0, 0, 127}, thickness = 0.5));
           annotation(
             Icon(coordinateSystem(grid = {2, 0})));
         end LynxIdealNavigation;
@@ -195,18 +211,50 @@ extends Internal.Icon;
         RocketControl.Interfaces.AvionicsBus bus annotation(
             Placement(visible = true, transformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {102, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
         RocketControl.GNC.Navigation.AttitudeEstimation attitudeEstimation(elevation0 = 1.466076571675237, heading0 = 2.268928027592628, samplingPeriodMs = opt.samplePeriodMs, sigma_b = 2, sigma_u = from_deg(10), sigma_v = from_deg(60)) annotation(
-            Placement(visible = true, transformation(origin = {-32, 50}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+            Placement(visible = true, transformation(origin = {-50, 50}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+            
+            RocketControl.GNC.Navigation.PositionEstimation positionEstimation(samplingPeriodMs = samplePeriodMs, sigma_gps = {1000, 1000, 1000, 100, 100, 100}, sigma_pos = 2, sigma_vel = 1) annotation(
+            Placement(visible = true, transformation(origin = {-48, 10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  RocketControl.GNC.Navigation.FlightPathBlocks.Downrange downrange annotation(
+            Placement(visible = true, transformation(origin = {30, -90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  RocketControl.GNC.Navigation.FlightPathBlocks.Track track annotation(
+            Placement(visible = true, transformation(origin = {30, -30}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  RocketControl.Blocks.Math.Quaternion2Euler quaternion2Euler annotation(
+            Placement(visible = true, transformation(origin = {30, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  RocketControl.GNC.Navigation.FlightPathBlocks.ClimbAngle climbAngle annotation(
+            Placement(visible = true, transformation(origin = {30, -60}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+            
         equation
-          connect(bus.w_meas, attitudeEstimation.w_meas) annotation(
-            Line(points = {{100, 0}, {100, 100}, {-100, 100}, {-100, 58}, {-44, 58}}, thickness = 0.5));
+  connect(bus.w_meas, attitudeEstimation.w_meas) annotation(
+            Line(points = {{100, 0}, {100, 100}, {-100, 100}, {-100, 58}, {-62, 58}}, thickness = 0.5));
   connect(bus.b_meas, attitudeEstimation.b_meas) annotation(
-            Line(points = {{100, 0}, {100, 100}, {-100, 100}, {-100, 50}, {-44, 50}}, thickness = 0.5));
+            Line(points = {{100, 0}, {100, 100}, {-100, 100}, {-100, 50}, {-62, 50}}, thickness = 0.5));
   connect(attitudeEstimation.q_est, bus.q_est) annotation(
-            Line(points = {{-20, 56}, {60, 56}, {60, 0}, {100, 0}}, color = {0, 0, 127}, thickness = 0.5));
-  connect(bus.x_meas, attitudeEstimation.r_0_est) annotation(
-            Line(points = {{100, 0}, {100, 100}, {-100, 100}, {-100, 42}, {-44, 42}}, thickness = 0.5));
+            Line(points = {{-39, 55}, {60, 55}, {60, 0}, {100, 0}}, color = {0, 0, 127}, thickness = 0.5));
   connect(attitudeEstimation.w_est, bus.w_est) annotation(
-            Line(points = {{-20, 46}, {60, 46}, {60, 0}, {100, 0}}, color = {0, 0, 127}, thickness = 0.5));
+            Line(points = {{-39, 45}, {60, 45}, {60, 0}, {100, 0}}, color = {0, 0, 127}, thickness = 0.5));
+  connect(bus.q_est, positionEstimation.q) annotation(
+            Line(points = {{100, 0}, {100, 100}, {-100, 100}, {-100, 20}, {-60, 20}}, thickness = 0.5));
+  connect(bus.a_meas, positionEstimation.acc_body) annotation(
+            Line(points = {{100, 0}, {100, 100}, {-100, 100}, {-100, 14}, {-60, 14}}, thickness = 0.5));
+  connect(bus.x_meas, positionEstimation.pos_ned) annotation(
+            Line(points = {{100, 0}, {100, 100}, {-100, 100}, {-100, 6}, {-60, 6}}, thickness = 0.5));
+  connect(bus.v_meas, positionEstimation.vel_ned) annotation(
+            Line(points = {{100, 0}, {100, 100}, {-100, 100}, {-100, 0}, {-60, 0}}, thickness = 0.5));
+  connect(bus.x_est, attitudeEstimation.r_0_est) annotation(
+            Line(points = {{100, 0}, {100, 100}, {-100, 100}, {-100, 42}, {-62, 42}}, thickness = 0.5));
+  connect(positionEstimation.pos_est, bus.x_est) annotation(
+            Line(points = {{-36, 14}, {-14, 14}, {-14, 34}, {60, 34}, {60, 0}, {100, 0}}, color = {0, 0, 127}, thickness = 0.5));
+  connect(positionEstimation.vel_est, bus.v_est) annotation(
+            Line(points = {{-36, 6}, {-8, 6}, {-8, 26}, {60, 26}, {60, 0}, {100, 0}}, color = {0, 0, 127}, thickness = 0.5));
+  connect(bus.q_est, quaternion2Euler.q) annotation(
+            Line(points = {{100, 0}, {100, 100}, {-100, 100}, {-100, -16}, {0, -16}, {0, 0}, {18, 0}}, thickness = 0.5));
+  connect(bus.v_est, track.v) annotation(
+            Line(points = {{100, 0}, {100, 100}, {-100, 100}, {-100, -30}, {18, -30}}, thickness = 0.5));
+  connect(track.v, climbAngle.v) annotation(
+            Line(points = {{18, -30}, {0, -30}, {0, -60}, {18, -60}}, color = {0, 0, 127}, thickness = 0.5));
+  connect(climbAngle.v, downrange.x) annotation(
+            Line(points = {{18, -60}, {0, -60}, {0, -90}, {18, -90}}, color = {0, 0, 127}, thickness = 0.5));
           annotation(
             Icon(coordinateSystem(grid = {2, 0})));
         end LynxNavigation;
