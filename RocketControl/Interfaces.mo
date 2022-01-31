@@ -48,7 +48,8 @@ package Interfaces
     RocketControl.Types.AngularVelocity[3] w_est;
     SI.MagneticFluxDensity b_meas[3](each displayUnit = "nT");
     SI.Pressure p_meas;
-    SI.Angle control_cmd[3];
+    SI.Angle control_cmd[4];
+    SI.Angle fin_position[4];
     Real q_est[4];
     annotation(
       Icon(graphics = {Ellipse( fillColor = {0, 85, 255}, fillPattern = FillPattern.Solid, extent = {{-100, 100}, {100, -100}}), Ellipse( fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid, extent = {{-60, 60}, {60, -60}}), Ellipse(fillColor = {255, 255, 0}, fillPattern = FillPattern.Solid, extent = {{-40, 40}, {40, -40}})}));

@@ -133,10 +133,10 @@ extends Internal.Icon;
         Placement(visible = true, transformation(origin = {-50, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   RocketControl.Rockets.Lynx.AerodynamicsWithCanards.Aerodynamics aerodynamics annotation(
         Placement(visible = true, transformation(origin = {-10, 50}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  RocketControl.Components.Actuators.FinServoMotor finServoMotor[4](a = {0.07692, 1}, b = {0, 1}) annotation(
-        Placement(visible = true, transformation(origin = {38, 32}, extent = {{-10, -10}, {10, 10}}, rotation = 180)));
   RocketControl.Interfaces.AvionicsBus bus annotation(
-        Placement(visible = true, transformation(origin = {100, 90}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {100, 50}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+        Placement(visible = true, transformation(origin = {100, 90}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {100, 70}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  RocketControl.Components.Actuators.ServoMotor servoMotor(a = {0.07692, 1}, b = {0, 1}, nservos = 4) annotation(
+        Placement(visible = true, transformation(origin = {62, 34}, extent = {{-10, -10}, {10, 10}}, rotation = 180)));
     equation
       connect(frame_lug_bow, lynxBody.frame_lug_bow) annotation(
         Line(points = {{-100, 60}, {-76, 60}, {-76, 6}, {-60, 6}}));
@@ -144,12 +144,14 @@ extends Internal.Icon;
         Line(points = {{-100, -40}, {-76, -40}, {-76, -6}, {-60, -6}}));
       connect(lynxBody.ref_center, ref_center) annotation(
         Line(points = {{-40, 0}, {100, 0}}));
-  connect(aerodynamics.frame_b, lynxBody.ref_center) annotation(
+      connect(aerodynamics.frame_b, lynxBody.ref_center) annotation(
         Line(points = {{-20, 50}, {-30, 50}, {-30, 0}, {-40, 0}}, color = {95, 95, 95}));
-  connect(finServoMotor.servo_pos, aerodynamics.finDeflection) annotation(
-        Line(points = {{28, 32}, {-26, 32}, {-26, 44}, {-20, 44}}, color = {0, 0, 127}, thickness = 0.5));
-  connect(bus.control_cmd, finServoMotor.setpoint) annotation(
-        Line(points = {{100, 98}, {100, 32}, {50, 32}}, thickness = 0.5));
+  connect(bus.control_cmd, servoMotor.setpoint) annotation(
+        Line(points = {{100, 90}, {100, 34}, {74, 34}}, thickness = 0.5));
+  connect(servoMotor.servo_pos, aerodynamics.finDeflection) annotation(
+        Line(points = {{52, 34}, {-26, 34}, {-26, 44}, {-20, 44}}, color = {0, 0, 127}, thickness = 0.5));
+  connect(servoMotor.servo_pos, bus.fin_position) annotation(
+        Line(points = {{52, 34}, {32, 34}, {32, 90}, {100, 90}}, color = {0, 0, 127}, thickness = 0.5));
       annotation(
         Icon(coordinateSystem(grid = {2, 0})));
     end LynxWithCanardsRocket;
@@ -194,6 +196,10 @@ extends Internal.Icon;
       extends Modelica.Icons.SensorsPackage;
       model LynxIdealSensors
       extends Rockets.Internal.PartialSensorsPackage;
+      RocketControl.Interfaces.AvionicsBus bus annotation(
+            Placement(visible = true, transformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {102, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      RocketControl.Aerodynamics.AeroStateSensor aeroStateSensor annotation(
+            Placement(visible = true, transformation(origin = {-58, 90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
         RocketControl.Components.Sensors.IdealSensors.IdealGyroscope idealGyroscope annotation(
           Placement(visible = true, transformation(origin = {0, 80}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
         RocketControl.Components.Sensors.IdealSensors.IdealAccelerometer idealAccelerometer annotation(
@@ -206,10 +212,8 @@ extends Internal.Icon;
           Placement(visible = true, transformation(origin = {0, -80}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   RocketControl.Components.Sensors.IdealSensors.IdealAsset idealAsset annotation(
             Placement(visible = true, transformation(origin = {0, -18}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  RocketControl.Aerodynamics.AeroStateSensor aeroStateSensor annotation(
-            Placement(visible = true, transformation(origin = {-58, 90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  RocketControl.Interfaces.AvionicsBus bus annotation(
-            Placement(visible = true, transformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {102, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      
+      
       equation
         connect(frame_a, idealGyroscope.frame_a) annotation(
           Line(points = {{-100, 0}, {-40, 0}, {-40, 80}, {-10, 80}}));
@@ -242,7 +246,16 @@ extends Internal.Icon;
         annotation(
           Icon(coordinateSystem(grid = {2, 0})));
       end LynxIdealSensors;
-      
+
+        model LynxRealSensors
+        extends Rockets.Internal.PartialSensorsPackage;
+        RocketControl.Interfaces.AvionicsBus bus annotation(
+              Placement(visible = true, transformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {102, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+        equation
+
+          annotation(
+            Icon(coordinateSystem(grid = {2, 0})));
+        end LynxRealSensors;
         annotation(
           Icon(coordinateSystem(grid = {2, 0})));
       end Sensors;
@@ -2383,7 +2396,7 @@ extends Internal.Icon;
     equation
 
       annotation(
-        Icon(graphics = {Line(origin = {46, 47}, points = {{54, 23}, {-46, -47}}, color = {0, 255, 0}), Line(origin = {-1, -7}, points = {{-11, 61}, {15, 61}, {1, 61}, {1, -61}, {-15, -61}, {1, -61}, {1, -23}, {15, -23}, {1, -23}, {1, 7}, {-13, 7}}, color = {85, 255, 0})}));
+        Icon(graphics = {Line(origin = {46, 47}, points = {{54, 23}, {-46, -47}}, color = {0, 255, 0}), Line(origin = {-1, -7}, points = {{-11, 61}, {15, 61}, {1, 61}, {1, -61}, {-15, -61}, {1, -61}, {1, -23}, {15, -23}, {1, -23}, {1, 7}, {-13, 7}}, color = {85, 255, 0}), Text(origin = {-10, -254}, lineColor = {0, 0, 255}, extent = {{-115, 155}, {115, 105}}, textString = "%name")}));
     end PartialRocket;
 
     partial model PartialRocketBody
