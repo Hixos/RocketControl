@@ -44,7 +44,6 @@ package Interfaces
     SI.Velocity x_est[3];
     SI.Velocity v_est[3];
     SI.Acceleration a_meas[3];
-    SI.Acceleration a_est[3];
     RocketControl.Types.AngularVelocity[3] w_meas;
     RocketControl.Types.AngularVelocity[3] w_est;
     SI.MagneticFluxDensity b_meas[3](each displayUnit = "nT");

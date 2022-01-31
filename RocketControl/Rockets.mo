@@ -112,6 +112,8 @@ extends Internal.Icon;
         Placement(visible = true, transformation(origin = {-50, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Aerodynamics.Aerodynamics aerodynamics annotation(
         Placement(visible = true, transformation(origin = {12, 46}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  RocketControl.Interfaces.AvionicsBus bus annotation(
+        Placement(visible = true, transformation(origin = {100, 98}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {100, 70}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
     equation
       connect(frame_lug_bow, lynxBody.frame_lug_bow) annotation(
         Line(points = {{-100, 60}, {-76, 60}, {-76, 6}, {-60, 6}}));
@@ -133,6 +135,8 @@ extends Internal.Icon;
         Placement(visible = true, transformation(origin = {-10, 50}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   RocketControl.Components.Actuators.FinServoMotor finServoMotor[4](a = {0.07692, 1}, b = {0, 1}) annotation(
         Placement(visible = true, transformation(origin = {38, 32}, extent = {{-10, -10}, {10, 10}}, rotation = 180)));
+  RocketControl.Interfaces.AvionicsBus bus annotation(
+        Placement(visible = true, transformation(origin = {100, 90}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {100, 50}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
     equation
       connect(frame_lug_bow, lynxBody.frame_lug_bow) annotation(
         Line(points = {{-100, 60}, {-76, 60}, {-76, 6}, {-60, 6}}));
@@ -144,7 +148,7 @@ extends Internal.Icon;
         Line(points = {{-20, 50}, {-30, 50}, {-30, 0}, {-40, 0}}, color = {95, 95, 95}));
   connect(finServoMotor.servo_pos, aerodynamics.finDeflection) annotation(
         Line(points = {{28, 32}, {-26, 32}, {-26, 44}, {-20, 44}}, color = {0, 0, 127}, thickness = 0.5));
-  connect(avionicsBus.control_cmd, finServoMotor.setpoint) annotation(
+  connect(bus.control_cmd, finServoMotor.setpoint) annotation(
         Line(points = {{100, 98}, {100, 32}, {50, 32}}, thickness = 0.5));
       annotation(
         Icon(coordinateSystem(grid = {2, 0})));
@@ -157,13 +161,28 @@ extends Internal.Icon;
 
         model LynxIdealNavigation
         extends Rockets.Internal.PartialNavigationSystem;
+  RocketControl.Interfaces.AvionicsBus bus annotation(
+            Placement(visible = true, transformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {102, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+        protected
+        Modelica.Blocks.Interfaces.RealInput v_est[3] annotation(
+                  Placement(visible = true, transformation(extent = {{-8, 72}, {8, 88}}, rotation = 0), iconTransformation(extent = {{-58, 12}, {-42, 28}}, rotation = 0)));
+  Modelica.Blocks.Interfaces.RealInput x_est[3] annotation(
+            Placement(visible = true, transformation(extent = {{-8, 52}, {8, 68}}, rotation = 0), iconTransformation(extent = {{-48, 22}, {-32, 38}}, rotation = 0)));
+  Modelica.Blocks.Interfaces.RealInput w_est[3] annotation(
+            Placement(visible = true, transformation(extent = {{-8, 32}, {8, 48}}, rotation = 0), iconTransformation(extent = {{-38, 32}, {-22, 48}}, rotation = 0)));
         equation
-  connect(bus.a_est, bus.a_meas);
-          connect(bus.w_est, bus.w_meas);
-          
-          connect(bus.x_est, bus.x_meas);
-          connect(bus.v_est, bus.v_meas);
-          
+          connect(bus.v_meas, v_est) annotation(
+            Line(points = {{100, 0}, {100, 100}, {-100, 100}, {-100, 80}, {0, 80}}, thickness = 0.5));
+  connect(v_est, bus.v_est) annotation(
+            Line(points = {{0, 80}, {60, 80}, {60, 0}, {100, 0}}, color = {0, 0, 127}, thickness = 0.5));
+  connect(bus.x_meas, x_est) annotation(
+            Line(points = {{100, 0}, {100, 100}, {-100, 100}, {-100, 60}, {0, 60}}, thickness = 0.5));
+  connect(x_est, bus.x_est) annotation(
+            Line(points = {{0, 60}, {60, 60}, {60, 0}, {100, 0}}, color = {0, 0, 127}, thickness = 0.5));
+  connect(bus.w_meas, w_est) annotation(
+            Line(points = {{100, 0}, {100, 100}, {-100, 100}, {-100, 40}, {0, 40}}, thickness = 0.5));
+  connect(w_est, bus.w_est) annotation(
+            Line(points = {{0, 40}, {60, 40}, {60, 0}, {100, 0}}, color = {0, 0, 127}, thickness = 0.5));
           annotation(
             Icon(coordinateSystem(grid = {2, 0})));
         end LynxIdealNavigation;
@@ -189,6 +208,8 @@ extends Internal.Icon;
             Placement(visible = true, transformation(origin = {0, -18}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   RocketControl.Aerodynamics.AeroStateSensor aeroStateSensor annotation(
             Placement(visible = true, transformation(origin = {-58, 90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  RocketControl.Interfaces.AvionicsBus bus annotation(
+            Placement(visible = true, transformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {102, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
       equation
         connect(frame_a, idealGyroscope.frame_a) annotation(
           Line(points = {{-100, 0}, {-40, 0}, {-40, 80}, {-10, 80}}));
@@ -225,6 +246,27 @@ extends Internal.Icon;
         annotation(
           Icon(coordinateSystem(grid = {2, 0})));
       end Sensors;
+
+      model ContinuousGNC
+      extends RocketControl.GNC.Internal.Icons.Navigation;
+  Interfaces.AvionicsBus bus annotation(
+          Placement(visible = true, transformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {102, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Mechanics.MultiBody.Interfaces.Frame_a frame_a annotation(
+          Placement(visible = true, transformation(origin = {-100, 0}, extent = {{-16, -16}, {16, 16}}, rotation = 0), iconTransformation(origin = {-100, 2}, extent = {{-16, -16}, {16, 16}}, rotation = 0)));
+  RocketControl.Rockets.Lynx.GNC.Sensors.LynxIdealSensors lynxIdealSensors annotation(
+          Placement(visible = true, transformation(origin = {2, 60}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  RocketControl.Rockets.Lynx.GNC.Navigation.LynxIdealNavigation lynxIdealNavigation annotation(
+          Placement(visible = true, transformation(origin = {2, 20}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      equation
+        connect(frame_a, lynxIdealSensors.frame_a) annotation(
+          Line(points = {{-100, 0}, {-40, 0}, {-40, 60}, {-8, 60}}));
+  connect(lynxIdealSensors.bus, bus) annotation(
+          Line(points = {{12, 60}, {100, 60}, {100, 0}}, thickness = 0.5));
+  connect(lynxIdealNavigation.bus, bus) annotation(
+          Line(points = {{12, 20}, {100, 20}, {100, 0}}, thickness = 0.5));
+        annotation(
+          Icon(coordinateSystem(grid = {2, 0})));
+      end ContinuousGNC;
       annotation(
         Icon(coordinateSystem(grid = {2, 0})));
     end GNC;
@@ -2338,12 +2380,10 @@ extends Internal.Icon;
   package Internal
     partial model PartialRocket
       extends PartialRocketBody;
-  RocketControl.Interfaces.AvionicsBus avionicsBus annotation(
-        Placement(visible = true, transformation(origin = {100, 98}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {100, 100}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
     equation
 
       annotation(
-        Icon(graphics = {Line(origin = {46, 47}, points = {{46, 47}, {-46, -47}}, color = {0, 255, 0}), Line(origin = {-1, -7}, points = {{-11, 61}, {15, 61}, {1, 61}, {1, -61}, {-15, -61}, {1, -61}, {1, -23}, {15, -23}, {1, -23}, {1, 7}, {-13, 7}}, color = {85, 255, 0})}));
+        Icon(graphics = {Line(origin = {46, 47}, points = {{54, 23}, {-46, -47}}, color = {0, 255, 0}), Line(origin = {-1, -7}, points = {{-11, 61}, {15, 61}, {1, 61}, {1, -61}, {-15, -61}, {1, -61}, {1, -23}, {15, -23}, {1, -23}, {1, 7}, {-13, 7}}, color = {85, 255, 0})}));
     end PartialRocket;
 
     partial model PartialRocketBody
@@ -2366,8 +2406,6 @@ extends Internal.Icon;
 
     partial model PartialSensorsPackage
   extends Modelica.Icons.SensorsPackage;
-      RocketControl.Interfaces.AvionicsBus bus annotation(
-        Placement(visible = true, transformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {102, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Mechanics.MultiBody.Interfaces.Frame_a frame_a annotation(
         Placement(visible = true, transformation(origin = {-100, 0}, extent = {{-16, -16}, {16, 16}}, rotation = 0), iconTransformation(origin = {-100, 2}, extent = {{-16, -16}, {16, 16}}, rotation = 0)));
     equation
@@ -2378,8 +2416,6 @@ extends Internal.Icon;
 
     partial block PartialNavigationSystem
     extends RocketControl.GNC.Internal.Icons.Navigation;
-  RocketControl.Interfaces.AvionicsBus avionicsBus annotation(
-        Placement(visible = true, transformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
     equation
 
       annotation(
