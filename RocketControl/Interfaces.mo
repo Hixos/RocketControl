@@ -52,46 +52,8 @@ package Interfaces
     SI.Angle control_cmd[3];
     Real q_est[4];
     annotation(
-      Icon(graphics = {Ellipse(origin = {0, 0.0100002}, fillColor = {0, 85, 255}, fillPattern = FillPattern.Solid, extent = {{-60, 59.99}, {60, -59.99}}, endAngle = 360), Ellipse(origin = {-0.0400009, -0.360001}, fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid, extent = {{-29.96, 30.36}, {29.96, -30.36}}, endAngle = 360), Ellipse(fillColor = {255, 255, 0}, fillPattern = FillPattern.Solid, extent = {{-10, 10}, {10, -10}}, endAngle = 360)}));
+      Icon(graphics = {Ellipse( fillColor = {0, 85, 255}, fillPattern = FillPattern.Solid, extent = {{-100, 100}, {100, -100}}), Ellipse( fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid, extent = {{-60, 60}, {60, -60}}), Ellipse(fillColor = {255, 255, 0}, fillPattern = FillPattern.Solid, extent = {{-40, 40}, {40, -40}})}));
   end AvionicsBus;
-
-  model ComposeMassProperties
-    RocketControl.Interfaces.MassPropertiesOutput out annotation(
-      Placement(visible = true, transformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-    Modelica.Blocks.Interfaces.RealInput m annotation(
-      Placement(visible = true, transformation(origin = {-104, 40}, extent = {{-20, -20}, {20, 20}}, rotation = 0), iconTransformation(origin = {-96, 60}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
-    Modelica.Blocks.Interfaces.RealInput I[6] annotation(
-      Placement(visible = true, transformation(origin = {-104, -40}, extent = {{-20, -20}, {20, 20}}, rotation = 0), iconTransformation(origin = {-92, -60}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
-  equation
-    out.m = m;
-    out.I[1, 1] = I[1];
-    out.I[2, 2] = I[2];
-    out.I[3, 3] = I[3];
-    out.I[1, 2] = I[4];
-    out.I[1, 3] = I[5];
-    out.I[2, 3] = I[6];
-    out.I[2, 1] = I[4];
-    out.I[3, 1] = I[5];
-    out.I[3, 2] = I[6];
-    annotation(
-      Icon(graphics = {Line(origin = {-52.397, 0.412098}, points = {{-48, 60}, {48, 60}, {48, -60}, {-40, -60}, {40, -60}}), Line(origin = {49, 0}, points = {{53, 0}, {-53, 0}}), Text(origin = {-68, 196.667}, extent = {{28, -126.667}, {-28, -88.6667}}, textString = "m"), Text(origin = {-68, 70.67}, extent = {{28, -126.67}, {-28, -88.67}}, textString = "I")}));
-  end ComposeMassProperties;
-
-  model AvionicsBusDemux
-    RocketControl.Components.Interfaces.AvionicsBus avionicsBus annotation(
-      Placement(visible = true, transformation(origin = {0, 94}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {32, 76}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-    Modelica.Blocks.Interfaces.RealOutput pos annotation(
-      Placement(visible = true, transformation(origin = {-90, -10}, extent = {{-10, -10}, {10, 10}}, rotation = -90), iconTransformation(origin = {-270, -32}, extent = {{-10, -10}, {10, 10}}, rotation = -90)));
-    Modelica.Blocks.Interfaces.RealOutput vel annotation(
-      Placement(visible = true, transformation(origin = {-50, -10}, extent = {{-10, -10}, {10, 10}}, rotation = -90), iconTransformation(origin = {272, -32}, extent = {{-10, -10}, {10, 10}}, rotation = -90)));
-  equation
-    connect(avionicsBus.x_meas, pos) annotation(
-      Line(points = {{0, 94}, {0, 40}, {-90, 40}, {-90, -10}}));
-    connect(avionicsBus.v_est, vel) annotation(
-      Line(points = {{0, 94}, {0, 40}, {-50, 40}, {-50, -10}}));
-    annotation(
-      Icon(graphics = {Rectangle(origin = {-259.95, 9.05}, fillPattern = FillPattern.Solid, extent = {{-299.43, 10.3}, {299.43, -10.3}}), Text(origin = {-272, 69}, rotation = -90, fillColor = {85, 85, 85}, extent = {{-38, 13}, {38, -13}}, textString = "x_meas")}));
-  end AvionicsBusDemux;
 
   package Debug
   model ComposeMassProperties
