@@ -246,7 +246,7 @@ package GNC
   end Guidance;
 
   package Navigation
-
+extends Internal.Icons.Navigation;
     model AttitudeEstimation "Rocket attitude estimation from gyroscope and magnetometer data, using a Multiplicative Extended Kalamn Filter (MEKF)"
       import Modelica.Mechanics.MultiBody.Frames.Quaternions;
       extends RocketControl.GNC.Internal.Icons.Navigation;
@@ -496,7 +496,7 @@ package GNC
     package LinearStateMatrices
 
       block RocketAndActuator
-  extends RocketControl.Math.Blocks.Matrix.Internal.MatrixIcon;
+  extends Internal.PartialLinearStateMatrix;
         outer RocketControl.World.Atmosphere atmosphere;
         parameter Real CA0;
         parameter Real CA_a;
@@ -520,10 +520,6 @@ package GNC
         parameter Real Ix;
         parameter Real Is;
         parameter Real wa;
-        Modelica.Blocks.Interfaces.RealOutput A[9, 9] annotation(
-          Placement(visible = true, transformation(origin = {110, 40}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {110, 50}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-        Modelica.Blocks.Interfaces.RealOutput B[9, 3] annotation(
-          Placement(visible = true, transformation(origin = {110, -40}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {110, -50}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
         SI.Velocity u;
         SI.Velocity v;
         SI.Velocity w;
@@ -534,29 +530,21 @@ package GNC
         SI.Angle dps;
         SI.Angle drs;
         SI.Density rho(displayUnit = "kg/m3");
-        Modelica.Blocks.Interfaces.RealInput vel[3] annotation(
-          Placement(visible = true, transformation(origin = {-120, 90}, extent = {{-20, -20}, {20, 20}}, rotation = 0), iconTransformation(origin = {-120, 92}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
-        Modelica.Blocks.Interfaces.RealInput x_est[3] annotation(
-          Placement(visible = true, transformation(origin = {-120, -30}, extent = {{-20, -20}, {20, 20}}, rotation = 0), iconTransformation(origin = {-120, -20}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
-        Modelica.Blocks.Interfaces.RealInput ang_vel[3] annotation(
-          Placement(visible = true, transformation(origin = {-120, 30}, extent = {{-20, -20}, {20, 20}}, rotation = 0), iconTransformation(origin = {-120, 40}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
-        Modelica.Blocks.Interfaces.RealInput control_cmd[3] annotation(
-          Placement(visible = true, transformation(origin = {-120, -92}, extent = {{-20, -20}, {20, 20}}, rotation = 0), iconTransformation(origin = {-120, -80}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
       equation
-        rho = atmosphere.density(-x_est[3]);
-        u = vel[1];
-        v = vel[2];
-        w = vel[3];
-        p = ang_vel[1];
-        q = ang_vel[2];
-        r = ang_vel[3];
-        dys = control_cmd[1];
-        dps = control_cmd[2];
-        drs = control_cmd[3];
+        rho = atmosphere.density(-bus.x_est[3]);
+        u = bus.v_est[1];
+        v = bus.v_est[2];
+        w = bus.v_est[3];
+        p = bus.w_est[1];
+        q = bus.w_est[2];
+        r = bus.w_est[3];
+        dys = bus.actuator_pos_meas[1];
+        dps = bus.actuator_pos_meas[2];
+        drs = bus.actuator_pos_meas[3];
         A = [-CA0 * S * rho * u / m, r - CA_b * S * rho * v / m, (-q) - CA_a * S * rho * w / m, 0, -w, v, 0, 0, 0; CY_b * S * rho * v / (2 * m) - r + CY_dy * S * dys * rho * u / m, CY_b * S * rho * u / (2 * m), p, w, 0, -u, CY_dy * S * rho * u ^ 2 / (2 * m), 0, 0; q - CN_a * S * rho * w / (2 * m) - CN_dp * S * dps * rho * u / m, -p, -CN_a * S * rho * u / (2 * m), -v, u, 0, 0, -CN_dp * S * rho * u ^ 2 / (2 * m), 0; CLL_dr * S * c * drs * rho * u / Ix, 0, 0, 0, 0, 0, 0, 0, CLL_dr * S * c * rho * u ^ 2 / (2 * Ix); CLM_a * S * c * rho * w / (2 * Is) + CLM_dp * S * c * dps * rho * u / Is, 0, CLM_a * S * c * rho * u / (2 * Is), r - Ix * r / Is, 0, p - Ix * p / Is, 0, CLM_dp * S * c * rho * u ^ 2 / (2 * Is), 0; CLN_b * S * c * rho * v / (2 * Is) + CLN_dy * S * c * dys * rho * u / Is, CLN_b * S * c * rho * u / (2 * Is), 0, Ix * q / Is - q, Ix * p / Is - p, 0, CLN_dy * S * c * rho * u ^ 2 / (2 * Is), 0, 0; 0, 0, 0, 0, 0, 0, -wa, 0, 0; 0, 0, 0, 0, 0, 0, 0, -wa, 0; 0, 0, 0, 0, 0, 0, 0, 0, -wa];
         B = [0, 0, 0; 0, 0, 0; 0, 0, 0; 0, 0, 0; 0, 0, 0; 0, 0, 0; wa, 0, 0; 0, wa, 0; 0, 0, wa];
         annotation(
-          Icon(graphics = {Text(origin = {7, -2}, extent = {{-73, 62}, {73, -62}}, textString = "A,B"), Text(origin = {-2, -250}, lineColor = {0, 0, 255}, extent = {{-150, 150}, {150, 110}}, textString = "%name"), Text(origin = {77, 49}, lineColor = {102, 102, 102}, extent = {{-21, 19}, {21, -19}}, textString = "A"), Text(origin = {79, -47}, lineColor = {102, 102, 102}, extent = {{-21, 19}, {21, -19}}, textString = "B")}),
+          Icon,
           Diagram);
       end RocketAndActuator;
     
@@ -1121,11 +1109,11 @@ package GNC
         Modelica.Blocks.Interfaces.RealOutput A annotation(
             Placement(visible = true, transformation(origin = {110, 40}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {110, 50}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   RocketControl.Interfaces.AvionicsBus bus annotation(
-            Placement(visible = true, transformation(origin = {-100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-64, 4}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+            Placement(visible = true, transformation(origin = {-100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
         equation
 
           annotation(
-            Icon(graphics = {Rectangle(lineColor = {255, 85, 0}, fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid, extent = {{-100, 100}, {100, -100}}, radius = 20), Text(origin = {0, 4}, extent = {{-80, 68}, {80, -68}}, textString = "A,B")}));
+            Icon(graphics = {Rectangle(lineColor = {255, 85, 0}, fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid, extent = {{-100, 100}, {100, -100}}, radius = 20), Text(origin = {0, 4}, extent = {{-80, 68}, {80, -68}}, textString = "A,B"), Text(origin = {105, 21}, lineColor = {102, 102, 102}, extent = {{-21, 19}, {21, -19}}, textString = "A"), Text(origin = {105, -79}, lineColor = {102, 102, 102}, extent = {{-21, 19}, {21, -19}}, textString = "B"), Text(origin = {-2, -250}, lineColor = {0, 0, 255}, extent = {{-150, 150}, {150, 110}}, textString = "%name")}));
         end PartialLinearStateMatrix;
         annotation(
           Icon(coordinateSystem(grid = {2, 0})));

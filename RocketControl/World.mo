@@ -90,7 +90,7 @@ package World
         annotation(Inline = true,
           Icon(coordinateSystem(grid = {2, 0})));
       end ecef2nedMatrix;
-      //  class Coordinates
+        //  class Coordinates
   //    function ecef2nedMatrix
   //      input SI.Position x_ecef[3] "Position in ECEF coordinates";
   //      output Real T[3, 3];
@@ -110,9 +110,9 @@ package World
   //      T[3, :] := D;
   ////  R := Modelica.Mechanics.MultiBody.Frames.from_T(T, {0,0,0});
   //      annotation(Inline = true,
-  //        Icon(coordinateSystem(grid = {2, 0})));
 
-//    end ecef2nedMatrix;
+//        Icon(coordinateSystem(grid = {2, 0})));
+  //    end ecef2nedMatrix;
   //    function ecef2ned
   //      input SI.Position v_ecef[3];
   //      output SI.Position v_ned[3];
@@ -122,9 +122,9 @@ package World
   //        Inline = true,
   //        Icon(coordinateSystem(grid = {2, 0})));
   //    end ecef2ned;
-  //    function lla2ecef
 
-//      input NonSI.Angle_deg lat;
+//    function lla2ecef
+  //      input NonSI.Angle_deg lat;
   //      input NonSI.Angle_deg lon;
   //      input SI.Distance alt;
   //      output SI.Position[3] x_ecef;
@@ -142,9 +142,9 @@ package World
   //    end lla2ecef;
   //    function ned2ecefPosition "Converts a position from the NED frame to the ECEF frame"
   //      input SI.Position x_ned[3];
-  //      output SI.Position x_ecef[3];
 
-//    algorithm
+//      output SI.Position x_ecef[3];
+  //    algorithm
   //      x_ecef := x_0_ecef + transpose(T) * x_ned;
   //      annotation(
   //        Icon(coordinateSystem(grid = {2, 0})));
@@ -153,9 +153,9 @@ package World
   //      input SI.Position x[3] "Position in ECEF coordinates";
   //      output Real n[3] "Unit vector pointing in the nadir direction";
   //    algorithm
-  //      n := -x / norm(x);
 
-//      annotation(
+//      n := -x / norm(x);
+  //      annotation(
   //        Icon(coordinateSystem(grid = {2, 0})));
   //    end getNadir;
   //    function getEast
@@ -164,16 +164,16 @@ package World
   //    algorithm
   //      if abs(nadir * {0, 0, 1}) > 1 - 1e-10 then
   //        east := {0, 1, 0};
-  //      else
 
-//        east := cross(nadir, {0, 0, 1});
+//      else
+  //        east := cross(nadir, {0, 0, 1});
   //        east := east / norm(east);
   //      end if;
   //      annotation(
   //        Icon(coordinateSystem(grid = {2, 0})));
   //    end getEast;
   //    annotation(
-  //      Icon(coordinateSystem(grid = {2, 0})));
+    //      Icon(coordinateSystem(grid = {2, 0})));
     //  end Coordinates;
   equation
   
@@ -260,7 +260,7 @@ package World
   equation
 
     annotation(
-      Icon(graphics = {Ellipse(origin = {-53, -46}, lineColor = {255, 255, 255}, fillColor = {195, 195, 195}, pattern = LinePattern.None, fillPattern = FillPattern.Sphere, extent = {{-37, 36}, {37, -36}}), Ellipse(origin = {-19, 0}, lineColor = {255, 255, 255}, fillColor = {195, 195, 195}, pattern = LinePattern.None, fillPattern = FillPattern.Sphere, extent = {{-37, 36}, {37, -36}}), Ellipse(origin = {-3, -58}, lineColor = {255, 255, 255}, fillColor = {195, 195, 195}, pattern = LinePattern.None, fillPattern = FillPattern.Sphere, extent = {{-37, 36}, {37, -36}}), Ellipse(origin = {61, -44}, lineColor = {255, 255, 255}, fillColor = {195, 195, 195}, pattern = LinePattern.None, fillPattern = FillPattern.Sphere, extent = {{-37, 36}, {37, -36}}), Ellipse(origin = {43, -10}, lineColor = {255, 255, 255}, fillColor = {195, 195, 195}, pattern = LinePattern.None, fillPattern = FillPattern.Sphere, extent = {{-37, 36}, {37, -36}}), Ellipse(origin = {-65, 56}, lineColor = {255, 255, 255}, fillColor = {255, 255, 0}, fillPattern = FillPattern.Sphere, extent = {{-21, 20}, {21, -20}}), Line(origin = {-63.08, 24.12}, points = {{6, 9}, {12, -9}}, color = {255, 255, 0}, arrowSize = 1), Line(origin = {-85.33, 26.82}, points = {{6, 9}, {-6, -9}}, color = {255, 255, 0}, arrowSize = 1), Line(origin = {-74.2, 23.11}, points = {{6, 9}, {2, -9}}, color = {255, 255, 0}, arrowSize = 1), Line(origin = {-44.2, 45.36}, points = {{6, 9}, {24, 5}}, color = {255, 255, 0}), Line(origin = {-49.26, 30.53}, points = {{6, 9}, {18, -5}}, color = {255, 255, 0}), Line(origin = {-46.56, 59.51}, points = {{6, 9}, {26, 11}}, color = {255, 255, 0}), Text(origin = {4, 10}, lineColor = {0, 0, 255}, extent = {{-132, 76}, {129, 124}}, textString = "%name")}));
+      Icon(graphics = {Rectangle(fillColor = {202, 244, 255}, fillPattern = FillPattern.Solid, extent = {{-100, 100}, {100, -100}}), Ellipse(origin = {-53, -46}, lineColor = {255, 255, 255}, fillColor = {195, 195, 195}, pattern = LinePattern.None, fillPattern = FillPattern.Sphere, extent = {{-37, 36}, {37, -36}}), Ellipse(origin = {-19, 0}, lineColor = {255, 255, 255}, fillColor = {195, 195, 195}, pattern = LinePattern.None, fillPattern = FillPattern.Sphere, extent = {{-37, 36}, {37, -36}}), Ellipse(origin = {-3, -58}, lineColor = {255, 255, 255}, fillColor = {195, 195, 195}, pattern = LinePattern.None, fillPattern = FillPattern.Sphere, extent = {{-37, 36}, {37, -36}}), Ellipse(origin = {61, -44}, lineColor = {255, 255, 255}, fillColor = {195, 195, 195}, pattern = LinePattern.None, fillPattern = FillPattern.Sphere, extent = {{-37, 36}, {37, -36}}), Ellipse(origin = {43, -10}, lineColor = {255, 255, 255}, fillColor = {195, 195, 195}, pattern = LinePattern.None, fillPattern = FillPattern.Sphere, extent = {{-37, 36}, {37, -36}}), Ellipse(origin = {-65, 56}, lineColor = {255, 255, 255}, fillColor = {255, 255, 0}, fillPattern = FillPattern.Sphere, extent = {{-21, 20}, {21, -20}}), Line(origin = {-63.08, 24.12}, points = {{6, 9}, {12, -9}}, color = {255, 255, 0}, arrowSize = 1), Line(origin = {-85.33, 26.82}, points = {{6, 9}, {-6, -9}}, color = {255, 255, 0}, arrowSize = 1), Line(origin = {-74.2, 23.11}, points = {{6, 9}, {2, -9}}, color = {255, 255, 0}, arrowSize = 1), Line(origin = {-44.2, 45.36}, points = {{6, 9}, {24, 5}}, color = {255, 255, 0}), Line(origin = {-49.26, 30.53}, points = {{6, 9}, {18, -5}}, color = {255, 255, 0}), Line(origin = {-46.56, 59.51}, points = {{6, 9}, {26, 11}}, color = {255, 255, 0}), Text(origin = {4, 20}, lineColor = {0, 0, 255}, extent = {{-132, 76}, {129, 124}}, textString = "%name")}));
   end Atmosphere;
 
   package Interfaces
