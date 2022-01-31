@@ -53,6 +53,7 @@ package Blocks
   package Math
   model Quaternion2Euler "Converts a quaternion to the equivalent ZYX euler angle representation"
       extends Modelica.Units.Icons.Conversion;
+      import RocketControl.Math.quat2euler;
       Modelica.Blocks.Interfaces.RealOutput eul[3](each final quantity = "Angle", each final unit = "rad", each displayUnit = "deg") annotation(
         Placement(visible = true, transformation(origin = {110, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {110, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
       Modelica.Blocks.Interfaces.RealInput q[4] annotation(
