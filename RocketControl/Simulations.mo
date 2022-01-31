@@ -30,6 +30,10 @@ package Simulations
       Placement(visible = true, transformation(origin = {50, -30}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Rockets.Lynx.GNC.Sensors.LynxSampledIdealSensors lynxSampledIdealSensors annotation(
       Placement(visible = true, transformation(origin = {50, -70}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Rockets.Lynx.GNC.Sensors.LynxRealSensors lynxRealSensors annotation(
+      Placement(visible = true, transformation(origin = {40, 46}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Rockets.Lynx.GNC.Navigation.LynxNavigation lynxNavigation annotation(
+      Placement(visible = true, transformation(origin = {82, 6}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   equation
     connect(fixed.frame_b, launchRail.frame_a) annotation(
       Line(points = {{-80, 10}, {-60, 10}}, color = {95, 95, 95}));
@@ -39,10 +43,14 @@ package Simulations
       Line(points = {{-40, 4}, {-20, 4}}));
     connect(lynxRocket.ref_center, landDetector.frame_a) annotation(
       Line(points = {{0, 10}, {54, 10}, {54, 90}, {80, 90}}, color = {95, 95, 95}));
-  connect(lynxRocket.ref_center, continuousGNC.frame_a) annotation(
+    connect(lynxRocket.ref_center, continuousGNC.frame_a) annotation(
       Line(points = {{0, 10}, {20, 10}, {20, -30}, {40, -30}}, color = {95, 95, 95}));
-  connect(lynxRocket.ref_center, lynxSampledIdealSensors.frame_a) annotation(
+    connect(lynxRocket.ref_center, lynxSampledIdealSensors.frame_a) annotation(
       Line(points = {{0, 10}, {20, 10}, {20, -70}, {40, -70}}));
+    connect(lynxRealSensors.frame_a, lynxRocket.ref_center) annotation(
+      Line(points = {{30, 46}, {20, 46}, {20, 10}, {0, 10}}));
+  connect(lynxSampledIdealSensors.bus, lynxNavigation.bus) annotation(
+      Line(points = {{60, -70}, {92, -70}, {92, 6}}, thickness = 0.5));
     annotation(
       Icon(coordinateSystem(grid = {2, 0})),
       experiment(StartTime = 0, StopTime = 60, Tolerance = 1e-6, Interval = 0.01));

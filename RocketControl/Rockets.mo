@@ -188,6 +188,28 @@ extends Internal.Icon;
           annotation(
             Icon(coordinateSystem(grid = {2, 0})));
         end LynxIdealNavigation;
+
+        model LynxNavigation
+        outer World.SimOptions opt;
+        extends Rockets.Internal.PartialNavigationSystem;
+        RocketControl.Interfaces.AvionicsBus bus annotation(
+            Placement(visible = true, transformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {102, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+        RocketControl.GNC.Navigation.AttitudeEstimation attitudeEstimation(elevation0 = 1.466076571675237, heading0 = 2.268928027592628, samplingPeriodMs = opt.samplePeriodMs, sigma_b = 2, sigma_u = from_deg(10), sigma_v = from_deg(60)) annotation(
+            Placement(visible = true, transformation(origin = {-32, 50}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+        equation
+          connect(bus.w_meas, attitudeEstimation.w_meas) annotation(
+            Line(points = {{100, 0}, {100, 100}, {-100, 100}, {-100, 58}, {-44, 58}}, thickness = 0.5));
+  connect(bus.b_meas, attitudeEstimation.b_meas) annotation(
+            Line(points = {{100, 0}, {100, 100}, {-100, 100}, {-100, 50}, {-44, 50}}, thickness = 0.5));
+  connect(attitudeEstimation.q_est, bus.q_est) annotation(
+            Line(points = {{-20, 56}, {60, 56}, {60, 0}, {100, 0}}, color = {0, 0, 127}, thickness = 0.5));
+  connect(bus.x_meas, attitudeEstimation.r_0_est) annotation(
+            Line(points = {{100, 0}, {100, 100}, {-100, 100}, {-100, 42}, {-44, 42}}, thickness = 0.5));
+  connect(attitudeEstimation.w_est, bus.w_est) annotation(
+            Line(points = {{-20, 46}, {60, 46}, {60, 0}, {100, 0}}, color = {0, 0, 127}, thickness = 0.5));
+          annotation(
+            Icon(coordinateSystem(grid = {2, 0})));
+        end LynxNavigation;
         annotation(
           Icon(coordinateSystem(grid = {2, 0})));
       end Navigation;
