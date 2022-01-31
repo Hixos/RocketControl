@@ -32,15 +32,14 @@ package Tests
           Placement(visible = true, transformation(origin = {-90, 90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
         RocketControl.Tests.MotionFrame motionFrame(v0 = {0, 0, 0}, w(each displayUnit = "deg/s") = {0.08726646259971647, 0.1745329251994329, -0.08726646259971647}) annotation(
           Placement(visible = true, transformation(origin = {-70, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  RocketControl.Components.Sensors.IdealGyroscope idealGyroscope(samplePeriodMs = 20)  annotation(
-          Placement(visible = true, transformation(origin = {-10, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  RocketControl.Components.Sensors.RealGyroscope realGyroscope(bias = {0.00174532925199433, 0.003490658503988659, -0.006981317007977318}, bits = 16, rate_max = 4.363323129985824, samplePeriodMs = 20, sigmaARW = 0.00174532925199433, sigmaRRW = 0.000174532925199433)  annotation(
-          Placement(visible = true, transformation(origin = {-10, 40}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Components.Sensors.IdealSensors.IdealGyroscope idealGyroscope annotation(
+          Placement(visible = true, transformation(origin = {12, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Components.Sensors.IdealSensors.IdealGyroscope idealGyroscope annotation(
+          Placement(visible = true, transformation(origin = {8, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
       equation
-        connect(idealGyroscope.frame_a, motionFrame.frame_b) annotation(
-          Line(points = {{-20, 0}, {-60, 0}}, color = {95, 95, 95}));
-  connect(motionFrame.frame_b, realGyroscope.frame_a) annotation(
-          Line(points = {{-60, 0}, {-38, 0}, {-38, 40}, {-20, 40}}));
+        connect(motionFrame.frame_b, idealGyroscope.frame_a) annotation(
+          Line(points = {{-60, 0}, {-2, 0}}, color = {95, 95, 95}));
+      protected
         annotation(
           Icon(coordinateSystem(grid = {2, 0})));
       end RealGyroscopeTest;

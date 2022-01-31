@@ -197,21 +197,11 @@ package Simulations
   Components.Blocks.EulerRates eulerRates annotation(
       Placement(visible = true, transformation(origin = {-36, 66}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   RocketControl.Components.Parts.DescentDetector descentDetector annotation(
-      Placement(visible = true, transformation(origin = {90, -90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      Placement(visible = true, transformation(origin = {86, -86}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   RocketControl.GNC.Control.Deflection2Control deflection2Control annotation(
-      Placement(visible = true, transformation(origin = {188, -20}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  RocketControl.GNC.Control.FinSaturation finSaturation annotation(
-      Placement(visible = true, transformation(origin = {84, -30}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Blocks.Continuous.TransferFunction transferFunction3(a = {0.07692, 1}, b = {0, 1}, initType = Modelica.Blocks.Types.Init.InitialOutput) annotation(
-      Placement(visible = true, transformation(origin = {51, -95}, extent = {{-5, -5}, {5, 5}}, rotation = 0)));
-  Modelica.Blocks.Continuous.TransferFunction transferFunction2(a = {0.07692, 1}, b = {0, 1}, initType = Modelica.Blocks.Types.Init.InitialOutput) annotation(
-      Placement(visible = true, transformation(origin = {51, -79}, extent = {{-5, -5}, {5, 5}}, rotation = 0)));
-  Modelica.Blocks.Continuous.TransferFunction transferFunction(a = {0.07692, 1}, b = {0, 1}, initType = Modelica.Blocks.Types.Init.InitialOutput) annotation(
-      Placement(visible = true, transformation(origin = {51, -41}, extent = {{-5, -5}, {5, 5}}, rotation = 0)));
-  Modelica.Blocks.Continuous.TransferFunction transferFunction1(a = {0.07692, 1}, b = {0, 1}, initType = Modelica.Blocks.Types.Init.InitialOutput) annotation(
-      Placement(visible = true, transformation(origin = {51, -61}, extent = {{-5, -5}, {5, 5}}, rotation = 0)));
-  Components.Parts.FinServoMotor finServoMotor annotation(
-      Placement(visible = true, transformation(origin = {46, -10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      Placement(visible = true, transformation(origin = {122, -10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  RocketControl.Components.Parts.FinServoMotor finServoMotor(a = {0.07692, 1}, b = {0, 1})  annotation(
+      Placement(visible = true, transformation(origin = {50, -38}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   equation
     connect(fixed.frame_b, launchRail.frame_a) annotation(
       Line(points = {{-80, 10}, {-60, 10}}, color = {95, 95, 95}));
@@ -237,30 +227,17 @@ package Simulations
       Line(points = {{-48, 72}, {-60, 72}, {-60, -56}, {-8, -56}, {-8, -38}}, color = {0, 0, 127}, thickness = 0.5));
     connect(eulerRates.q, sensorsIdealCont.bus.q_est) annotation(
       Line(points = {{-48, 60}, {-60, 60}, {-60, -56}, {-8, -56}, {-8, -38}}, color = {0, 0, 127}, thickness = 0.5));
-    connect(finSaturation.fin_sat, aerodynamics.finDeflection) annotation(
-      Line(points = {{96, -30}, {122, -30}, {122, 2}, {70, 2}, {70, 24}, {80, 24}}, color = {0, 0, 127}, thickness = 0.5));
-    connect(finSaturation.fin_sat, deflection2Control.u) annotation(
-      Line(points = {{96, -30}, {176, -30}, {176, -20}}, color = {0, 0, 127}, thickness = 0.5));
-    connect(transferFunction3.y, finSaturation.fin[4]) annotation(
-      Line(points = {{56, -94}, {72, -94}, {72, -30}}, color = {0, 0, 127}));
-    connect(controllersLQ.fin[4], transferFunction3.u) annotation(
-      Line(points = {{8, -68}, {40, -68}, {40, -95}, {45, -95}}, color = {0, 0, 127}));
-    connect(transferFunction2.y, finSaturation.fin[3]) annotation(
-      Line(points = {{56, -78}, {72, -78}, {72, -30}}, color = {0, 0, 127}));
-    connect(controllersLQ.fin[3], transferFunction2.u) annotation(
-      Line(points = {{8, -68}, {46, -68}, {46, -78}}, color = {0, 0, 127}));
-    connect(transferFunction.y, finSaturation.fin[1]) annotation(
-      Line(points = {{56, -40}, {64, -40}, {64, -30}, {72, -30}}, color = {0, 0, 127}));
-    connect(transferFunction1.y, finSaturation.fin[2]) annotation(
-      Line(points = {{56, -60}, {72, -60}, {72, -30}}, color = {0, 0, 127}));
-    connect(controllersLQ.fin[2], transferFunction1.u) annotation(
-      Line(points = {{8, -68}, {45, -68}, {45, -61}}, color = {0, 0, 127}));
-    connect(controllersLQ.fin[1], transferFunction.u) annotation(
-      Line(points = {{8, -68}, {32, -68}, {32, -41}, {45, -41}}, color = {0, 0, 127}));
     annotation(
       experiment(StartTime = 0, StopTime = 60, Tolerance = 0.0001, Interval = 0.01),
       Icon(graphics = {Polygon(fillColor = {29, 163, 125}, fillPattern = FillPattern.Solid, lineThickness = 1.5, points = {{-80, 80}, {-80, -80}, {80, 0}, {-80, 80}})}));
   end LynxLQ;
+
+  model LynxRepack
+  equation
+
+    annotation(
+      Icon(coordinateSystem(grid = {2, 0})));
+  end LynxRepack;
 equation
 
 annotation(
