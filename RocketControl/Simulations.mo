@@ -28,6 +28,8 @@ package Simulations
       Placement(visible = true, transformation(origin = {-50, 10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   RocketControl.Rockets.Lynx.GNC.ContinuousGNC continuousGNC annotation(
       Placement(visible = true, transformation(origin = {50, -30}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Rockets.Lynx.GNC.Sensors.LynxSampledIdealSensors lynxSampledIdealSensors annotation(
+      Placement(visible = true, transformation(origin = {50, -70}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   equation
     connect(fixed.frame_b, launchRail.frame_a) annotation(
       Line(points = {{-80, 10}, {-60, 10}}, color = {95, 95, 95}));
@@ -39,6 +41,8 @@ package Simulations
       Line(points = {{0, 10}, {54, 10}, {54, 90}, {80, 90}}, color = {95, 95, 95}));
   connect(lynxRocket.ref_center, continuousGNC.frame_a) annotation(
       Line(points = {{0, 10}, {20, 10}, {20, -30}, {40, -30}}, color = {95, 95, 95}));
+  connect(lynxRocket.ref_center, lynxSampledIdealSensors.frame_a) annotation(
+      Line(points = {{0, 10}, {20, 10}, {20, -70}, {40, -70}}));
     annotation(
       Icon(coordinateSystem(grid = {2, 0})),
       experiment(StartTime = 0, StopTime = 60, Tolerance = 1e-6, Interval = 0.01));
@@ -73,19 +77,19 @@ package Simulations
   equation
     connect(fixed.frame_b, launchRail.frame_a) annotation(
       Line(points = {{-80, 10}, {-60, 10}}, color = {95, 95, 95}));
-  connect(launchRail.frame_b_lug_bow, lynxWithCanardsRocket.frame_lug_bow) annotation(
+    connect(launchRail.frame_b_lug_bow, lynxWithCanardsRocket.frame_lug_bow) annotation(
       Line(points = {{-40, 16}, {-10, 16}}));
-  connect(launchRail.frame_b_lug_aft, lynxWithCanardsRocket.frame_lug_aft) annotation(
+    connect(launchRail.frame_b_lug_aft, lynxWithCanardsRocket.frame_lug_aft) annotation(
       Line(points = {{-40, 4}, {-10, 4}}, color = {95, 95, 95}));
-  connect(lynxWithCanardsRocket.ref_center, continuousGNC.frame_a) annotation(
+    connect(lynxWithCanardsRocket.ref_center, continuousGNC.frame_a) annotation(
       Line(points = {{10, 10}, {31, 10}, {31, -30}, {40, -30}}, color = {95, 95, 95}));
-  connect(lynxWithCanardsRocket.bus, continuousGNC.bus) annotation(
+    connect(lynxWithCanardsRocket.bus, continuousGNC.bus) annotation(
       Line(points = {{10, 17}, {84, 17}, {84, -30}, {60, -30}}, thickness = 0.5));
-  connect(vectorConstant.v, lynxWithCanardsRocket.bus.control_cmd) annotation(
+    connect(vectorConstant.v, lynxWithCanardsRocket.bus.control_cmd) annotation(
       Line(points = {{-12, 66}, {10, 66}, {10, 17}}, color = {0, 0, 127}, thickness = 0.5));
-  connect(lynxWithCanardsRocket.ref_center, landDetector.frame_a) annotation(
+    connect(lynxWithCanardsRocket.ref_center, landDetector.frame_a) annotation(
       Line(points = {{10, 10}, {34, 10}, {34, 90}, {80, 90}}));
-    protected
+  protected
   annotation(
       Icon(coordinateSystem(grid = {2, 0})),
       experiment(StartTime = 0, StopTime = 60, Tolerance = 1e-6, Interval = 0.01));

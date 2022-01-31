@@ -277,7 +277,7 @@ package Components
           Dialog(enable = limited, group = "Limiting and quantization"));
       parameter Integer bits(min = 1) = 8 "Resolution in bits" annotation(
           Dialog(enable = limited and quantized, group = "Limiting and quantization"));
-        parameter Integer fixedLocalSeed[3] = {10, 100, 1000} "Local seed for each of the accelerometer axes" annotation(
+        parameter Integer fixedLocalSeed[3] = {10, 100, 1000} "Local seed for each of the axes" annotation(
           Dialog(enable = noisy, group = "Sampling and noise"));
         parameter Types.MagneticFluxDensity sigmaNoise "Noise standard deviation" annotation(
           Dialog(enable = noisy, group = "Sampling and noise"));
@@ -471,6 +471,53 @@ package Components
       annotation(
         Icon(coordinateSystem(grid = {2, 0})));
     end RealSensors;
+
+    package Parts
+      model GyroBMX180
+        extends RealSensors.RealGyroscope(bias = {0.00174532925199433, -0.0008726646259971648, -0.0003490658503988659}, bits = 16, rate_max = 4.363323129985824, sigmaARW = 0.008726646259971648, sigmaRRW = 0.0174532925199433, noisy = true, biased = true, limited = true, quantized = true);
+       
+        annotation(
+          Icon(coordinateSystem(grid = {2, 0})));
+      end GyroBMX180;
+
+      model AccBMX180
+      extends RealSensors.RealAccelerometer(acc_max = 156.96, bias = {0.02, 0.04, -0.03}, bits = 16,  sigmaBiasInstability = 0.01, sigmaNoise = 0.1, noisy = true, biased = true, limited = true, quantized = true);
+      
+      equation
+
+        annotation(
+          Icon(coordinateSystem(grid = {2, 0})));
+      end AccBMX180;
+
+      model MagBMX160
+      extends RealSensors.RealMagnetometer(b_max = 2500000 * 1e-9, bias = 250 * 1e-9, bits = 16, misalignement = {from_deg(0.2), from_deg(-0.1), from_deg(0.3)}, sigmaNoise = 1.000000000000001e-08, noisy = true, biased = true, limited = true, quantized = true);
+       
+      equation
+
+        annotation(
+          Icon(coordinateSystem(grid = {2, 0})));
+      end MagBMX160;
+
+      model BaroMS5803
+      extends RealSensors.RealBarometer(bias(displayUnit = "Pa") = 300, bits = 24, p_max(displayUnit = "Pa") = 110000, p_min(displayUnit = "Pa") = 999.9999999999999, sigmaNoise(displayUnit = "Pa") = 50, noisy = true, biased = true, limited = true, quantized = true);
+       
+      equation
+
+        annotation(
+          Icon(coordinateSystem(grid = {2, 0})));
+      end BaroMS5803;
+
+      model GNSSUbloxM7N
+      extends RealSensors.RealGNSS(sigmaNoise_vxy = 3, sigmaNoise_vz = 5, sigmaNoise_xy = 15, sigmaNoise_z = 30, sin_error_amplitude = {30, 30, 50}, sin_error_freq = 0.005, sin_error_phase = from_deg({20, 30, 40}), noisy=true);
+       
+      equation
+
+        annotation(
+          Icon(coordinateSystem(grid = {2, 0})));
+      end GNSSUbloxM7N;
+      annotation(
+        Icon(coordinateSystem(grid = {2, 0})));
+    end Parts;
 
     package Conversions
       model Altimeter
