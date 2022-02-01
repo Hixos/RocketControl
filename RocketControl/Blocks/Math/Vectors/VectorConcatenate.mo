@@ -1,4 +1,4 @@
-within RocketControl.Blocks.Math.Vector;
+within RocketControl.Blocks.Math.Vectors;
 
 model VectorConcatenate
   extends RocketControl.Icons.VectorBlock;

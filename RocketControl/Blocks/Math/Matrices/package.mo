@@ -1,7 +1,7 @@
 within RocketControl.Blocks.Math;
 
-package Matrix
+package Matrices
   extends RocketControl.Icons.MatrixBlock;
   annotation(
     Icon(graphics = {Text(extent = {{-100, 100}, {100, -100}}, textString = "M")}));
-end Matrix;
+end Matrices;

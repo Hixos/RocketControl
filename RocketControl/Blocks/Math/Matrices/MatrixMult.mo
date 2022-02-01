@@ -1,4 +1,4 @@
-within RocketControl.Blocks.Math.Matrix;
+within RocketControl.Blocks.Math.Matrices;
 
 model MatrixMult
   extends RocketControl.Icons.MatrixBlock;

@@ -1,4 +1,4 @@
-within RocketControl.Blocks.Math.Quaternion;
+within RocketControl.Blocks.Math.Quaternions;
 
 block resolve1
   extends RocketControl.Icons.QuaternionBlock;

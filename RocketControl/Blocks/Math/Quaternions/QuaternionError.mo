@@ -1,4 +1,4 @@
-within RocketControl.Blocks.Math.Quaternion;
+within RocketControl.Blocks.Math.Quaternions;
 
 model QuaternionError
   extends RocketControl.Icons.QuaternionBlock;

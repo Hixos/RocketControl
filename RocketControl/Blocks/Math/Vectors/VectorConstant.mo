@@ -1,4 +1,4 @@
-within RocketControl.Blocks.Math.Vector;
+within RocketControl.Blocks.Math.Vectors;
 
 block VectorConstant
   extends RocketControl.Icons.VectorBlock;
