@@ -23,8 +23,8 @@ equation
     Line(points = {{100, 90}, {100, 34}, {74, 34}}, thickness = 0.5));
   connect(servoMotor.servo_pos, aerodynamics.finDeflection) annotation(
     Line(points = {{52, 34}, {-20, 34}, {-20, 44}}, color = {0, 0, 127}, thickness = 0.5));
-  connect(servoMotor.servo_pos, bus.fin_true_position) annotation(
-    Line(points = {{52, 34}, {30, 34}, {30, 90}, {100, 90}}, color = {0, 0, 127}, thickness = 0.5));
+  connect(servoMotor.servo_pos, bus.control_position_meas) annotation(
+    Line(points = {{52, 34}, {28, 34}, {28, 90}, {100, 90}}, color = {0, 0, 127}, thickness = 0.5));
   annotation(
     Icon(coordinateSystem(grid = {2, 0})));
 end LynxWithCanardsRocket;

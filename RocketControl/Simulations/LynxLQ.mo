@@ -20,8 +20,6 @@ within RocketControl.Simulations;
       Placement(visible = true, transformation(origin = {-90, -90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Components.LaunchPad.LaunchRail launchRail(azimuth(displayUnit = "deg") = 0, c_x = c_x, c_y = c_y, c_z = c_z, d_x = d_x, d_y = d_y, d_z = d_z, elevation(displayUnit = "deg") = 1.466076571675237, lug_length = 0.04, r_rel = {0, 0, 0.04}, rail_length = 4) annotation(
       Placement(visible = true, transformation(origin = {-50, 10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  RocketControl.Rockets.Lynx.GNC.ContinuousGNC continuousGNC annotation(
-      Placement(visible = true, transformation(origin = {50, -30}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   RocketControl.Rockets.Lynx.LynxWithCanardsRocket lynxWithCanardsRocket annotation(
       Placement(visible = true, transformation(origin = {0, 10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
  RocketControl.GNC.Guidance.ConstantFlightPathGuidance constantFlightPathGuidance annotation(
@@ -30,6 +28,8 @@ within RocketControl.Simulations;
     Placement(visible = true, transformation(origin = {-54, -34}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
  RocketControl.GNC.Control.BodyVelocityControl bodyVelocityControl annotation(
     Placement(visible = true, transformation(origin = {62, -84}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+ RocketControl.Rockets.Lynx.GNC.Sensors.TrueSensors trueSensors annotation(
+    Placement(visible = true, transformation(origin = {54, -16}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
 equation
   connect(fixed.frame_b, launchRail.frame_a) annotation(
     Line(points = {{-80, 10}, {-60, 10}}, color = {95, 95, 95}));
@@ -37,20 +37,20 @@ equation
     Line(points = {{-40, 16}, {-10, 16}}));
   connect(launchRail.frame_b_lug_aft, lynxWithCanardsRocket.frame_lug_aft) annotation(
     Line(points = {{-40, 4}, {-10, 4}}, color = {95, 95, 95}));
-  connect(lynxWithCanardsRocket.ref_center, continuousGNC.frame_a) annotation(
-    Line(points = {{10, 10}, {31, 10}, {31, -30}, {40, -30}}, color = {95, 95, 95}));
-  connect(lynxWithCanardsRocket.bus, continuousGNC.bus) annotation(
-    Line(points = {{10, 17}, {84, 17}, {84, -30}, {60, -30}}, thickness = 0.5));
   connect(lynxWithCanardsRocket.ref_center, landDetector.frame_a) annotation(
     Line(points = {{10, 10}, {34, 10}, {34, 90}, {80, 90}}));
-  connect(continuousGNC.bus, constantFlightPathGuidance.bus) annotation(
-    Line(points = {{60, -30}, {78, -30}, {78, -64}, {-16, -64}, {-16, -84}, {0, -84}}, thickness = 0.5));
   connect(control_enable.y, lynxWithCanardsRocket.bus.control_enable) annotation(
     Line(points = {{-42, -34}, {10, -34}, {10, 18}}, color = {255, 0, 255}));
- connect(constantFlightPathGuidance.acc_err_int, bodyVelocityControl.vel_error) annotation(
+  connect(constantFlightPathGuidance.acc_err_int, bodyVelocityControl.vel_error) annotation(
     Line(points = {{22, -84}, {50, -84}}, color = {0, 0, 127}, thickness = 0.5));
- connect(bodyVelocityControl.bus, continuousGNC.bus) annotation(
-    Line(points = {{72, -84}, {84, -84}, {84, -30}, {60, -30}}, thickness = 0.5));
+ connect(lynxWithCanardsRocket.ref_center, trueSensors.frame_a) annotation(
+    Line(points = {{10, 10}, {24, 10}, {24, -16}, {44, -16}}));
+ connect(lynxWithCanardsRocket.bus, trueSensors.bus) annotation(
+    Line(points = {{10, 18}, {98, 18}, {98, -16}, {64, -16}}, thickness = 0.5));
+ connect(trueSensors.bus, bodyVelocityControl.bus) annotation(
+    Line(points = {{64, -16}, {98, -16}, {98, -84}, {72, -84}}, thickness = 0.5));
+ connect(trueSensors.bus, constantFlightPathGuidance.bus) annotation(
+    Line(points = {{64, -16}, {98, -16}, {98, -62}, {-22, -62}, {-22, -84}, {0, -84}}, thickness = 0.5));
 protected
   annotation(
       Icon(coordinateSystem(grid = {2, 0})),

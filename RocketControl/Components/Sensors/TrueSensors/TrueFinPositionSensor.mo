@@ -2,9 +2,9 @@ within RocketControl.Components.Sensors.TrueSensors;
 
 block TrueFinPositionSensor
  extends Modelica.Icons.RoundSensor;
-  Modelica.Blocks.Interfaces.RealOutput control_meas[4](each displayUnit = "deg/s", each final quantity = "AngularVelocity", each final unit = "rad/s") annotation(
+  Modelica.Blocks.Interfaces.RealOutput control_meas[4](each displayUnit = "deg/s", each final quantity = "AngularVelocity", each final unit = "deg/s") annotation(
     Placement(visible = true, transformation(origin = {110, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {110, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Blocks.Interfaces.RealInput fin_pos_true[4] annotation(
+  Modelica.Blocks.Interfaces.RealInput fin_pos_true[4](each displayUnit = "deg/s", each final quantity = "AngularVelocity", each final unit = "deg/s") annotation(
     Placement(visible = true, transformation(origin = {-120, 0}, extent = {{-20, -20}, {20, 20}}, rotation = 0), iconTransformation(origin = {-120, 0}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
   RocketControl.GNC.Control.Deflection2Control deflection2Control annotation(
     Placement(visible = true, transformation(origin = {0, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));

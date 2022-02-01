@@ -42,7 +42,7 @@ equation
       if abs(acc_err_int[i]) > int_lim and acc_err[i] * acc_err[i] > 0 then
         der(acc_err_int[i]) = 0;
       else
-        der(acc_err_int[i]) = - kint * acc_err[i];
+        der(acc_err_int[i]) = kint * acc_err[i];
       end if;
     end for;
   else
