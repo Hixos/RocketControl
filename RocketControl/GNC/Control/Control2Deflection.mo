@@ -12,5 +12,5 @@ model Control2Deflection
 equation
   deflection = Minv * cat(1, u, {0});
   annotation(
-    Icon(graphics = {Text(extent = {{-100, 100}, {100, -100}}, textString = "c2f")}));
+    Icon(graphics = {Rectangle(fillColor = {255, 231, 213}, fillPattern = FillPattern.Solid, extent = {{-100, 100}, {100, -100}}), Text(origin = {31, -78}, fillColor = {255, 224, 201}, extent = {{-65, 22}, {65, -22}}, textString = "d1,d2,d3,d4", horizontalAlignment = TextAlignment.Left), Line(origin = {-5, 0}, points = {{-75, 0}, {83, 0}}, thickness = 0.5, arrow = {Arrow.None, Arrow.Open}, arrowSize = 15), Text(origin = {-33, 78}, fillColor = {255, 224, 201}, extent = {{-65, 22}, {65, -22}}, textString = "dy,dp,dr,ds", horizontalAlignment = TextAlignment.Left)}));
 end Control2Deflection;

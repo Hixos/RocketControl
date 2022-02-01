@@ -10,5 +10,5 @@ model Deflection2Control
 equation
   control = M * u;
   annotation(
-    Icon(graphics = {Text(extent = {{-100, 100}, {100, -100}}, textString = "f2c")}));
+    Icon(graphics = {Rectangle(fillColor = {255, 231, 213}, fillPattern = FillPattern.Solid, extent = {{-100, 100}, {100, -100}}), Line(origin = {-5, 0}, points = {{-75, 0}, {83, 0}}, thickness = 0.5, arrow = {Arrow.None, Arrow.Open}, arrowSize = 15), Text(origin = {33, -78}, fillColor = {255, 224, 201}, extent = {{-65, 22}, {65, -22}}, textString = "dy,dp,dr,ds", horizontalAlignment = TextAlignment.Left), Text(origin = {-31, 78}, fillColor = {255, 224, 201}, extent = {{-65, 22}, {65, -22}}, textString = "d1,d2,d3,d4", horizontalAlignment = TextAlignment.Left)}));
 end Deflection2Control;

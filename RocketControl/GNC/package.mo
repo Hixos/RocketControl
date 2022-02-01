@@ -91,7 +91,7 @@ block DiscreteKalmanFilter
       Placement(visible = true, transformation(origin = {110, 62}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {110, 50}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   equation
     if enable then
-      (P, niter) = RocketControl.Math.sdaCare(A, B, R, Q, g, tol, maxiter);
+      (P, niter) = RocketControl.Math.Matrices.sdaCare(A, B, R, Q, g, tol, maxiter);
       K = Modelica.Math.Matrices.solve2(R, transpose(B) * P);
       u = -K * x;
 //  assert(niter < maxiter, "sdaCare maximum number of iterations reached", level = AssertionLevel.warning);

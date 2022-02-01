@@ -18,5 +18,5 @@ equation
     vu = v / vnorm;
   end if;
   annotation(
-    Icon(graphics = {Text(lineColor = {0, 0, 255}, extent = {{-150, 150}, {150, 110}}, textString = "%name"), Text(extent = {{-100, 100}, {100, -100}}, textString = "1")}));
+    Icon(graphics = {Text(origin = {-4, -6},lineColor = {0, 0, 255}, extent = {{-150, 150}, {150, 110}}, textString = "%name"), Text(extent = {{-100, 100}, {100, -100}}, textString = "1")}));
 end UnitVector;
