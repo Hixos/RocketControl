@@ -35,8 +35,8 @@ block RocketAndActuator
   SI.Angle dps;
   SI.Angle drs;
   SI.Density rho(displayUnit = "kg/m3");
-  RocketControl.Interfaces.AvionicsBus bus annotation(
-    Placement(visible = true, transformation(origin = {-100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Interfaces.AvionicsBus bus annotation(
+    Placement(visible = true, transformation(origin = {-100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(extent = {{-110, -10}, {-90, 10}}, rotation = 0)));
 equation
   rho = atmosphere.density(-bus.x_est[3]);
   u = bus.v_est[1];

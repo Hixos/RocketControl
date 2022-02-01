@@ -6,20 +6,25 @@ model LaunchRailPresenceSensor "Detects wheter frame_lug is within a distance of
   parameter SI.Length rail_length;
   SI.Position s[3];
   SI.Length d;
-  Modelica.Blocks.Interfaces.BooleanOutput y annotation(
+  Modelica.Blocks.Interfaces.BooleanOutput y(start = true) annotation(
     Placement(visible = true, transformation(origin = {106, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {104, 70}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Mechanics.MultiBody.Interfaces.Frame_a frame_lug annotation(
     Placement(visible = true, transformation(origin = {-100, 0}, extent = {{-16, -16}, {16, 16}}, rotation = 0), iconTransformation(origin = {100, -38}, extent = {{-16, -16}, {16, 16}}, rotation = 0)));
   Modelica.Mechanics.MultiBody.Interfaces.Frame_a frame_rail annotation(
     Placement(visible = true, transformation(origin = {0, -100}, extent = {{-16, -16}, {16, 16}}, rotation = -90), iconTransformation(origin = {0, -100}, extent = {{-16, -16}, {16, 16}}, rotation = -90)));
-initial equation
-  y = true;
+//initial equation
+//  y = true;
 equation
   s = resolve2(frame_rail.R, frame_lug.r_0 - frame_rail.r_0);
   d = s * n;
-  when d > rail_length then
-    y = false;
-  end when;
+  if d > rail_length then
+  y = false;
+  else
+  y = true;
+  end if;
+//  when d > rail_length then
+//    y = false;
+//  end when;
   frame_rail.f = zeros(3);
   frame_rail.t = zeros(3);
   frame_lug.f = zeros(3);

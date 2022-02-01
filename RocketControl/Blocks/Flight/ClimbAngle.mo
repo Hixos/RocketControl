@@ -11,7 +11,7 @@ model ClimbAngle
 equation
   vnorm = norm(v);
   if noEvent(vnorm > v_small) then
-    angle = asin(v[3] / vnorm);
+    angle = -asin(v[3] / vnorm);
   else
     angle = 0;
   end if;

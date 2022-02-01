@@ -39,7 +39,7 @@ equation
   acc_err = cat(1, {0}, acc_target_sat - acc_meas);
   if noEvent(bus.control_enable) then
     for i in 1:3 loop
-      if abs(acc_err_int[i]) > int_lim and acc_err[i] * acc_err[i] > 0 then
+      if abs(acc_err_int[i]) > int_lim and acc_err[i] * acc_err_int[i] > 0 then
         der(acc_err_int[i]) = 0;
       else
         der(acc_err_int[i]) = kint * acc_err[i];
