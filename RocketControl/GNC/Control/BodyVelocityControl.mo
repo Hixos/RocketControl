@@ -25,10 +25,8 @@ block BodyVelocityControl
     Placement(visible = true, transformation(origin = {40, -60}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   RocketControl.Blocks.Math.Vectors.VectorConcatenate vectorConcatenate(n1 = 6, n2 = 3) annotation(
     Placement(visible = true, transformation(origin = {-14, -92}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  RocketControl.Blocks.Math.Vectors.VectorSplit vectorSplit(n = 4, s = 3)  annotation(
-    Placement(visible = true, transformation(origin = {-190, -142}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  RocketControl.Blocks.Math.Vectors.VectorConstant vectorConstant2(k = {0, 0, 0}, n = 3) annotation(
-    Placement(visible = true, transformation(origin = {-96, -108}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  RocketControl.Components.Actuators.TFServoMotor servoMotor(a = {0.07692, 1}, b = {0, 1}, nservos = 3) annotation(
+    Placement(visible = true, transformation(origin = {-8, 80}, extent = {{-10, -10}, {10, 10}}, rotation = 180)));
 equation
   connect(continuousLQR.u, control2Deflection.u) annotation(
     Line(points = {{22, 0}, {48, 0}}, color = {0, 0, 127}, thickness = 0.5));
@@ -54,10 +52,10 @@ equation
     Line(points = {{-2, -92}, {10, -92}, {10, -12}, {-10, -12}, {-10, -8}, {-2, -8}}, color = {0, 0, 127}, thickness = 0.5));
   connect(control2Deflection.deflection, bus.fin_setpoint) annotation(
     Line(points = {{72, 0}, {100, 0}}, color = {0, 0, 127}, thickness = 0.5));
-  connect(bus.control_position_meas, vectorSplit.v) annotation(
-    Line(points = {{100, 0}, {100, -142}, {-202, -142}}, thickness = 0.5));
-  connect(vectorConstant2.v, vectorConcatenate.v2) annotation(
-    Line(points = {{-84, -108}, {-40, -108}, {-40, -96}, {-26, -96}}, color = {0, 0, 127}, thickness = 0.5));
+  connect(servoMotor.setpoint, continuousLQR.u) annotation(
+    Line(points = {{4, 80}, {4, 40}, {22, 40}, {22, 0}}, color = {0, 0, 127}, thickness = 0.5));
+  connect(servoMotor.servo_pos_nonsat, vectorConcatenate.v2) annotation(
+    Line(points = {{-18, 74}, {-76, 74}, {-76, -96}, {-26, -96}}, color = {0, 0, 127}, thickness = 0.5));
   annotation(
     Icon(graphics = {Rectangle(fillColor = {255, 242, 254}, fillPattern = FillPattern.Solid, extent = {{-100, 100}, {100, -100}}, radius = 12), Polygon(origin = {-72, -22}, fillColor = {91, 91, 91}, fillPattern = FillPattern.Solid, points = {{-2, -12}, {8, -22}, {22, 12}, {12, 22}, {-22, 8}, {-2, -12}}), Polygon(origin = {-41, 9}, fillColor = {155, 183, 193}, fillPattern = FillPattern.Solid, points = {{-43, -33}, {25, 35}, {45, 45}, {35, 25}, {-33, -43}, {-37, -39}, {-43, -33}}), Line(origin = {24.4844, 12.5364}, points = {{-56, -7}, {56, 7}}, arrow = {Arrow.None, Arrow.Filled}, arrowSize = 12), Line(origin = {30.3844, 41.6364}, points = {{-15.9035, 23.9035}, {0.0964559, 17.9035}, {8.09646, 7.90354}, {14.0965, -4.09646}, {16.0965, -24.0965}}, color = {255, 0, 0}, arrow = {Arrow.None, Arrow.Filled}, arrowSize = 21), Text(origin = {-1, -68}, extent = {{-77, 18}, {77, -18}}, textString = "vtrack"), Text(origin = {2, -250}, lineColor = {0, 0, 255}, extent = {{-150, 150}, {150, 110}}, textString = "%name")}));
 end BodyVelocityControl;
