@@ -1,7 +1,7 @@
 within RocketControl.Blocks.Math.Vector;
 
 block ProjectOnPlane
-  extends Internal.VectorIcon;
+  extends RocketControl.Icons.VectorBlock;
   parameter Real n[3];
   Modelica.Blocks.Interfaces.RealInput v[3] annotation(
     Placement(visible = true, transformation(origin = {-120, 0}, extent = {{-20, -20}, {20, 20}}, rotation = 0), iconTransformation(origin = {-120, 0}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));

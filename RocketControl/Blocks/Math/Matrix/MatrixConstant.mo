@@ -1,7 +1,7 @@
 within RocketControl.Blocks.Math.Matrix;
 
 model MatrixConstant
-  extends Internal.MatrixIcon;
+  extends RocketControl.Icons.MatrixBlock;
   parameter Integer n(min = 1) = 1 annotation(
     Evaluate = true);
   parameter Integer m(min = 1) = n annotation(

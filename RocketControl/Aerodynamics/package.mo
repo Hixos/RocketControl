@@ -1,6 +1,7 @@
 within RocketControl;
 
 package Aerodynamics
+extends Modelica.Icons.Package;
 extends Icons.AerodynamicsIcon;
 partial model PartialAerodynamicForce
 extends Icons.AerodynamicsIcon;

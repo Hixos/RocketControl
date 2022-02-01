@@ -1,7 +1,7 @@
 within RocketControl.Blocks.Math.Vector;
 
 model CrossProduct
-  extends Internal.VectorIcon;
+  extends RocketControl.Icons.VectorBlock;
   Modelica.Blocks.Interfaces.RealOutput vc[3] annotation(
     Placement(visible = true, transformation(origin = {110, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Blocks.Interfaces.RealInput v2[3] annotation(

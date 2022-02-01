@@ -1,7 +1,7 @@
 within RocketControl.Blocks.Math.Vector;
 
 model UnitVector
-  extends Internal.VectorIcon;
+  extends RocketControl.Icons.VectorBlock;
   parameter Integer n(min = 1) = 3 annotation(
     Evaluate = true);
   parameter Real v_small = 1e-6;

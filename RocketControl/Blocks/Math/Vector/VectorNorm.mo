@@ -1,7 +1,7 @@
 within RocketControl.Blocks.Math.Vector;
 
 model VectorNorm
-  extends Internal.VectorIcon;
+  extends RocketControl.Icons.VectorBlock;
   parameter Integer n(min = 1) = 3 annotation(
     Evaluate = true);
   Modelica.Blocks.Interfaces.RealInput v[n] annotation(

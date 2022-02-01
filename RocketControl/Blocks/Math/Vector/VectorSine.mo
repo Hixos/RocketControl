@@ -1,11 +1,12 @@
 within RocketControl.Blocks.Math.Vector;
 
 block VectorSine
+extends RocketControl.Icons.VectorBlock;
   parameter Real[3] A;
   parameter SI.Frequency f;
   parameter SI.Angle[3] phase(each displayUnit = "deg") = {0, 0, 0};
   parameter Real[3] b = {0, 0, 0};
-  extends Internal.VectorIcon;
+
   Modelica.Blocks.Interfaces.RealOutput y[3] annotation(
     Placement(visible = true, transformation(origin = {110, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {110, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Blocks.Sources.Sine sine(amplitude = A[1], f = f, offset = b[1], phase = phase[1]) annotation(

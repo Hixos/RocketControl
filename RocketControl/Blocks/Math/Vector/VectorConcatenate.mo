@@ -1,7 +1,7 @@
 within RocketControl.Blocks.Math.Vector;
 
 model VectorConcatenate
-  extends Internal.VectorIcon;
+  extends RocketControl.Icons.VectorBlock;
   parameter Integer n1(min = 1) = 3 annotation(
     Evaluate = true);
   parameter Integer n2(min = 1) = 3 annotation(

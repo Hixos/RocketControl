@@ -5,3 +5,6 @@ RocketBody
 Guidance
 Navigation
 Control
+VectorBlock
+MatrixBlock
+QuaternionBlock

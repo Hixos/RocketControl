@@ -1,7 +1,7 @@
 within RocketControl.Blocks.Math.Vector;
 
 model VectorAdd
-  extends Internal.VectorIcon;
+ extends RocketControl.Icons.VectorBlock;
   parameter Integer n(min = 1) = 3 annotation(
     Evaluate = true);
   parameter Real gain[2] = {1, 1};

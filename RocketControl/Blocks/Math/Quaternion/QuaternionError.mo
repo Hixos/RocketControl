@@ -1,7 +1,7 @@
 within RocketControl.Blocks.Math.Quaternion;
 
 model QuaternionError
-  extends Internal.QuaternionIcon;
+  extends RocketControl.Icons.QuaternionBlock;
   import RocketControl.Math.*;
   Modelica.Blocks.Interfaces.RealInput q1[4] annotation(
     Placement(visible = true, transformation(origin = {-120, 60}, extent = {{-20, -20}, {20, 20}}, rotation = 0), iconTransformation(origin = {-120, 42}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));

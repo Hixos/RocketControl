@@ -1,7 +1,7 @@
 within RocketControl;
 
 package Types
-
+  extends Modelica.Icons.TypesPackage;
   type NanoTesla
 = Real(final quantity = "MagneticFluxDensity", final unit = "nT");
   
