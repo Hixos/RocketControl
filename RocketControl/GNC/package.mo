@@ -1,6 +1,7 @@
 within RocketControl;
 
 package GNC
+extends RocketControl.Icons.Navigation;
 block DiscreteKalmanFilter
   parameter Integer n(min = 1) "Number of states" annotation(
       Evaluate = true);

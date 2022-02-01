@@ -1,7 +1,7 @@
 within RocketControl.Rockets.Internal;
 
 partial block PartialNavigationSystem
-  extends RocketControl.GNC.Internal.Icons.Navigation;
+  extends RocketControl.Icons.Navigation;
 equation
 
   annotation(

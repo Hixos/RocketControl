@@ -183,7 +183,7 @@ end PartialAerodynamicForce;
   end coefficientStrings;
 
   class AeroData
-  
+    extends RocketControl.Icons.AerodynamicsIcon;
     type E = enumeration(:);
     replaceable type State = E;
   
@@ -229,7 +229,7 @@ end PartialAerodynamicForce;
         Include = "#include \"ModelicaAeroData.h\"");
     end getData;
     annotation(
-      Icon(coordinateSystem(grid = {2, 0})));
+      Icon);
   end AeroData;
   annotation(
     Icon(coordinateSystem(grid = {2, 0})));

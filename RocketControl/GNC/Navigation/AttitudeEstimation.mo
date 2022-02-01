@@ -2,7 +2,7 @@ within RocketControl.GNC.Navigation;
 
 model AttitudeEstimation "Rocket attitude estimation from gyroscope and magnetometer data, using a Multiplicative Extended Kalamn Filter (MEKF)"
   import Modelica.Mechanics.MultiBody.Frames.Quaternions;
-  extends RocketControl.GNC.Internal.Icons.Navigation;
+  extends RocketControl.Icons.Navigation;
   parameter Integer samplingPeriodMs;
   parameter SI.Angle heading0;
   parameter SI.Angle elevation0;

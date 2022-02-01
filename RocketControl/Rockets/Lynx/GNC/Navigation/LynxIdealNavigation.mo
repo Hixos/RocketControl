@@ -1,7 +1,7 @@
 within RocketControl.Rockets.Lynx.GNC.Navigation;
 
 model LynxIdealNavigation
-  extends Rockets.Internal.PartialNavigationSystem;
+  extends RocketControl.Rockets.Internal.PartialNavigationSystem;
   RocketControl.Interfaces.AvionicsBus bus annotation(
     Placement(visible = true, transformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {102, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   RocketControl.Blocks.Math.Quaternion2Euler quaternion2Euler annotation(

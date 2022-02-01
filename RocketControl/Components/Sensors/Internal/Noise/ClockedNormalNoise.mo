@@ -14,7 +14,7 @@ equation
     r = distribution(r_raw, mu, sigma);
   end when;
   annotation(
-    Icon(coordinateSystem(preserveAspectRatio = false, extent = {{-100, -100}, {100, 100}}), graphics = {Text(visible = enableNoise, extent = {{-66, 92}, {94, 66}}, textColor = {175, 175, 175}, textString = "mu=%mu"), Text(visible = enableNoise, extent = {{-70, -68}, {94, -96}}, textColor = {175, 175, 175}, textString = "sigma=%sigma")}),
+    Icon(coordinateSystem(preserveAspectRatio = false, extent = {{-100, -100}, {100, 100}}), graphics = {Text(lineColor = {175, 175, 175}, extent = {{-66, 92}, {94, 66}}, textString = "mu=%mu"), Text(lineColor = {175, 175, 175}, extent = {{-70, -68}, {94, -96}}, textString = "sigma=%sigma")}),
     Documentation(info = "<html>
   <p>
   A summary of the common properties of the noise blocks is provided in the documentation of package

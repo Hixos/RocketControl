@@ -2,7 +2,7 @@ within RocketControl.Rockets.Lynx.GNC.Navigation;
 
 model LynxNavigation
   outer World.SimOptions opt;
-  extends Rockets.Internal.PartialNavigationSystem;
+  extends RocketControl.Rockets.Internal.PartialNavigationSystem;
   RocketControl.Interfaces.AvionicsBus bus annotation(
     Placement(visible = true, transformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {102, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   RocketControl.GNC.Navigation.AttitudeEstimation attitudeEstimation(elevation0 = 1.466076571675237, heading0 = 2.268928027592628, samplingPeriodMs = opt.samplePeriodMs, sigma_b = 2, sigma_u = from_deg(10), sigma_v = from_deg(60)) annotation(

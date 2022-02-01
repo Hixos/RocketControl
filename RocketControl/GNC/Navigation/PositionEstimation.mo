@@ -1,7 +1,7 @@
 within RocketControl.GNC.Navigation;
 
 model PositionEstimation
-  extends RocketControl.GNC.Internal.Icons.Navigation;
+  extends RocketControl.Icons.Navigation;
   parameter SI.Position sigma_pos;
   parameter SI.Position sigma_vel;
   parameter Real[6] sigma_gps;
