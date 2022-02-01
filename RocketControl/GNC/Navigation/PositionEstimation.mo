@@ -18,11 +18,11 @@ model PositionEstimation
     Placement(visible = true, transformation(origin = {-120, -30}, extent = {{-20, -20}, {20, 20}}, rotation = 0), iconTransformation(origin = {-120, -36}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
   Modelica.Blocks.Interfaces.RealInput vel_ned[3] annotation(
     Placement(visible = true, transformation(origin = {-120, -80}, extent = {{-20, -20}, {20, 20}}, rotation = 0), iconTransformation(origin = {-120, -98}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
-  RocketControl.Blocks.Math.resolve1 acc_ned annotation(
+  RocketControl.Blocks.Math.Quaternions.resolve1 acc_ned annotation(
     Placement(visible = true, transformation(origin = {-50, 50}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  RocketControl.Blocks.Math.Vector.VectorConstant gravity(k = {0, 0, Modelica.Constants.g_n}) annotation(
+  RocketControl.Blocks.Math.Vectors.VectorConstant gravity(k = {0, 0, Modelica.Constants.g_n}) annotation(
     Placement(visible = true, transformation(origin = {-32, 90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  RocketControl.Blocks.Math.Vector.VectorAdd acc_inertial annotation(
+  RocketControl.Blocks.Math.Vectors.VectorAdd acc_inertial annotation(
     Placement(visible = true, transformation(origin = {10, 30}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Blocks.Interfaces.RealOutput pos_est[3] annotation(
     Placement(visible = true, transformation(origin = {110, 40}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {110, 40}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));

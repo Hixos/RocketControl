@@ -1,7 +1,7 @@
 within RocketControl.Tests.World;
 
   model MagneticField
-    RocketControl.World.MyWorld world(altitude_0 = 100, latitude_0 = 45, longitude_0 = 8) annotation(
+    RocketControl.World.FlatWorld world(altitude_0 = 100, latitude_0 = 45, longitude_0 = 8) annotation(
       Placement(visible = true, transformation(origin = {-90, -90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
     Real b[3];
   equation

@@ -3,7 +3,7 @@ within RocketControl.Components.Sensors.TrueSensors;
 model TrueBarometer
   extends Modelica.Mechanics.MultiBody.Sensors.Internal.PartialAbsoluteSensor;
   outer RocketControl.World.Atmosphere atmosphere;
-  outer RocketControl.World.MyWorld world;
+  outer RocketControl.World.FlatWorld world;
   Modelica.Blocks.Interfaces.RealOutput p(final unit = "Pa", final quantity = "Pressure", displayUnit = "kPa") annotation(
     Placement(visible = true, transformation(origin = {110, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {108, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
 equation

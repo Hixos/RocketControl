@@ -40,7 +40,7 @@ model RealMagnetometer "Magnetometer sensor model with bias, gaussian noise and 
     Placement(visible = true, transformation(origin = {16, 0}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
   RocketControl.Components.Sensors.Internal.ADeffects sampleZ(samplePeriodMs = samplePeriodMs, bias = 0, biased = biased, bits = bits, limited = limited, noise(fixedLocalSeed = fixedLocalSeed[3], sigma = sigmaNoise, useAutomaticLocalSeed = false), noisy = noisy, quantized = quantized, yMax = b_max, yMin = b_min) annotation(
     Placement(visible = true, transformation(origin = {16, -40}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
-  RocketControl.Components.Sensors.IdealSensors.IdealMagnetometer idealMagnetometer annotation(
+  RocketControl.Components.Sensors.TrueSensors.TrueMagnetometer trueMagnetometer annotation(
     Placement(visible = true, transformation(origin = {-60, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Blocks.Interfaces.RealOutput b[3](each final unit = "T", each final quantity = "MagneticFluxDensity", each displayUnit = "nT") annotation(
     Placement(visible = true, transformation(origin = {110, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {108, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
@@ -50,12 +50,12 @@ protected
   Types.MagneticFluxDensity b_mis[3];
   Types.NanoTesla b_biased[3];
 equation
-  b_biased = idealMagnetometer.b + idealMagnetometer.b * bias / norm(idealMagnetometer.b);
+  b_biased = trueMagnetometer.b + trueMagnetometer.b * bias / norm(trueMagnetometer.b);
   b_mis = Modelica.Mechanics.MultiBody.Frames.resolve2(R_mis, b_biased);
   sampleX.u = b_mis[1];
   sampleY.u = b_mis[2];
   sampleZ.u = b_mis[3];
-  connect(frame_a, idealMagnetometer.frame_a) annotation(
+  connect(frame_a, trueMagnetometer.frame_a) annotation(
     Line(points = {{-100, 0}, {-70, 0}}));
   connect(sampleX.y, b[1]) annotation(
     Line(points = {{23, 40}, {40, 40}, {40, 0}, {106, 0}}, color = {0, 0, 127}));

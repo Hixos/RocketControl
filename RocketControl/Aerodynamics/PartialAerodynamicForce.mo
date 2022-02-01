@@ -6,7 +6,7 @@ partial model PartialAerodynamicForce
   type AeroCoefficient = Real(unit = "1");
   type C = Coefficients;
   outer World.Atmosphere atmosphere;
-  outer World.MyWorld world;
+  outer World.Interfaces.WorldBase world;
   parameter Modelica.Units.SI.Angle max_alpha = from_deg(10);
   parameter Modelica.Units.SI.Angle min_alpha = from_deg(-10);
   parameter Modelica.Units.SI.Angle max_beta = from_deg(10);

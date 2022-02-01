@@ -34,7 +34,7 @@ model RealAccelerometer
     Dialog(enable = noisy, group = "Sampling and noise"));
   parameter SI.Jerk sigmaBiasInstability "Bias instability standard deviation" annotation(
     Dialog(enable = noisy, group = "Sampling and noise"));
-  RocketControl.Components.Sensors.IdealSensors.IdealAccelerometer idealAccelerometer annotation(
+  RocketControl.Components.Sensors.TrueSensors.TrueAccelerometer trueAccelerometer annotation(
     Placement(visible = true, transformation(origin = {-60, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   RocketControl.Components.Sensors.Internal.ADeffects sampleX(samplePeriodMs = samplePeriodMs, redeclare RocketControl.Components.Sensors.Internal.Noise.ClockedSensorNoise noise(sigmaNoise = sigmaNoise, sigmaRW = sigmaBiasInstability, useAutomaticLocalSeed = false, fixedLocalSeed = fixedLocalSeed[1]), bias = bias[1], biased = biased, bits = bits, limited = limited, noisy = noisy, quantized = quantized, yMax = acc_max, yMin = acc_min) annotation(
     Placement(visible = true, transformation(origin = {0, 40}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
@@ -45,13 +45,13 @@ model RealAccelerometer
   Modelica.Blocks.Interfaces.RealOutput a[3](each final unit = "m/s2", each final quantity = "Acceleration") annotation(
     Placement(visible = true, transformation(origin = {110, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {108, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
 equation
-  connect(frame_a, idealAccelerometer.frame_a) annotation(
+  connect(frame_a, trueAccelerometer.frame_a) annotation(
     Line(points = {{-100, 0}, {-70, 0}}));
-  connect(idealAccelerometer.a[1], sampleX.u) annotation(
+  connect(trueAccelerometer.a[1], sampleX.u) annotation(
     Line(points = {{-50, 0}, {-29, 0}, {-29, 40}, {-7, 40}}, color = {0, 0, 127}));
-  connect(idealAccelerometer.a[2], sampleY.u) annotation(
+  connect(trueAccelerometer.a[2], sampleY.u) annotation(
     Line(points = {{-50, 0}, {-8, 0}}, color = {0, 0, 127}));
-  connect(idealAccelerometer.a[3], sampleZ.u) annotation(
+  connect(trueAccelerometer.a[3], sampleZ.u) annotation(
     Line(points = {{-50, 0}, {-28, 0}, {-28, -40}, {-8, -40}}, color = {0, 0, 127}));
   connect(sampleX.y, a[1]) annotation(
     Line(points = {{6, 40}, {40, 40}, {40, 0}, {106, 0}}, color = {0, 0, 127}));

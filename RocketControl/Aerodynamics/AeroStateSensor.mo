@@ -7,7 +7,7 @@ model AeroStateSensor
   RocketControl.Aerodynamics.AeroAnglesSensor aeroAnglesSensor annotation(
     Placement(visible = true, transformation(origin = {0, 40}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   outer World.Atmosphere atmosphere;
-  outer World.MyWorld world;
+  outer World.Interfaces.WorldBase world;
   Modelica.Units.SI.Angle beta2;
   SI.Velocity[3] v_w;
   SI.Velocity[3] v;

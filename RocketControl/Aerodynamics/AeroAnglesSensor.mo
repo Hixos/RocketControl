@@ -5,7 +5,7 @@ model AeroAnglesSensor
   import Modelica.Mechanics.MultiBody.Frames;
   import Modelica.Math.Vectors;
   outer World.Atmosphere atmosphere;
-  outer World.MyWorld world;
+  outer World.Interfaces.WorldBase world;
   parameter Boolean limit_alpha_dot = true;
   parameter SI.Angle alpha_dot_max = from_deg(360 * 5);
   Modelica.Blocks.Interfaces.RealOutput alpha(final quantity = "Angle", final unit = "rad", displayUnit = "deg") annotation(

@@ -2,7 +2,7 @@ within RocketControl.Tests.Components;
 
 package Sensors
   model SensorTestSuite
-    RocketControl.World.MyWorld myWorld(n = {0, 0, 1}) annotation(
+    RocketControl.World.FlatWorld myWorld(n = {0, 0, 1}) annotation(
       Placement(visible = true, transformation(origin = {-90, -90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
     Modelica.Mechanics.MultiBody.Parts.Body body(m = 1, r_CM = {0, 0, 0}) annotation(
       Placement(visible = true, transformation(origin = {-30, 30}, extent = {{-10, -10}, {10, 10}}, rotation = 90)));

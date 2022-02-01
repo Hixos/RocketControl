@@ -9,9 +9,9 @@ model LinearSpringDamperParallel "Spring and damper in parallel that act only on
   parameter Boolean s_fixed = false;
   parameter SI.ModulusOfElasticity c;
   parameter SI.DampingCoefficient d;
-  Components.Parts.Forces.LinearSpring linearSpring(c = c, n = n, s(fixed = s_fixed, start = s_start), s_0 = s_0, useEnablePort = true) annotation(
+  Components.Parts.LinearSpring linearSpring(c = c, n = n, s(fixed = s_fixed, start = s_start), s_0 = s_0, useEnablePort = true) annotation(
     Placement(visible = true, transformation(origin = {0, 40}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Components.Parts.Forces.LinearDamper linearDamper(d = d, n = n, s(start = s_start), useEnablePort = true) annotation(
+  Components.Parts.LinearDamper linearDamper(d = d, n = n, s(start = s_start), useEnablePort = true) annotation(
     Placement(visible = true, transformation(origin = {0, -40}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
 equation
   connect(enable, linearDamper.enable) annotation(

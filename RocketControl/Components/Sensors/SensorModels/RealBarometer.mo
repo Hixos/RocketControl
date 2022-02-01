@@ -32,16 +32,16 @@ model RealBarometer
     Dialog(enable = noisy, group = "Sampling and noise"));
   parameter SI.Pressure sigmaNoise "Noise standard deviation" annotation(
     Dialog(enable = noisy, group = "Sampling and noise"));
-  RocketControl.Components.Sensors.IdealSensors.IdealBarometer idealBarometer annotation(
+  RocketControl.Components.Sensors.TrueSensors.TrueBarometer trueBarometer annotation(
     Placement(visible = true, transformation(origin = {-50, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   RocketControl.Components.Sensors.Internal.ADeffects sample(samplePeriodMs = samplePeriodMs, noise(sigma = sigmaNoise, useAutomaticLocalSeed = false, fixedLocalSeed = fixedLocalSeed), bias = bias, biased = biased, bits = bits, limited = limited, noisy = noisy, quantized = quantized, yMax = p_max, yMin = p_min) annotation(
     Placement(visible = true, transformation(origin = {40, 0}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
   Modelica.Blocks.Interfaces.RealOutput p(final unit = "Pa", final quantity = "Pressure", displayUnit = "kPa") annotation(
     Placement(visible = true, transformation(origin = {110, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {108, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
 equation
-  connect(frame_a, idealBarometer.frame_a) annotation(
+  connect(frame_a, trueBarometer.frame_a) annotation(
     Line(points = {{-100, 0}, {-60, 0}}));
-  connect(idealBarometer.p, sample.u) annotation(
+  connect(trueBarometer.p, sample.u) annotation(
     Line(points = {{-40, 0}, {32, 0}}, color = {0, 0, 127}));
   connect(sample.y, p) annotation(
     Line(points = {{46, 0}, {106, 0}}, color = {0, 0, 127}));

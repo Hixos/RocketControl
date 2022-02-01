@@ -124,7 +124,7 @@ model AttitudeEstimation "Rocket attitude estimation from gyroscope and magnetom
     q_prop := O * q;
   end propagateQuaternion;
 
-  outer RocketControl.World.MyWorld world;
+  outer RocketControl.World.Interfaces.WorldBase world;
 equation
   when Clock() then
     q_prev = previous(q_prop);

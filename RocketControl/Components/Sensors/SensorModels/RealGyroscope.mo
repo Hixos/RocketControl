@@ -40,7 +40,7 @@ model RealGyroscope "Implementation of a real gyroscope, affected by startup ran
     Placement(visible = true, transformation(origin = {0, 0}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
   RocketControl.Components.Sensors.Internal.ADeffects sampleZ(samplePeriodMs = samplePeriodMs, redeclare RocketControl.Components.Sensors.Internal.Noise.ClockedSensorNoise noise(sigmaNoise = sigmaARW, sigmaRW = sigmaRRW, useAutomaticLocalSeed = false, fixedLocalSeed = fixedLocalSeed[3]), bias = bias[3], biased = biased, bits = bits, limited = limited, noisy = noisy, quantized = quantized, yMax = rate_max, yMin = rate_min) annotation(
     Placement(visible = true, transformation(origin = {0, -40}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
-  RocketControl.Components.Sensors.IdealSensors.IdealGyroscope idealGyroscope annotation(
+  RocketControl.Components.Sensors.TrueSensors.TrueGyroscope trueGyroscope annotation(
     Placement(visible = true, transformation(origin = {-58, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Blocks.Interfaces.RealOutput w[3](each final unit = "rad/s", each final quantity = "AngularVelocity", each displayUnit = "deg/s") annotation(
     Placement(visible = true, transformation(origin = {110, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {108, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
@@ -51,13 +51,13 @@ equation
     Line(points = {{106, 0}, {6, 0}}, color = {0, 0, 127}));
   connect(sampleZ.y, w[3]) annotation(
     Line(points = {{6, -40}, {40, -40}, {40, 0}, {106, 0}}, color = {0, 0, 127}));
-  connect(idealGyroscope.w[1], sampleX.u) annotation(
+  connect(trueGyroscope.w[1], sampleX.u) annotation(
     Line(points = {{-47, 0}, {-30, 0}, {-30, 40}, {-8, 40}}, color = {0, 0, 127}));
-  connect(idealGyroscope.w[2], sampleY.u) annotation(
+  connect(trueGyroscope.w[2], sampleY.u) annotation(
     Line(points = {{-47, 0}, {-8, 0}}, color = {0, 0, 127}));
-  connect(idealGyroscope.w[3], sampleZ.u) annotation(
+  connect(trueGyroscope.w[3], sampleZ.u) annotation(
     Line(points = {{-47, 0}, {-32, 0}, {-32, -40}, {-8, -40}}, color = {0, 0, 127}));
-  connect(frame_a, idealGyroscope.frame_a) annotation(
+  connect(frame_a, trueGyroscope.frame_a) annotation(
     Line(points = {{-100, 0}, {-68, 0}}));
   annotation(
     Icon(graphics = {Text(lineColor = {0, 0, 255}, extent = {{-127, 77}, {134, 125}}, textString = "%name"), Text(lineColor = {64, 64, 64}, extent = {{-50, -14}, {50, -54}}, textString = "w")}),

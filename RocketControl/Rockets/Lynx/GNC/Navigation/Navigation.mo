@@ -1,6 +1,6 @@
 within RocketControl.Rockets.Lynx.GNC.Navigation;
 
-model LynxNavigation
+model Navigation
   outer World.SimOptions opt;
   extends RocketControl.Rockets.Internal.PartialNavigationSystem;
   RocketControl.Interfaces.AvionicsBus bus annotation(
@@ -9,16 +9,18 @@ model LynxNavigation
     Placement(visible = true, transformation(origin = {-50, 50}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   RocketControl.GNC.Navigation.PositionEstimation positionEstimation(samplingPeriodMs = opt.samplePeriodMs, sigma_gps = {1000, 1000, 1000, 100, 100, 100}, sigma_pos = 2, sigma_vel = 1) annotation(
     Placement(visible = true, transformation(origin = {-48, 10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  RocketControl.GNC.Navigation.FlightDataBlocks.Downrange downrange annotation(
+ Blocks.Flight.Downrange downrange annotation(
     Placement(visible = true, transformation(origin = {30, -90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  RocketControl.GNC.Navigation.FlightDataBlocks.Track track annotation(
+ Blocks.Flight.Track track annotation(
     Placement(visible = true, transformation(origin = {30, -30}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  RocketControl.Blocks.Math.Quaternion2Euler quaternion2Euler annotation(
+  RocketControl.Blocks.Math.Quaternions.Quaternion2Euler quaternion2Euler annotation(
     Placement(visible = true, transformation(origin = {30, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  RocketControl.GNC.Navigation.FlightDataBlocks.ClimbAngle climbAngle annotation(
+ Blocks.Flight.ClimbAngle climbAngle annotation(
     Placement(visible = true, transformation(origin = {30, -60}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  RocketControl.Blocks.Transformations.ned2body v_body annotation(
-    Placement(visible = true, transformation(origin = {-50, -50}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  RocketControl.Blocks.Trasformations.ned2body v_body annotation(
+    Placement(visible = true, transformation(origin = {-70, -50}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+ RocketControl.Blocks.Flight.AeroAngles aeroAngles annotation(
+    Placement(visible = true, transformation(origin = {-30, -50}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
 equation
   connect(bus.w_meas, attitudeEstimation.w_meas) annotation(
     Line(points = {{100, 0}, {100, 100}, {-100, 100}, {-100, 58}, {-62, 58}}, thickness = 0.5));
@@ -50,10 +52,12 @@ equation
     Line(points = {{18, -30}, {0, -30}, {0, -60}, {18, -60}}, color = {0, 0, 127}, thickness = 0.5));
   connect(climbAngle.v, downrange.x) annotation(
     Line(points = {{18, -60}, {0, -60}, {0, -90}, {18, -90}}, color = {0, 0, 127}, thickness = 0.5));
-  connect(bus.v_est, v_body.x_w) annotation(
-    Line(points = {{100, 0}, {100, 100}, {-100, 100}, {-100, -44}, {-62, -44}}, thickness = 0.5));
-  connect(bus.q_est, v_body.q_bw) annotation(
-    Line(points = {{100, 0}, {100, 100}, {-100, 100}, {-100, -56}, {-62, -56}}, thickness = 0.5));
+ connect(bus.v_est, v_body.x_w) annotation(
+    Line(points = {{100, 0}, {100, 100}, {-100, 100}, {-100, -44}, {-82, -44}}, thickness = 0.5));
+ connect(bus.q_est, v_body.q_bw) annotation(
+    Line(points = {{100, 0}, {100, 100}, {-100, 100}, {-100, -56}, {-82, -56}}, thickness = 0.5));
+ connect(v_body.x_b, aeroAngles.v_body) annotation(
+    Line(points = {{-58, -50}, {-42, -50}}, color = {0, 0, 127}));
   annotation(
-    Icon(coordinateSystem(grid = {2, 0})));
-end LynxNavigation;
+    Icon(graphics = {Text(origin = {-10, -254}, lineColor = {0, 0, 255}, extent = {{-115, 155}, {115, 105}}, textString = "%name")}));
+end Navigation;

@@ -9,7 +9,7 @@ extends Icons.AerodynamicsIcon;
   type AeroCoefficient = Real(unit = "1");
   type C = Coefficients;
   outer World.Atmosphere atmosphere;
-  outer World.MyWorld world;
+  outer World.Interfaces.WorldBase world;
   parameter Modelica.Units.SI.Angle max_alpha = from_deg(10);
   parameter Modelica.Units.SI.Angle min_alpha = from_deg(-10);
   parameter Modelica.Units.SI.Angle max_beta = from_deg(10);
@@ -34,7 +34,7 @@ extends Icons.AerodynamicsIcon;
   Real q_v(unit = "kg/(m2.s)");
   Modelica.Mechanics.MultiBody.Interfaces.Frame_b frame_b annotation(
     Placement(visible = true, transformation(origin = {100, 0}, extent = {{-16, -16}, {16, 16}}, rotation = 0), iconTransformation(origin = {100, -2}, extent = {{-16, -16}, {16, 16}}, rotation = 0)));
-  Aerodynamics.Interfaces.AeroStateInput aeroState annotation(
+  Interfaces.AeroStateInput aeroState annotation(
     Placement(visible = true, transformation(origin = {-102, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(extent = {{-110, -10}, {-90, 10}}, rotation = 0)));
 equation
 //  assert(aeroState.alpha <= max_alpha and aeroState.alpha >= min_alpha, "Angle of attack out of range");
@@ -92,11 +92,11 @@ end PartialAerodynamicForce;
     RocketControl.Aerodynamics.AeroAnglesSensor aeroAnglesSensor annotation(
       Placement(visible = true, transformation(origin = {0, 40}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
     outer World.Atmosphere atmosphere;
-    outer World.MyWorld world;
+    outer World.Interfaces.WorldBase world;
     Modelica.Units.SI.Angle beta2;
     SI.Velocity[3] v_w;
     SI.Velocity[3] v;
-    Aerodynamics.Interfaces.AeroStateOutput aeroStateOutput annotation(
+    Interfaces.AeroStateOutput aeroStateOutput annotation(
       Placement(visible = true, transformation(origin = {98, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {98, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
     Modelica.Mechanics.MultiBody.Sensors.AbsoluteAngularVelocity absoluteAngularVelocity(resolveInFrame = Modelica.Mechanics.MultiBody.Types.ResolveInFrameA.frame_a) annotation(
       Placement(visible = true, transformation(origin = {0, -40}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
@@ -124,7 +124,7 @@ end PartialAerodynamicForce;
     import Modelica.Mechanics.MultiBody.Frames;
     import Modelica.Math.Vectors;
     outer World.Atmosphere atmosphere;
-    outer World.MyWorld world;
+    outer World.Interfaces.WorldBase world;
     
     parameter Boolean limit_alpha_dot = true;
     parameter SI.Angle alpha_dot_max = from_deg(360*5);
