@@ -1,4 +1,7 @@
-package RocketControl
+within RocketControl.Rockets;
+
+package Lynx
+
   annotation(
     Icon(coordinateSystem(grid = {2, 0})));
-end RocketControl;
+end Lynx;
