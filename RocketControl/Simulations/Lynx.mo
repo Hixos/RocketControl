@@ -1,7 +1,7 @@
 within RocketControl.Simulations;
 
 model Lynx
-  extends Internal.Icon;
+  extends RocketControl.Icons.SimulationIcon;
     parameter SI.Mass m = 28;
     parameter SI.Distance s_max = 0.0001;
     parameter SI.ModulusOfElasticity c_x = Modelica.Constants.g_n * m / s_max;

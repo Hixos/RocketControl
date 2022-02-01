@@ -1,7 +1,8 @@
 within RocketControl;
 
 package Simulations
-extends Internal.Icon;
+extends Modelica.Icons.BasesPackage;
+extends Icons.SimulationIcon;
   annotation(
     Icon(coordinateSystem(grid = {2, 0})));
 end Simulations;

@@ -1,8 +1,9 @@
 within RocketControl;
 
 package Aerodynamics
+extends Icons.AerodynamicsIcon;
 partial model PartialAerodynamicForce
-extends Internal.Icons.AerodynamicsIcon;
+extends Icons.AerodynamicsIcon;
   import Modelica.Mechanics.MultiBody.Frames;
   type AeroCoefficient = Real(unit = "1");
   type C = Coefficients;
@@ -65,7 +66,7 @@ equation
 end PartialAerodynamicForce;
 
   model PartialAerodynamics
-  extends Internal.Icons.AerodynamicsIcon;
+  extends Icons.AerodynamicsIcon;
     Modelica.Mechanics.MultiBody.Interfaces.Frame_b frame_b annotation(
       Placement(visible = true, transformation(origin = {-100, 0}, extent = {{-16, -16}, {16, 16}}, rotation = 0), iconTransformation(origin = {-100, 0}, extent = {{-16, -16}, {16, 16}}, rotation = 0)));
     replaceable PartialAerodynamicForce aerodynamicForce annotation(
@@ -170,7 +171,19 @@ end PartialAerodynamicForce;
       Icon(graphics = {Text(lineColor = {0, 0, 255}, extent = {{-132, 76}, {129, 124}}, textString = "%name"), Text(origin = {113, 44}, extent = {{-47, 16}, {47, -16}}, textString = "alpha"), Text(origin = {111, -95}, extent = {{-57, 15}, {57, -15}}, textString = "beta"), Text(origin = {118, -25}, extent = {{-60, 15}, {60, -15}}, textString = "alpha_dot")}));
   end AeroAnglesSensor;
 
+  type Coefficients = enumeration(CN, CM, CA, CY, CLN, CLL, CNA, CMA, CYB, CLNB, CLLB, CNQ, CMQ, CAQ, CNAD, CMAD, CYR, CLNR, CLLR, CYP, CLNP, CLLP);
+
+  function coefficientStrings
+  extends Modelica.Icons.Function;
+  output String array[Coefficients];
+  algorithm
+    for c in Coefficients loop
+      array[c] := String(c);
+    end for;
+  end coefficientStrings;
+
   class AeroData
+  
     type E = enumeration(:);
     replaceable type State = E;
   
@@ -218,16 +231,6 @@ end PartialAerodynamicForce;
     annotation(
       Icon(coordinateSystem(grid = {2, 0})));
   end AeroData;
-
-  type Coefficients = enumeration(CN, CM, CA, CY, CLN, CLL, CNA, CMA, CYB, CLNB, CLLB, CNQ, CMQ, CAQ, CNAD, CMAD, CYR, CLNR, CLLR, CYP, CLNP, CLLP);
-
-  function coefficientStrings
-  output String array[Coefficients];
-  algorithm
-    for c in Coefficients loop
-      array[c] := String(c);
-    end for;
-  end coefficientStrings;
   annotation(
     Icon(coordinateSystem(grid = {2, 0})));
 end Aerodynamics;
