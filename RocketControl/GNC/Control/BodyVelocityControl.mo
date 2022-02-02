@@ -1,8 +1,8 @@
 within RocketControl.GNC.Control;
 
 block BodyVelocityControl
-  parameter Real Qvec[6] = {0, 10, 10, 100, 0, 0} * 1;
-  parameter Real Rvec[3] = {1, 1, 0.4} * 20;
+  parameter Real Qvec[6] = {0, 20, 20, 100, 0, 0} * 1;
+  parameter Real Rvec[3] = {1, 1, 0.4} * 50;
   RocketControl.GNC.Control.LinearStateMatrices.RocketOnly rocket(CA0 = 0.4200, CA_a = -0.0277, CA_b = -0.0277, CA_dp = 0.4001, CA_dr = 0.5739, CA_ds = 0.8899, CA_dy = 0.4001, CLL_dr = 2.3963, CLM_a = -37.2959, CLM_dp = 21.8445, CLN_b = 37.2959, CLN_dy = 21.8445, CN_a = 24.0744, CN_dp = 3.4045, CY_b = -24.0744, CY_dy = 3.4045, Is = 6.437, Ix = 0.06, S = pi * 0.15 ^ 2 / 4, c = 0.15, m = 22) annotation(
     Placement(visible = true, transformation(origin = {-50, 50}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   RocketControl.GNC.ContinuousLQR continuousLQR(m = 3, n = 6, useEnablePort = true)  annotation(
@@ -21,8 +21,6 @@ block BodyVelocityControl
     Placement(visible = true, transformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {108, -4}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   RocketControl.Blocks.Math.Vectors.VectorConstant vectorConstant1(k = {0, 0, 0, 0}, n = 4)  annotation(
     Placement(visible = true, transformation(origin = {40, -60}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  RocketControl.Blocks.Math.Vectors.VectorConstant vectorConstant(k = {0, 0, 0}, n = 3) annotation(
-    Placement(visible = true, transformation(origin = {-90, -70}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
 equation
   connect(continuousLQR.u, control2Deflection.u) annotation(
     Line(points = {{22, 0}, {48, 0}}, color = {0, 0, 127}, thickness = 0.5));
@@ -40,10 +38,10 @@ equation
     Line(points = {{-39, -30}, {-22, -30}, {-22, -4}, {-2, -4}}, color = {0, 0, 127}, thickness = 0.5));
   connect(x_lq.vc, continuousLQR.x) annotation(
     Line(points = {{-38, -60}, {-14, -60}, {-14, -8}, {-2, -8}}, color = {0, 0, 127}, thickness = 0.5));
-  connect(vectorConstant.v, x_lq.v2) annotation(
-    Line(points = {{-79, -70}, {-62, -70}, {-62, -64}}, color = {0, 0, 127}, thickness = 0.5));
   connect(vel_error, x_lq.v1) annotation(
     Line(points = {{-120, 0}, {-76, 0}, {-76, -56}, {-62, -56}}, color = {0, 0, 127}, thickness = 0.5));
+  connect(bus.w_est, x_lq.v2) annotation(
+    Line(points = {{100, 0}, {100, 100}, {-100, 100}, {-100, -64}, {-62, -64}}, thickness = 0.5));
   connect(control2Deflection.deflection, bus.fin_setpoint) annotation(
     Line(points = {{72, 0}, {100, 0}}, color = {0, 0, 127}, thickness = 0.5));
   annotation(

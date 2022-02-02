@@ -14,13 +14,13 @@ within RocketControl.Simulations;
       Placement(visible = true, transformation(origin = {-90, 10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Components.Parts.LandDetector landDetector annotation(
       Placement(visible = true, transformation(origin = {90, 90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  inner World.Atmosphere atmosphere annotation(
+  inner World.Atmosphere atmosphere(wind_speed = {10, 0, 0})  annotation(
       Placement(visible = true, transformation(origin = {-90, 88}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   inner World.FlatWorld world(altitude_0 = 100, latitude_0 = 45.691051, longitude_0 = 8.490499, n = {0, 0, 1}) annotation(
       Placement(visible = true, transformation(origin = {-90, -90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   RocketControl.Rockets.Lynx.LynxWithCanardsRocket lynxWithCanardsRocket annotation(
       Placement(visible = true, transformation(origin = {0, 10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
- RocketControl.GNC.Guidance.ConstantFlightPathGuidance constantFlightPathGuidance annotation(
+ RocketControl.GNC.Guidance.ConstantFlightPathGuidance constantFlightPathGuidance(int_lim = 20, k = 0.6)  annotation(
     Placement(visible = true, transformation(origin = {10, -84}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
  Modelica.Blocks.Sources.BooleanExpression control_enable(y = time > 1 and time < 8)  annotation(
     Placement(visible = true, transformation(origin = {-54, -34}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
@@ -28,8 +28,12 @@ within RocketControl.Simulations;
     Placement(visible = true, transformation(origin = {62, -84}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
  RocketControl.Rockets.Lynx.GNC.ContinuousGNC continuousGNC annotation(
     Placement(visible = true, transformation(origin = {40, -24}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
- Components.LaunchPad.LaunchRail launchRail(azimuth(displayUnit = "deg") = 1.518436449235067, c_x = c_x, c_y = c_y, c_z = c_z, d_x = d_x, d_y = d_y, d_z = d_z, elevation(displayUnit = "deg") = 1.466076571675237, lug_length = 0.04, r_rel = {0, 0, 0.04}, rail_length = 4) annotation(
+ Components.LaunchPad.LaunchRail launchRail(azimuth(displayUnit = "deg") = 0.1745329251994329, c_x = c_x, c_y = c_y, c_z = c_z, d_x = d_x, d_y = d_y, d_z = d_z, elevation(displayUnit = "deg") = 1.43116998663535, lug_length = 0.04, r_rel = {0, 0, 0.04}, rail_length = 4) annotation(
     Placement(visible = true, transformation(origin = {-50, 10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+ Modelica.Mechanics.MultiBody.Visualizers.FixedShape fixedShape(height = 0.15, length = 2, shapeType = "cone", width = 0.15)  annotation(
+    Placement(visible = true, transformation(origin = {20, 88}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+ Components.Parts.StaticFrame staticFrame annotation(
+    Placement(visible = true, transformation(origin = {-34, 64}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
 equation
   connect(lynxWithCanardsRocket.ref_center, landDetector.frame_a) annotation(
     Line(points = {{10, 10}, {34, 10}, {34, 90}, {80, 90}}));
@@ -51,6 +55,10 @@ equation
     Line(points = {{-40, 4}, {-10, 4}}, color = {95, 95, 95}));
  connect(launchRail.frame_b_lug_bow, lynxWithCanardsRocket.frame_lug_bow) annotation(
     Line(points = {{-40, 16}, {-10, 16}}));
+ connect(staticFrame.frame_a, lynxWithCanardsRocket.ref_center) annotation(
+    Line(points = {{-44, 64}, {-46, 64}, {-46, 34}, {10, 34}, {10, 10}}, color = {95, 95, 95}));
+ connect(staticFrame.frame_b, fixedShape.frame_a) annotation(
+    Line(points = {{-24, 64}, {10, 64}, {10, 88}}));
 protected
   annotation(
       Icon(coordinateSystem(grid = {2, 0})),

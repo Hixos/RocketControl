@@ -25,13 +25,19 @@ model ConstantFlightPathGuidance
   SI.Acceleration g[3];
 equation
   g = Modelica.Mechanics.MultiBody.Frames.Quaternions.resolve2(bus.q_est, {0, 0, 9.80665});
+  
   V_body = Modelica.Mechanics.MultiBody.Frames.Quaternions.resolve2(bus.q_est, bus.v_est);
+  
   V_target_body = Modelica.Mechanics.MultiBody.Frames.Quaternions.resolve2(bus.q_est, V_dir_target_ned) * norm(bus.v_est);
+  
   V_err_body = V_target_body - V_body;
+  
   acc_target = k * V_err_body[2:3];
-  acc_max = 0.5 * atmosphere.density(-bus.x_est[3]) * norm(bus.v_est) ^ 2 * (3.14 * 0.15 ^ 2 / 4) * 24 * from_deg(4) / 22;
+  
+  acc_max = 0.5 * atmosphere.density(-bus.x_est[3]) * norm(bus.v_est) ^ 2 * (3.14 * 0.15 ^ 2 / 4) * 24 * from_deg(7) / 22;
+  
   if noEvent(acc_max < norm(acc_target)) then
-    acc_target_sat = acc_target_sat / norm(acc_target) * acc_max;
+    acc_target_sat = acc_target / norm(acc_target) * acc_max;
   else
     acc_target_sat = acc_target;
   end if;

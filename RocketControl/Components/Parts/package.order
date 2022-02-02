@@ -8,3 +8,4 @@ CompressionSpringDamper
 BodyVariableMass
 LandDetector
 DescentDetector
+StaticFrame
