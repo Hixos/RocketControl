@@ -9,10 +9,10 @@ model SampledTrueSensors
     Placement(visible = true, transformation(origin = {0, 80}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   RocketControl.Components.Sensors.SensorModels.RealAccelerometer realAccelerometer(bias = {0, 0, 0}, fixedLocalSeed = {11, 101, 1001}, noisy = true, samplePeriodMs = opt.samplePeriodMs, sigmaBiasInstability = 0, sigmaNoise = 0) annotation(
     Placement(visible = true, transformation(origin = {0, 40}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  RocketControl.Components.Sensors.SensorModels.RealMagnetometer realMagnetometer(b_max(displayUnit = "T") = 0, bias(each displayUnit = "T") = 0, fixedLocalSeed = {1211, 10211, 100211}, misalignement(each displayUnit = "rad") = {0, 0, 0}, noisy = true, samplePeriodMs = opt.samplePeriodMs, sigmaNoise(displayUnit = "T") = 0) annotation(
+  RocketControl.Components.Sensors.SensorModels.RealMagnetometer realMagnetometer(b_max(displayUnit = "T") = 0, bias(displayUnit = "T") = 0, fixedLocalSeed = {1211, 10211, 100211}, misalignement(each displayUnit = "rad") = {0, 0, 0}, noisy = true, samplePeriodMs = opt.samplePeriodMs, sigmaNoise(displayUnit = "T") = 0) annotation(
     Placement(visible = true, transformation(origin = {0, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   RocketControl.Components.Sensors.SensorModels.RealBarometer realBarometer(bias(displayUnit = "Pa") = 0, fixedLocalSeed = 14, noisy = true, p_max(displayUnit = "Pa") = 0, samplePeriodMs = opt.samplePeriodMs, sigmaNoise(displayUnit = "Pa") = 0) annotation(
-    Placement(visible = true, transformation(origin = {0, -80}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+    Placement(visible = true, transformation(origin = {0, -70}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   RocketControl.Components.Sensors.SensorModels.RealGNSS realGNSS(fixedLocalSeed = {13, 103, 1003}, noisy = true, samplePeriodMs = opt.samplePeriodMs, sigmaNoise_vxy = 0, sigmaNoise_vz = 0, sigmaNoise_xy = 0, sigmaNoise_z = 0, sin_error_freq = 0) annotation(
     Placement(visible = true, transformation(origin = {0, -40}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
 equation
@@ -25,7 +25,7 @@ equation
   connect(frame_a, realGNSS.frame_a) annotation(
     Line(points = {{-100, 0}, {-40, 0}, {-40, -40}, {-10, -40}}));
   connect(frame_a, realBarometer.frame_a) annotation(
-    Line(points = {{-100, 0}, {-40, 0}, {-40, -80}, {-10, -80}}));
+    Line(points = {{-100, 0}, {-40, 0}, {-40, -70}, {-10, -70}}));
   connect(realGyroscope.w, bus.w_meas) annotation(
     Line(points = {{11, 80}, {60, 80}, {60, 0}, {100, 0}}, color = {0, 0, 127}, thickness = 0.5));
   connect(realAccelerometer.a, bus.a_meas) annotation(
@@ -37,7 +37,7 @@ equation
   connect(realGNSS.v, bus.v_meas) annotation(
     Line(points = {{12, -44}, {60, -44}, {60, 0}, {100, 0}}, color = {0, 0, 127}, thickness = 0.5));
   connect(realBarometer.p, bus.p_meas) annotation(
-    Line(points = {{10, -80}, {60, -80}, {60, 0}, {100, 0}}, color = {0, 0, 127}));
+    Line(points = {{11, -70}, {60, -70}, {60, 0}, {100, 0}}, color = {0, 0, 127}));
   annotation(
     Icon(coordinateSystem(grid = {2, 0})));
 end SampledTrueSensors;

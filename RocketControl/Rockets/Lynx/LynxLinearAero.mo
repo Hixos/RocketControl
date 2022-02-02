@@ -17,8 +17,6 @@ equation
     Line(points = {{-40, 0}, {100, 0}}));
   connect(linearAerodynamics.frame_b, lynxBody.ref_center) annotation(
     Line(points = {{-2, 56}, {-40, 56}, {-40, 0}}, color = {95, 95, 95}));
-  connect(linearAerodynamics.finDeflection, bus.fin_setpoint) annotation(
-    Line(points = {{-2, 50}, {-34, 50}, {-34, 32}, {100, 32}, {100, 90}}, color = {0, 0, 127}, thickness = 0.5));
   annotation(
     Icon(coordinateSystem(grid = {2, 0})));
 end LynxLinearAero;

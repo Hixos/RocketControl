@@ -2,6 +2,7 @@ LynxBody
 LynxRocket
 LynxWithCanardsRocket
 LynxLinearAero
+LynxLinearAeroDiscrete
 Aerodynamics
 AerodynamicsWithCanards
 LinearAerodynamicsWithCanards

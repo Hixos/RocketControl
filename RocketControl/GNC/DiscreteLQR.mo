@@ -24,24 +24,33 @@ block DiscreteLQR
     Placement(visible = true, transformation(origin = {110, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {110, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Blocks.Interfaces.RealInput x[n](start = zeros(n)) annotation(
     Placement(visible = true, transformation(origin = {-120, -80}, extent = {{-20, -20}, {20, 20}}, rotation = 0), iconTransformation(origin = {-120, -80}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
-  Modelica.Blocks.Interfaces.RealOutput K[m, n](start = zeros(m,m)) annotation(
+  Modelica.Blocks.Interfaces.RealOutput K[m, n](start = zeros(m,n)) annotation(
     Placement(visible = true, transformation(origin = {110, 62}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {110, 50}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
 
 Real Ad[n,n];
 Real Bd[n,m];
-Real x_prev[n];
 
 Real P[n,n];
 
-Integer niter(start = 0);
+Integer niter;
 equation
   when Clock() then
-    Ad = identity(n) + sample(A)*dt + 0.5*sample(A)^2*dt^2;
-    Bd = sample(B)*dt + 0.5*sample(A)*sample(B)*dt^2; 
-    x_prev = previous(x);
-    (P, niter) = RocketControl.Math.Matrices.sdaDare(Ad, Bd, R, Q, s, tol, maxiter);
-    K = Modelica.Math.Matrices.solve2(R+transpose(Bd)*P*Bd, transpose(Bd)*P*Ad);
-    u = -K*x_prev;
+  if enable then
+      Ad = identity(n) + A*dt + 0.5*A*A*dt^2;
+      Bd = B*dt + 0.5*A*B*dt^2;
+//      P = identity(n);
+//      niter = 0;
+      (P, niter) = RocketControl.Math.Matrices.sdaDare(Ad, Bd, sample(R)*dt, sample(Q)/dt, s, tol, maxiter);
+      K = Modelica.Math.Matrices.solve2(sample(R)*dt+transpose(Bd)*P*Bd, transpose(Bd)*P*Ad);
+      u = -K*x;
+    else
+      Ad = zeros(n,n);
+      Bd = zeros(n,m);
+      P = identity(n);
+      niter = 0;
+      K = zeros(m,n);
+      u = zeros(m);
+    end if;
   end when;
 
 

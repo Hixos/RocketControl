@@ -4,3 +4,4 @@ LinearStateMatrices
 Internal
 BodyVelocityControl
 BodyVelocityControlWithActuator
+BodyVelocityControlDiscrete
