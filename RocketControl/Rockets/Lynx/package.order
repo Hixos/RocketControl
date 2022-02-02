@@ -1,6 +1,8 @@
 LynxBody
 LynxRocket
 LynxWithCanardsRocket
+LynxLinearAero
 Aerodynamics
 AerodynamicsWithCanards
+LinearAerodynamicsWithCanards
 GNC

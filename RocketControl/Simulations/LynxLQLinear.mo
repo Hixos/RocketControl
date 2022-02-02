@@ -1,6 +1,6 @@
 within RocketControl.Simulations;
 
- model LynxLQ
+ model LynxLQLinear
   extends RocketControl.Icons.SimulationIcon;
     parameter SI.Mass m = 28;
     parameter SI.Distance s_max = 0.0001;
@@ -18,7 +18,7 @@ within RocketControl.Simulations;
       Placement(visible = true, transformation(origin = {-90, 88}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   inner World.FlatWorld world(altitude_0 = 100, latitude_0 = 45.691051, longitude_0 = 8.490499, n = {0, 0, 1}) annotation(
       Placement(visible = true, transformation(origin = {-90, -90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  RocketControl.Rockets.Lynx.LynxWithCanardsRocket lynxWithCanardsRocket annotation(
+  RocketControl.Rockets.Lynx.LynxLinearAero lynxWithCanardsRocket annotation(
       Placement(visible = true, transformation(origin = {0, 10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
  RocketControl.GNC.Guidance.ConstantFlightPathGuidance constantFlightPathGuidance(int_lim = 20, k = 0.6)  annotation(
     Placement(visible = true, transformation(origin = {10, -84}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
@@ -67,4 +67,4 @@ protected
   annotation(
       Icon(coordinateSystem(grid = {2, 0})),
       experiment(StartTime = 0, StopTime = 60, Tolerance = 1e-6, Interval = 0.01));
-  end LynxLQ;
+  end LynxLQLinear;
