@@ -1,5 +1,6 @@
 DiscreteKalmanFilter
 ContinuousLQR
+DiscreteLQR
 AugmentIntegratorState
 FeedbackIntegrator
 Guidance
