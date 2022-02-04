@@ -53,10 +53,10 @@ equation
   
   if noEvent(bus.control_enable) then
     for i in 1:3 loop
-      if abs(acc_err_int_prev[i]) > int_lim and acc_err[i] * acc_err_int_prev[i] > 0 then
+      if abs(acc_err_int_prev[i]) > int_lim and acc_err[i] * acc_err_int_prev[i] < 0 then
         acc_err_int[i] = acc_err_int_prev[i];
       else
-        acc_err_int[i] = acc_err_int_prev[i] + kint * acc_err[i] * dt;
+        acc_err_int[i] = acc_err_int_prev[i] - kint * acc_err[i] * dt;
       end if;
     end for;
   else

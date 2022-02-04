@@ -37,9 +37,12 @@ block RocketAndActuator
   SI.Density rho(displayUnit = "kg/m3");
   Interfaces.AvionicsBus bus annotation(
     Placement(visible = true, transformation(origin = {-100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(extent = {{-110, -10}, {-90, 10}}, rotation = 0)));
+    
+  SI.Velocity v_body[3];
 equation
+  v_body = Modelica.Mechanics.MultiBody.Frames.Quaternions.resolve2(bus.q_est, bus.v_est);
   rho = atmosphere.density(-bus.x_est[3]);
-  u = bus.v_est[1];
+  u = v_body[1];
   v = 0;//bus.v_est[2];
   w = 0;//bus.v_est[3];
   p = 0;//bus.w_est[1];

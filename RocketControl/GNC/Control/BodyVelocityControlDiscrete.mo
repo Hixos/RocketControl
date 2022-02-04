@@ -20,8 +20,8 @@ block BodyVelocityControlDiscrete
     Placement(visible = true, transformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {108, -4}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   RocketControl.Blocks.Math.Vectors.VectorConstant vectorConstant1(k = {0, 0, 0, 0}, n = 4)  annotation(
     Placement(visible = true, transformation(origin = {40, -60}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  RocketControl.GNC.DiscreteLQR discreteLQR(dt = opt.samplePeriodMs / 1000, m = 3, n = 9, useEnablePort = true)  annotation(
-    Placement(visible = true, transformation(origin = {10, 2}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  RocketControl.GNC.DiscreteLQR discreteLQR(dt = opt.samplePeriodMs / 1000, m = 3, n = 9, s = 1, useEnablePort = true)  annotation(
+    Placement(visible = true, transformation(origin = {10, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   RocketControl.Blocks.Math.Vectors.VectorConcatenate vectorConcatenate(n1 = 6, n2 = 3) annotation(
     Placement(visible = true, transformation(origin = {-8, -78}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Blocks.Math.Vectors.VectorSplit vectorSplit(n = 4, s = 3)  annotation(
@@ -34,23 +34,23 @@ equation
   connect(bus.w_est, x_lq.v2) annotation(
     Line(points = {{100, 0}, {100, 100}, {-100, 100}, {-100, -64}, {-62, -64}}, thickness = 0.5));
   connect(bus.control_enable, discreteLQR.enable) annotation(
-    Line(points = {{100, 0}, {100, 100}, {10, 100}, {10, 12}}, color = {255, 0, 255}));
+    Line(points = {{100, 0}, {100, 100}, {10, 100}, {10, 9}}, color = {255, 0, 255}));
   connect(rocket.A, discreteLQR.A) annotation(
-    Line(points = {{-38, 56}, {-22, 56}, {-22, 10}, {-2, 10}}, color = {0, 0, 127}, thickness = 0.5));
+    Line(points = {{-38, 56}, {-22, 56}, {-22, 8}, {-2, 8}}, color = {0, 0, 127}, thickness = 0.5));
   connect(rocket.B, discreteLQR.B) annotation(
-    Line(points = {{-38, 46}, {-26, 46}, {-26, 6}, {-2, 6}}, color = {0, 0, 127}, thickness = 0.5));
+    Line(points = {{-38, 46}, {-26, 46}, {-26, 4}, {-2, 4}}, color = {0, 0, 127}, thickness = 0.5));
   connect(Q.k, discreteLQR.Q) annotation(
-    Line(points = {{-38, 0}, {-20, 0}, {-20, 2}, {-2, 2}}, color = {0, 0, 127}, thickness = 0.5));
+    Line(points = {{-38, 0}, {-2, 0}}, color = {0, 0, 127}, thickness = 0.5));
   connect(R.k, discreteLQR.R) annotation(
-    Line(points = {{-38, -30}, {-16, -30}, {-16, -2}, {-2, -2}}, color = {0, 0, 127}, thickness = 0.5));
-  connect(discreteLQR.u, control2Deflection.u) annotation(
-    Line(points = {{22, 2}, {35, 2}, {35, 0}, {44, 0}}, color = {0, 0, 127}, thickness = 0.5));
+    Line(points = {{-38, -30}, {-16, -30}, {-16, -4}, {-2, -4}}, color = {0, 0, 127}, thickness = 0.5));
+  connect(discreteLQR.u, control2Deflection.u[1:3]) annotation(
+    Line(points = {{21, 0}, {44, 0}}, color = {0, 0, 127}, thickness = 0.5));
   connect(control2Deflection.deflection, bus.fin_setpoint) annotation(
-    Line(points = {{68, 0}, {100, 0}}, color = {0, 0, 127}, thickness = 0.5));
+    Line(points = {{67, 0}, {100, 0}}, color = {0, 0, 127}, thickness = 0.5));
   connect(x_lq.vc, vectorConcatenate.v1) annotation(
     Line(points = {{-38, -60}, {-28, -60}, {-28, -74}, {-20, -74}}, color = {0, 0, 127}, thickness = 0.5));
   connect(vectorConcatenate.vc, discreteLQR.x) annotation(
-    Line(points = {{4, -78}, {12, -78}, {12, -22}, {-12, -22}, {-12, -6}, {-2, -6}}, color = {0, 0, 127}, thickness = 0.5));
+    Line(points = {{4, -78}, {12, -78}, {12, -22}, {-12, -22}, {-12, -8}, {-2, -8}}, color = {0, 0, 127}, thickness = 0.5));
   connect(vectorSplit.va, vectorConcatenate.v2) annotation(
     Line(points = {{-46, -90}, {-38, -90}, {-38, -82}, {-20, -82}}, color = {0, 0, 127}, thickness = 0.5));
   connect(bus.control_position_meas, vectorSplit.v) annotation(

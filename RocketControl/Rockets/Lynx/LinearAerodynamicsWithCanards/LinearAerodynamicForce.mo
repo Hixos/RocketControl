@@ -25,7 +25,7 @@ model LinearAerodynamicForce
 
   Real CA0_int;
   
-  Modelica.Blocks.Interfaces.RealInput finDeflection[4] annotation(
+  Modelica.Blocks.Interfaces.RealInput finDeflection[4](each final unit = "rad", each final quantity="Angle", each displayUnit="deg") annotation(
     Placement(visible = true, transformation(origin = {-100, -70}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-100, -70}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   RocketControl.GNC.Control.Deflection2Control cu annotation(
     Placement(visible = true, transformation(origin = {-50, -70}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
@@ -35,14 +35,14 @@ equation
   else
     CA0_int = CA0[1];
   end if;
-  CA = CA0_int +  CA_dy*from_deg(cu.control[1])^2 + CA_dp*from_deg(cu.control[2])^2 + CA_dr*from_deg(cu.control[3])^2 + CA_ds*from_deg(cu.control[4])^2;
+  CA = CA0_int +  CA_dy*cu.control[1]^2 + CA_dp*cu.control[2]^2 + CA_dr*cu.control[3]^2 + CA_ds*cu.control[4]^2;
   
-  CN = CN_a*aeroState.alpha + CN_dp*from_deg(cu.control[2]);
-  CY = CY_b*aeroState.beta + CY_dy*from_deg(cu.control[1]);
+  CN = CN_a*aeroState.alpha + CN_dp*cu.control[2];
+  CY = CY_b*aeroState.beta + CY_dy*cu.control[1];
   
-  CLL = CLL_dr*from_deg(cu.control[3]);
-  CLM = CLM_a*aeroState.alpha + CLM_dp*from_deg(cu.control[2]);
-  CLN = CLN_b*aeroState.beta + CLN_dy*from_deg(cu.control[1]);
+  CLL = CLL_dr*cu.control[3];
+  CLM = CLM_a*aeroState.alpha + CLM_dp*cu.control[2];
+  CLN = CLN_b*aeroState.beta + CLN_dy*cu.control[1];
   
   connect(finDeflection, cu.u) annotation(
     Line(points = {{-100, -70}, {-62, -70}}, color = {0, 0, 127}, thickness = 0.5));
