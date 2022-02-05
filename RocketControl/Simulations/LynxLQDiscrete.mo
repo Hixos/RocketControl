@@ -25,8 +25,8 @@ within RocketControl.Simulations;
  RocketControl.Rockets.Lynx.LynxLinearAeroDiscrete lynxLinearAeroDiscrete annotation(
     Placement(visible = true, transformation(origin = {0, 10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
  RocketControl.Rockets.Lynx.GNC.Navigation.Navigation navigation annotation(
-    Placement(visible = true, transformation(origin = {-50, -50}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
- RocketControl.GNC.Guidance.ConstantFlightPathGuidanceDiscrete constantFlightPathGuidance(dt = opt.samplePeriodMs / 1000, flightpathangle = from_deg(83), heading = 0.5235987755982988, int_lim = 50, kint = 4)  annotation(
+    Placement(visible = true, transformation(origin = {-48, -50}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+ RocketControl.GNC.Guidance.ConstantFlightPathGuidanceDiscrete constantFlightPathGuidance(dt = opt.samplePeriodMs / 1000, flightpathangle = from_deg(70), heading = 0.5235987755982988, int_lim = 50, kint = 4)  annotation(
     Placement(visible = true, transformation(origin = {10, -90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
  Modelica.Clocked.BooleanSignals.Sampler.Sample sample1 annotation(
     Placement(visible = true, transformation(origin = {-12, 60}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
@@ -38,6 +38,8 @@ within RocketControl.Simulations;
     Placement(visible = true, transformation(origin = {14, 88}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
  RocketControl.Rockets.Lynx.GNC.Sensors.RealSensors realSensors annotation(
     Placement(visible = true, transformation(origin = {42, -32}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+ Rockets.Lynx.GNC.ContinuousGNC continuousGNC annotation(
+    Placement(visible = true, transformation(origin = {108, 46}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
 equation
   connect(fixed.frame_b, launchRail.frame_a) annotation(
     Line(points = {{-80, 10}, {-60, 10}}, color = {95, 95, 95}));
@@ -53,8 +55,8 @@ equation
     Line(points = {{-6, 60}, {10, 60}, {10, 18}}, color = {255, 0, 255}));
   connect(constantFlightPathGuidance.acc_err_int, bodyVelocityControlDiscrete.vel_error) annotation(
     Line(points = {{21, -90}, {58, -90}}, color = {0, 0, 127}, thickness = 0.5));
-  connect(navigation.bus, constantFlightPathGuidance.bus) annotation(
-    Line(points = {{-40, -50}, {-40, -90}, {0, -90}}, thickness = 0.5));
+ connect(navigation.bus, constantFlightPathGuidance.bus) annotation(
+    Line(points = {{-38, -50}, {-38, -90}, {0, -90}}, thickness = 0.5));
   connect(assetVisualizer.frame_a, lynxLinearAeroDiscrete.ref_center) annotation(
     Line(points = {{4, 88}, {-2, 88}, {-2, 24}, {16, 24}, {16, 10}, {10, 10}}, color = {95, 95, 95}));
   connect(lynxLinearAeroDiscrete.ref_center, realSensors.frame_a) annotation(
@@ -63,8 +65,10 @@ equation
     Line(points = {{10, 18}, {84, 18}, {84, -34}, {52, -34}, {52, -32}}, thickness = 0.5));
   connect(realSensors.bus, bodyVelocityControlDiscrete.bus) annotation(
     Line(points = {{52, -32}, {88, -32}, {88, -90}, {80, -90}}, thickness = 0.5));
-  connect(realSensors.bus, navigation.bus) annotation(
-    Line(points = {{52, -32}, {-40, -32}, {-40, -50}}, thickness = 0.5));
+ connect(realSensors.bus, navigation.bus) annotation(
+    Line(points = {{52, -32}, {-38, -32}, {-38, -50}}, thickness = 0.5));
+ connect(continuousGNC.frame_a, lynxLinearAeroDiscrete.ref_center) annotation(
+    Line(points = {{98, 46}, {48, 46}, {48, 10}, {10, 10}}, color = {95, 95, 95}));
 protected
   annotation(
       Icon(coordinateSystem(grid = {2, 0})),

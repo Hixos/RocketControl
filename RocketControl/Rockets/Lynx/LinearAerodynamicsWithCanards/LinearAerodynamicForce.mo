@@ -31,11 +31,11 @@ model LinearAerodynamicForce
     Placement(visible = true, transformation(origin = {-50, -70}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
 equation
   if nCAO > 1 then 
-  CA0_int = Modelica.Math.Vectors.interpolate(machCA0, CA0, aeroState.mach);
+  CA0_int = Modelica.Math.Vectors.interpolate(machCA0, CA0, min(aeroState.mach, machCA0[end]));
   else
     CA0_int = CA0[1];
   end if;
-  CA = CA0_int +  CA_dy*cu.control[1]^2 + CA_dp*cu.control[2]^2 + CA_dr*cu.control[3]^2 + CA_ds*cu.control[4]^2;
+  CA = CA0_int + CA_dy*cu.control[1]^2 + CA_dp*cu.control[2]^2 + CA_dr*cu.control[3]^2 + CA_ds*cu.control[4]^2;
   
   CN = CN_a*aeroState.alpha + CN_dp*cu.control[2];
   CY = CY_b*aeroState.beta + CY_dy*cu.control[1];
