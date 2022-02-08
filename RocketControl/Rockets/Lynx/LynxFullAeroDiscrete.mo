@@ -1,6 +1,6 @@
 within RocketControl.Rockets.Lynx;
 
-model LynxLinearAeroDiscrete
+model LynxFullAeroDiscrete
   extends Rockets.Internal.PartialRocket;
   RocketControl.Rockets.Lynx.LynxBody lynxBody annotation(
     Placement(visible = true, transformation(origin = {-50, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
@@ -16,8 +16,8 @@ model LynxLinearAeroDiscrete
     Placement(visible = true, transformation(origin = {36, 76}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   RocketControl.GNC.Control.Deflection2Control deflection2Control annotation(
     Placement(visible = true, transformation(origin = {68, 76}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  RocketControl.Rockets.Lynx.LinearAerodynamicsWithCanards.LinearAerodynamics linearAerodynamics annotation(
-    Placement(visible = true, transformation(origin = {-20, 72}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  AerodynamicsWithCanards.Aerodynamics aerodynamics annotation(
+    Placement(visible = true, transformation(origin = {-28, 70}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
 equation
   connect(frame_lug_bow, lynxBody.frame_lug_bow) annotation(
     Line(points = {{-100, 60}, {-76, 60}, {-76, 6}, {-60, 6}}));
@@ -37,10 +37,10 @@ equation
     Line(points = {{80, 76}, {100, 76}, {100, 90}}, color = {0, 0, 127}, thickness = 0.5));
   connect(tFServoMotor.setpoint, vectorHold.y) annotation(
     Line(points = {{38, 20}, {62, 20}}, color = {0, 0, 127}, thickness = 0.5));
-  connect(linearAerodynamics.frame_b, lynxBody.ref_center) annotation(
-    Line(points = {{-30, 72}, {-40, 72}, {-40, 0}}, color = {95, 95, 95}));
-  connect(linearAerodynamics.finDeflection, tFServoMotor.servo_pos_nonsat) annotation(
-    Line(points = {{-30, 66}, {-40, 66}, {-40, 14}, {16, 14}}, color = {0, 0, 127}, thickness = 0.5));
+  connect(aerodynamics.frame_b, lynxBody.ref_center) annotation(
+    Line(points = {{-38, 70}, {-38, 35}, {-40, 35}, {-40, 0}}));
+  connect(aerodynamics.finDeflection, tFServoMotor.servo_pos) annotation(
+    Line(points = {{-38, 64}, {-12, 64}, {-12, 20}, {16, 20}}, color = {0, 0, 127}, thickness = 0.5));
   annotation(
     Icon(coordinateSystem(grid = {2, 0})));
-end LynxLinearAeroDiscrete;
+end LynxFullAeroDiscrete;

@@ -43,11 +43,11 @@ equation
   v_body = Modelica.Mechanics.MultiBody.Frames.Quaternions.resolve2(bus.q_est, bus.v_est);
   rho = atmosphere.density(-bus.x_est[3]);
   u = v_body[1];
-  v = 0;//bus.v_est[2];
-  w = 0;//bus.v_est[3];
+  v = 0;//v_body[2];
+  w = 0;//v_body[3];
   p = 0;//bus.w_est[1];
-  q = 0;//bus.w_est[2];
-  r = 0;//bus.w_est[3];
+  q = bus.w_est[2];
+  r = bus.w_est[3];
   dys = 0;//bus.control_position_meas[1];
   dps = 0;//bus.control_position_meas[2];
   drs = 0;//bus.control_position_meas[3];

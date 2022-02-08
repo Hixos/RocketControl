@@ -1,0 +1,50 @@
+within RocketControl.Rockets.Lynx.GNC;
+
+model RealGNC
+extends RocketControl.Icons.Guidance;
+
+outer World.SimOptions opt;
+  Modelica.Mechanics.MultiBody.Interfaces.Frame_a frame_a annotation(
+    Placement(visible = true, transformation(origin = {-100, 0}, extent = {{-16, -16}, {16, 16}}, rotation = 0), iconTransformation(origin = {-100, 2}, extent = {{-16, -16}, {16, 16}}, rotation = 0)));
+  Interfaces.AvionicsBus bus annotation(
+    Placement(visible = true, transformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {102, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  RocketControl.Rockets.Lynx.GNC.Navigation.Navigation navigation annotation(
+    Placement(visible = true, transformation(origin = {-10, 60}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  RocketControl.GNC.Guidance.ConstantFlightPathGuidanceDiscrete constantFlightPathGuidanceDiscrete(dt = opt.samplePeriodMs / 1000, flightpathangle (displayUnit = "rad") = 1.221730476396031, heading = 0, int_lim = 60, k = 0.3, kint = 4)  annotation(
+    Placement(visible = true, transformation(origin = {-40, -8}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  RocketControl.GNC.Control.AccelerationRollRateControl accelerationRollRateControl(Qvec = {0, 40, 40, 0, 0, 0, 0, 0, 0, 10} * 0.01, Rvec = {1, 1, 0.4} * 300)  annotation(
+    Placement(visible = true, transformation(origin = {50, -10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  RocketControl.GNC.FeedbackIntegrator feedbackIntegrator(kint = 1,ts = opt.samplePeriodMs / 1000, useEnablePort = true)  annotation(
+    Placement(visible = true, transformation(origin = {-12, -50}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  RocketControl.Blocks.Math.Vectors.VectorConstant pqr_zero(k = {0, 0, 0}, n = 3) annotation(
+    Placement(visible = true, transformation(origin = {-40, 30}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  RocketControl.Rockets.Lynx.GNC.Sensors.SampledTrueSensors sampledTrueSensors annotation(
+    Placement(visible = true, transformation(origin = {-30, 90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  RocketControl.GNC.Guidance.RollDirectionGuidance rollDirectionGuidance(k = 0.5, rollrate_max = from_deg(10))  annotation(
+    Placement(visible = true, transformation(origin = {-52, -50}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+equation
+  connect(navigation.bus, bus) annotation(
+    Line(points = {{0, 60}, {8, 60}, {8, 90}, {100, 90}, {100, 0}}, thickness = 0.5));
+  connect(bus, constantFlightPathGuidanceDiscrete.bus) annotation(
+    Line(points = {{100, 0}, {100, -100}, {-70, -100}, {-70, -8}, {-50, -8}}, thickness = 0.5));
+  connect(bus.control_enable, feedbackIntegrator.enable) annotation(
+    Line(points = {{100, 0}, {-12, 0}, {-12, -41}}, color = {255, 0, 255}));
+  connect(bus.w_est[1], feedbackIntegrator.feedback[1]) annotation(
+    Line(points = {{100, 0}, {100, -100}, {-12, -100}, {-12, -62}}, thickness = 0.5));
+  connect(accelerationRollRateControl.bus, bus) annotation(
+    Line(points = {{60, -10}, {100, -10}, {100, 0}}, thickness = 0.5));
+  connect(sampledTrueSensors.frame_a, frame_a) annotation(
+    Line(points = {{-40, 90}, {-100, 90}, {-100, 0}}));
+  connect(sampledTrueSensors.bus, navigation.bus) annotation(
+    Line(points = {{-20, 90}, {12, 90}, {12, 60}, {0, 60}}, thickness = 0.5));
+  connect(constantFlightPathGuidanceDiscrete.acc_err_int, accelerationRollRateControl.acc_err_int) annotation(
+    Line(points = {{-28, -8}, {38, -8}, {38, -4}}, color = {0, 0, 127}, thickness = 0.5));
+  connect(feedbackIntegrator.err_int[1], accelerationRollRateControl.rollrate_err_int) annotation(
+    Line(points = {{0, -50}, {18, -50}, {18, -16}, {38, -16}}, color = {0, 0, 127}));
+  connect(rollDirectionGuidance.rollrate_ref, feedbackIntegrator.ref[1]) annotation(
+    Line(points = {{-40, -50}, {-24, -50}}, color = {0, 0, 127}));
+  connect(rollDirectionGuidance.bus, constantFlightPathGuidanceDiscrete.bus) annotation(
+    Line(points = {{-62, -50}, {-70, -50}, {-70, -8}, {-50, -8}}, thickness = 0.5));
+  annotation(
+    Icon(coordinateSystem(grid = {2, 0})));
+end RealGNC;

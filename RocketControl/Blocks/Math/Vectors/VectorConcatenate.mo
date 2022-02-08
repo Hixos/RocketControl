@@ -15,5 +15,5 @@ model VectorConcatenate
 equation
   vc = cat(1, v1, v2);
   annotation(
-    Icon(graphics = {Text(origin = {0, -250}, textColor = {0, 0, 255}, extent = {{-150, 150}, {150, 110}}, textString = "%name"), Text(origin = {1, 5}, extent = {{-85, 59}, {85, -59}}, textString = "{v1,v2}")}));
+    Icon(graphics = {Text(origin = {0, -250}, lineColor = {0, 0, 255}, extent = {{-150, 150}, {150, 110}}, textString = "%name"), Text(origin = {1, 5}, extent = {{-85, 59}, {85, -59}}, textString = "{v1,v2}")}));
 end VectorConcatenate;

@@ -1,8 +1,6 @@
 LynxBody
-LynxRocket
-LynxWithCanardsRocket
-LynxLinearAero
 LynxLinearAeroDiscrete
+LynxFullAeroDiscrete
 Aerodynamics
 AerodynamicsWithCanards
 LinearAerodynamicsWithCanards

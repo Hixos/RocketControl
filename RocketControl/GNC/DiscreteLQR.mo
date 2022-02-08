@@ -39,8 +39,8 @@ Integer rank_obsv;
 equation
   when Clock() then
   if enable then
-      Ad = identity(n) + A*dt + 0.5*A*A*dt^2;
-      Bd = B*dt + 0.5*A*B*dt^2;
+      Ad = identity(n) + A*dt;// + 0.5*A*A*dt^2;
+      Bd = B*dt;// + 0.5*A*B*dt^2;
       rank_ctrb = 0;
 //rank(RocketControl.Math.Matrices.ctrb(Ad, Bd));
       rank_obsv = 0;

@@ -1,6 +1,7 @@
 AngularRateVelocityTrack
 Icon
 VelocityRef
-AngularRateGuidance
 ConstantFlightPathGuidance
 ConstantFlightPathGuidanceDiscrete
+ConstantFlightPathGuidanceDiscrete2
+RollDirectionGuidance

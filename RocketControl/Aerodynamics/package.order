@@ -1,3 +1,4 @@
+SimplifiedAerodynamicForce
 PartialAerodynamicForce
 PartialAerodynamics
 AeroStateSensor
@@ -5,4 +6,3 @@ AeroAnglesSensor
 Coefficients
 coefficientStrings
 AeroData
-PartialLinearAerodynamicForce

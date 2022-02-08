@@ -5,15 +5,15 @@ parameter Integer nservos(min = 1) = 4;
   parameter Real b[:] = {1} "Numerator coefficients of transfer function (e.g., 2*s+3 is specified as {2,3})";
   parameter Real a[:] = {1} "Denominator coefficients of transfer function (e.g., 5*s+6 is specified as {5,6})";
   parameter SI.Angle saturation_angle = from_deg(10);
-  Modelica.Blocks.Interfaces.RealInput setpoint[nservos] annotation(
+  Modelica.Blocks.Interfaces.RealInput setpoint[nservos](each final unit = "rad", each final quantity="Angle", each displayUnit="deg") annotation(
     Placement(visible = true, transformation(origin = {-120, 0}, extent = {{-20, -20}, {20, 20}}, rotation = 0), iconTransformation(origin = {-120, 0}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
-  Modelica.Blocks.Interfaces.RealOutput servo_pos[nservos] annotation(
+  Modelica.Blocks.Interfaces.RealOutput servo_pos[nservos](each final unit = "rad", each final quantity="Angle", each displayUnit="deg") annotation(
     Placement(visible = true, transformation(origin = {110, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {110, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Blocks.Continuous.TransferFunction servoResponse[nservos](each a = a, each b = b, each initType = Modelica.Blocks.Types.Init.InitialOutput) annotation(
     Placement(visible = true, transformation(origin = {-56, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Blocks.Nonlinear.Limiter servoSaturation[nservos](each uMax = saturation_angle)  annotation(
     Placement(visible = true, transformation(origin = {32, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Blocks.Interfaces.RealOutput servo_pos_nonsat[nservos] annotation(
+  Modelica.Blocks.Interfaces.RealOutput servo_pos_nonsat[nservos](each final unit = "rad", each final quantity="Angle", each displayUnit="deg") annotation(
     Placement(visible = true, transformation(origin = {110, 58}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {110, 70}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
 equation
   connect(setpoint, servoResponse.u) annotation(
