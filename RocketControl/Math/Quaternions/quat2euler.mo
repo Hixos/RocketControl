@@ -9,7 +9,7 @@ protected
 algorithm
   q := q_in / norm(q_in);
   eul[1] := atan2(2 * q[4] * q[3] + 2 * q[1] * q[2], q[4] ^ 2 + q[1] ^ 2 - q[2] ^ 2 - q[3] ^ 2);
-  eul[2] := asin(2 * q[4] * q[2] - 2 * q[1] * q[3]);
+  eul[2] := asin(min(max(2 * q[4] * q[2] - 2 * q[1] * q[3], -1),1));
   eul[3] := atan2(2 * q[4] * q[1] + 2 * q[2] * q[3], q[4] ^ 2 - q[1] ^ 2 - q[2] ^ 2 + q[3] ^ 2);
   annotation(
     Icon(coordinateSystem(grid = {2, 0})));

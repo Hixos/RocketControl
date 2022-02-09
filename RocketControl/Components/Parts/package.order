@@ -9,3 +9,5 @@ BodyVariableMass
 LandDetector
 DescentDetector
 StaticFrame
+ParachuteLine
+Parachute

@@ -1,7 +1,10 @@
 LynxBody
+LynxBodyParachute
 LynxLinearAeroDiscrete
 LynxFullAeroDiscrete
+LynxParachute
 Aerodynamics
 AerodynamicsWithCanards
 LinearAerodynamicsWithCanards
 GNC
+StateMachines

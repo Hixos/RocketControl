@@ -33,7 +33,7 @@ within RocketControl.Simulations;
  RocketControl.Rockets.Lynx.GNC.ContinuousGNC continuousGNC annotation(
     Placement(visible = true, transformation(origin = {90, 50}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
  RocketControl.Rockets.Lynx.GNC.RealGNC realGNC annotation(
-    Placement(visible = true, transformation(origin = {10, -52}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+    Placement(visible = true, transformation(origin = {10, -50}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
 equation
   connect(fixed.frame_b, launchRail.frame_a) annotation(
     Line(points = {{-80, 10}, {-60, 10}}, color = {95, 95, 95}));
@@ -52,9 +52,9 @@ equation
   connect(continuousGNC.frame_a, lynxLinearAeroDiscrete.ref_center) annotation(
     Line(points = {{80, 50}, {48, 50}, {48, 10}, {10, 10}}, color = {95, 95, 95}));
  connect(lynxLinearAeroDiscrete.ref_center, realGNC.frame_a) annotation(
-    Line(points = {{10, 10}, {22, 10}, {22, -26}, {-20, -26}, {-20, -52}, {0, -52}}, color = {95, 95, 95}));
+    Line(points = {{10, 10}, {22, 10}, {22, -26}, {-20, -26}, {-20, -50}, {0, -50}}, color = {95, 95, 95}));
  connect(lynxLinearAeroDiscrete.bus, realGNC.bus) annotation(
-    Line(points = {{10, 18}, {62, 18}, {62, -52}, {20, -52}}, thickness = 0.5));
+    Line(points = {{10, 18}, {62, 18}, {62, -50}, {20, -50}}, thickness = 0.5));
 protected
   annotation(
       Icon(coordinateSystem(grid = {2, 0})),

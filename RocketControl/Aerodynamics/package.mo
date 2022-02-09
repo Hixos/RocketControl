@@ -16,7 +16,7 @@ extends Icons.AerodynamicsIcon;
   parameter Modelica.Units.SI.Angle min_beta = from_deg(-10);
   parameter Modelica.Units.SI.Length d = 0.15;
   parameter Modelica.Units.SI.Area S = pi * (0.15 / 2) ^ 2;
-  
+  parameter Real angular_damping_reverse = 0.006;
   AeroCoefficient coeffs[Coefficients];
   SI.Angle alpha0;
   SI.Angle beta0;
@@ -40,7 +40,7 @@ equation
 //  assert(aeroState.alpha <= max_alpha and aeroState.alpha >= min_alpha, "Angle of attack out of range");
 //  assert(aeroState.beta <= max_beta and aeroState.beta >= min_beta, "Sideslip angle out of range");
 // TODO: alpha0 / beta0 should be the nearest grid points in the case of nearest neighbour interpolation
-  alpha0 = max(min(aeroState.alpha,max_alpha), min_alpha);
+    alpha0 = max(min(aeroState.alpha, max_alpha), min_alpha);
   beta0 = max(min(aeroState.beta,max_beta), min_beta);
   
   v_norm = norm(aeroState.v);
@@ -50,7 +50,7 @@ equation
   CA = coeffs[C.CA];
   CY = coeffs[C.CY] + coeffs[C.CYB] * (aeroState.beta - beta0);
 // Second term is always zero in case of linear interpoaltion of the coefficients
-  CN = coeffs[C.CN] + coeffs[C.CNA] * (aeroState.alpha - alpha0);
+    CN = coeffs[C.CN] + coeffs[C.CNA] * (aeroState.alpha - alpha0);
   CLL = coeffs[C.CLL] + coeffs[C.CLLB] * (aeroState.beta - beta0);
   CLM = coeffs[C.CM] + coeffs[C.CMA] * (aeroState.alpha - alpha0);
   CLN = coeffs[C.CLN] + coeffs[C.CLNB] * (aeroState.beta - beta0);
@@ -60,10 +60,17 @@ equation
   ma[1] = q_v * S * d * (v_norm * CLL + (coeffs[C.CLLP] * aeroState.w[1] + coeffs[C.CLLR] * aeroState.w[3]) * d / 2);
   ma[2] = q_v * S * d * (v_norm * CLM + (coeffs[C.CMAD] * der(aeroState.alpha) + coeffs[C.CMQ] * aeroState.w[2]) * d / 2);
   ma[3] = q_v * S * d * (v_norm * CLN + (coeffs[C.CLNR] * aeroState.w[3] + coeffs[C.CLNP] * aeroState.w[1]) * d / 2);
+  
+  if abs(aeroState.alpha) < from_deg(10) then
   frame_b.f = -fa;
   frame_b.t = -ma;
+  else
+  frame_b.f = zeros(3);
+  frame_b.t = angular_damping_reverse*aeroState.w;
+  end if;
   annotation(
     Icon(graphics = {Text(origin = {2, -178}, lineColor = {0, 0, 255}, extent = {{-132, 76}, {129, 124}}, textString = "%name")}));
+
 end PartialAerodynamicForce;
 
   model PartialAerodynamics
@@ -82,7 +89,7 @@ end PartialAerodynamicForce;
   connect(aeroStateSensor.aeroStateOutput, aerodynamicForce.aeroState) annotation(
       Line(points = {{-20, 0}, {40, 0}}));
     annotation(
-      Icon(graphics = {Text(origin = {10, -170}, lineColor = {0, 0, 255}, extent = {{-150, 110}, {150, 70}}, textString = "%name")}));
+      Icon(graphics = {Text(origin = {10, -170}, lineColor = {0, 0, 255}, extent = {{-150, 110}, {150, 70}}, textString = "%name"), Text(origin = {80, 45}, extent = {{-2, -1}, {2, 1}}, textString = "text")}));
   end PartialAerodynamics;
 
   model AeroStateSensor
@@ -91,8 +98,8 @@ end PartialAerodynamicForce;
     import Modelica.Math.Vectors;
     RocketControl.Aerodynamics.AeroAnglesSensor aeroAnglesSensor annotation(
       Placement(visible = true, transformation(origin = {0, 40}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-    outer World.Atmosphere atmosphere;
-    outer World.Interfaces.WorldBase world;
+    outer RocketControl.World.Atmosphere atmosphere;
+    outer RocketControl.World.Interfaces.WorldBase world;
     Modelica.Units.SI.Angle beta2;
     SI.Velocity[3] v_w;
     SI.Velocity[3] v;
@@ -123,8 +130,8 @@ end PartialAerodynamicForce;
     extends Modelica.Mechanics.MultiBody.Sensors.Internal.PartialAbsoluteSensor;
     import Modelica.Mechanics.MultiBody.Frames;
     import Modelica.Math.Vectors;
-    outer World.Atmosphere atmosphere;
-    outer World.Interfaces.WorldBase world;
+    outer RocketControl.World.Atmosphere atmosphere;
+    outer RocketControl.World.Interfaces.WorldBase world;
     
     parameter Boolean limit_alpha_dot = true;
     parameter SI.Angle alpha_dot_max = from_deg(360*5);
@@ -144,7 +151,7 @@ end PartialAerodynamicForce;
     v_b = Frames.resolve2(frame_a.R, der(frame_a.r_0) - v_w);
     v_norm = Vectors.norm(v_b);
     if noEvent(abs(v_b[1]) > v_small) then
-      alpha = atan(v_b[3] / v_b[1]);
+      alpha = atan2(v_b[3], v_b[1]);
     elseif noEvent(abs(v_b[3]) > abs(v_b[1])) then
       alpha = sign(v_b[3]) * pi / 2;
     else
@@ -159,7 +166,7 @@ end PartialAerodynamicForce;
     end if;
     
     if noEvent(abs(v_b[1]) > v_small) then
-    beta = atan(v_b[2] / v_b[1]);
+    beta = atan2(v_b[2], v_b[1]);
 //sideslip = asin(v_b[2] / v_norm);
     elseif noEvent(abs(v_b[2]) > v_small) then
     beta = Modelica.Units.Conversions.from_deg(90 * sign(v_b[2]));
