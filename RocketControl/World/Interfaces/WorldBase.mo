@@ -25,6 +25,6 @@ extends Modelica.Icons.Function;
     annotation(
       Icon(coordinateSystem(grid = {2, 0})));
   end altitude_agl;
-    annotation(
+    annotation(defaultComponentPrefixes="inner", defaultComponentName = "world",
       Icon(coordinateSystem(grid = {2, 0})));
   end WorldBase;

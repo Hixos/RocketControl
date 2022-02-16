@@ -51,7 +51,7 @@ equation
   
   acc_err_int_prev = previous(acc_err_int);
   
-  if noEvent(bus.control_enable) then
+  if noEvent(bus.velocity_guidace) then
     for i in 1:3 loop
       if abs(acc_err_int_prev[i]) > int_lim and acc_err[i] * acc_err_int_prev[i] < 0 then
         acc_err_int[i] = acc_err_int_prev[i];

@@ -37,10 +37,10 @@ equation
     Line(points = {{80, 76}, {100, 76}, {100, 90}}, color = {0, 0, 127}, thickness = 0.5));
   connect(tFServoMotor.setpoint, vectorHold.y) annotation(
     Line(points = {{38, 20}, {62, 20}}, color = {0, 0, 127}, thickness = 0.5));
-  connect(aerodynamics.frame_b, lynxBody.ref_center) annotation(
-    Line(points = {{-38, 70}, {-38, 35}, {-40, 35}, {-40, 0}}));
   connect(aerodynamics.finDeflection, tFServoMotor.servo_pos) annotation(
     Line(points = {{-38, 64}, {-12, 64}, {-12, 20}, {16, 20}}, color = {0, 0, 127}, thickness = 0.5));
+  connect(aerodynamics.frame_b, lynxBody.ref_center) annotation(
+    Line(points = {{-38, 70}, {-38, 35}, {-40, 35}, {-40, 0}}));
   annotation(
     Icon(coordinateSystem(grid = {2, 0})));
 end LynxFullAeroDiscrete;

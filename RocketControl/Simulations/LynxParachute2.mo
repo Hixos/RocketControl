@@ -1,6 +1,6 @@
 within RocketControl.Simulations;
 
-model LynxParachute
+model LynxParachute2
   extends RocketControl.Icons.SimulationIcon;
   parameter SI.Mass m = 28;
   parameter SI.Distance s_max = 0.0001;
@@ -30,7 +30,7 @@ model LynxParachute
     Placement(visible = true, transformation(origin = {50, -90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   inner World.SimOptions opt(launch_azimuth = from_deg(0), launch_elevation = from_deg(84)) annotation(
     Placement(visible = true, transformation(origin = {-50, 90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Rockets.Lynx.LynxParachute lynxRocket annotation(
+  Rockets.Lynx.LynxParachute2 lynxRocket annotation(
     Placement(visible = true, transformation(origin = {-10, 10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Rockets.Lynx.StateMachines.FlightModeManager flightModeManager annotation(
     Placement(visible = true, transformation(origin = {-18, -46}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
@@ -64,4 +64,4 @@ equation
   annotation(
     Icon(coordinateSystem(grid = {2, 0})),
     experiment(StartTime = 0, StopTime = 200, Tolerance = 1e-06, Interval = 0.01));
-end LynxParachute;
+end LynxParachute2;

@@ -14,19 +14,19 @@ within RocketControl.Simulations;
       Placement(visible = true, transformation(origin = {-90, 10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Components.Parts.LandDetector landDetector annotation(
       Placement(visible = true, transformation(origin = {90, 90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  inner RocketControl.World.Atmosphere atmosphere(wind_speed = {0, 0, 0})  annotation(
+  inner RocketControl.World.Atmosphere atmosphere(wind_speed = {8, 3, 0})  annotation(
       Placement(visible = true, transformation(origin = {-90, 90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   inner World.FlatWorld world(altitude_0 = 100, animateGravity = false, animateGround = false, animateWorld = true, enableAnimation = true, latitude_0 = 45.691051, longitude_0 = 8.490499, n = {0, 0, 1}) annotation(
       Placement(visible = true, transformation(origin = {-90, -90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
  Modelica.Blocks.Sources.BooleanExpression control_enable(y = time > 1 and time < 15)  annotation(
-    Placement(visible = true, transformation(origin = {-54, 42}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+    Placement(visible = true, transformation(origin = {-56, 62}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
  Components.LaunchPad.LaunchRail launchRail(azimuth(displayUnit = "deg") = opt.launch_azimuth, c_x = c_x, c_y = c_y, c_z = c_z, d_x = d_x, d_y = d_y, d_z = d_z, elevation(displayUnit = "deg") = opt.launch_elevation, lug_length = 0.04, r_rel = {0, 0, 0.04}, rail_length = 4) annotation(
     Placement(visible = true, transformation(origin = {-50, 10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
  RocketControl.Rockets.Lynx.LynxFullAeroDiscrete lynxFullAero annotation(
     Placement(visible = true, transformation(origin = {0, 10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
  Modelica.Clocked.BooleanSignals.Sampler.Sample sample1 annotation(
     Placement(visible = true, transformation(origin = {-12, 60}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
- inner RocketControl.World.SimOptions opt(launch_azimuth = from_deg(0), launch_elevation = from_deg(84))  annotation(
+ inner RocketControl.World.SimOptions opt(launch_azimuth = from_deg(20), launch_elevation = from_deg(84))  annotation(
     Placement(visible = true, transformation(origin = {-50, 90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
  Components.Visualizers.AssetVisualizer assetVisualizer annotation(
     Placement(visible = true, transformation(origin = {14, 88}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
@@ -44,9 +44,7 @@ equation
   connect(landDetector.frame_a, lynxFullAero.ref_center) annotation(
     Line(points = {{80, 90}, {30, 90}, {30, 10}, {10, 10}}));
   connect(control_enable.y, sample1.u) annotation(
-    Line(points = {{-42, 42}, {-20, 42}, {-20, 60}}, color = {255, 0, 255}));
-  connect(sample1.y, lynxFullAero.bus.control_enable) annotation(
-    Line(points = {{-6, 60}, {10, 60}, {10, 18}}, color = {255, 0, 255}));
+    Line(points = {{-45, 62}, {-32.5, 62}, {-32.5, 60}, {-20, 60}}, color = {255, 0, 255}));
   connect(assetVisualizer.frame_a, lynxFullAero.ref_center) annotation(
     Line(points = {{4, 88}, {-2, 88}, {-2, 24}, {16, 24}, {16, 10}, {10, 10}}, color = {95, 95, 95}));
   connect(continuousGNC.frame_a, lynxFullAero.ref_center) annotation(
@@ -55,6 +53,8 @@ equation
     Line(points = {{10, 10}, {22, 10}, {22, -26}, {-20, -26}, {-20, -52}, {0, -52}}, color = {95, 95, 95}));
  connect(lynxFullAero.bus, realGNC.bus) annotation(
     Line(points = {{10, 18}, {62, 18}, {62, -52}, {20, -52}}, thickness = 0.5));
+ connect(sample1.y, lynxFullAero.bus.velocity_guidace) annotation(
+    Line(points = {{-6, 60}, {10, 60}, {10, 18}}, color = {255, 0, 255}));
 protected
   annotation(
       Icon(coordinateSystem(grid = {2, 0})),

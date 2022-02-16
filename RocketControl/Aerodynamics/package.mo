@@ -10,10 +10,8 @@ extends Icons.AerodynamicsIcon;
   type C = Coefficients;
   outer World.Atmosphere atmosphere;
   outer World.Interfaces.WorldBase world;
-  parameter Modelica.Units.SI.Angle max_alpha = from_deg(10);
-  parameter Modelica.Units.SI.Angle min_alpha = from_deg(-10);
-  parameter Modelica.Units.SI.Angle max_beta = from_deg(10);
-  parameter Modelica.Units.SI.Angle min_beta = from_deg(-10);
+  parameter Modelica.Units.SI.Angle max_alpha = from_deg(20);
+  parameter Modelica.Units.SI.Angle max_beta = from_deg(20);
   parameter Modelica.Units.SI.Length d = 0.15;
   parameter Modelica.Units.SI.Area S = pi * (0.15 / 2) ^ 2;
   parameter Real angular_damping_reverse = 0.006;
@@ -40,8 +38,8 @@ equation
 //  assert(aeroState.alpha <= max_alpha and aeroState.alpha >= min_alpha, "Angle of attack out of range");
 //  assert(aeroState.beta <= max_beta and aeroState.beta >= min_beta, "Sideslip angle out of range");
 // TODO: alpha0 / beta0 should be the nearest grid points in the case of nearest neighbour interpolation
-    alpha0 = max(min(aeroState.alpha, max_alpha), min_alpha);
-  beta0 = max(min(aeroState.beta,max_beta), min_beta);
+    alpha0 = max(min(aeroState.alpha, max_alpha), -max_alpha);
+  beta0 = max(min(aeroState.beta,max_beta), -max_beta);
   
   v_norm = norm(aeroState.v);
   q_v = 0.5 * atmosphere.density(world.altitude(frame_b.r_0)) * v_norm;
@@ -61,7 +59,7 @@ equation
   ma[2] = q_v * S * d * (v_norm * CLM + (coeffs[C.CMAD] * der(aeroState.alpha) + coeffs[C.CMQ] * aeroState.w[2]) * d / 2);
   ma[3] = q_v * S * d * (v_norm * CLN + (coeffs[C.CLNR] * aeroState.w[3] + coeffs[C.CLNP] * aeroState.w[1]) * d / 2);
   
-  if abs(aeroState.alpha) < from_deg(10) then
+  if abs(aeroState.alpha) < max_alpha and abs(aeroState.beta) < max_beta then
   frame_b.f = -fa;
   frame_b.t = -ma;
   else

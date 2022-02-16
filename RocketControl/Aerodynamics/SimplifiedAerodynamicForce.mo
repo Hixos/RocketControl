@@ -8,7 +8,9 @@ extends Icons.AerodynamicsIcon;
   
   parameter SI.Area S = pi * (0.15 / 2) ^ 2;
   parameter SI.Length d = 0.15;
-  
+  parameter Modelica.Units.SI.Angle max_alpha = from_deg(20);
+  parameter Modelica.Units.SI.Angle max_beta = from_deg(20);
+  parameter Real angular_damping_reverse = 0.006;
   parameter Integer nCAO(min = 1) annotation(Evaluate = true);
   
   parameter Real machCA0[nCAO];
@@ -83,8 +85,13 @@ equation
   ma[2] = q * S * d * CLM + q_v*S*d*CLM_q*aeroState.w[2]*d/2;
   ma[3] = q * S * d * CLN + q_v*S*d*CLN_r*aeroState.w[3]*d/2;
   
+  if abs(aeroState.alpha) < max_alpha and abs(aeroState.beta) < max_beta then
   frame_b.f = -fa;
   frame_b.t = -ma;
+  else
+  frame_b.f = zeros(3);
+  frame_b.t = angular_damping_reverse*aeroState.w;
+  end if;
   connect(finDeflection, cu.u) annotation(
     Line(points = {{-100, -70}, {-62, -70}}, color = {0, 0, 127}, thickness = 0.5));
   annotation(

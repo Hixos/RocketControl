@@ -41,8 +41,6 @@ equation
     Line(points = {{100, 0}, {100, 100}, {-100, 100}, {-100, 86}, {-92, 86}}, thickness = 0.5));
   connect(acc_err_int, x_lq.v1) annotation(
     Line(points = {{-120, 0}, {-76, 0}, {-76, -12}, {-62, -12}}, color = {0, 0, 127}, thickness = 0.5));
-  connect(bus.control_enable, discreteLQR.enable) annotation(
-    Line(points = {{100, 0}, {100, 100}, {40, 100}, {40, 59}}, color = {255, 0, 255}));
   connect(Q.k, discreteLQR.Q) annotation(
     Line(points = {{-39, 40}, {-20, 40}, {-20, 50}, {28, 50}}, color = {0, 0, 127}, thickness = 0.5));
   connect(R.k, discreteLQR.R) annotation(
@@ -79,6 +77,8 @@ equation
     Line(points = {{-126, -24}, {-116, -24}, {-116, -30}, {-94, -30}}, color = {0, 0, 127}, thickness = 0.5));
   connect(bus.w_est[1], vectorConcatenate2.v1[1]) annotation(
     Line(points = {{100, 0}, {100, 102}, {-160, 102}, {-160, -22}, {-94, -22}}, thickness = 0.5));
+  connect(bus.velocity_guidace, discreteLQR.enable) annotation(
+    Line(points = {{100, 0}, {100, 102}, {40, 102}, {40, 60}}, color = {255, 0, 255}));
   annotation(
     Icon(graphics = {Rectangle(fillColor = {255, 242, 254}, fillPattern = FillPattern.Solid, extent = {{-100, 100}, {100, -100}}, radius = 12), Polygon(origin = {-72, -22}, fillColor = {91, 91, 91}, fillPattern = FillPattern.Solid, points = {{-2, -12}, {8, -22}, {22, 12}, {12, 22}, {-22, 8}, {-2, -12}}), Polygon(origin = {-41, 9}, fillColor = {155, 183, 193}, fillPattern = FillPattern.Solid, points = {{-43, -33}, {25, 35}, {45, 45}, {35, 25}, {-33, -43}, {-37, -39}, {-43, -33}}), Line(origin = {24.4844, 12.5364}, points = {{-56, -7}, {56, 7}}, arrow = {Arrow.None, Arrow.Filled}, arrowSize = 12), Line(origin = {30.3844, 41.6364}, points = {{-15.9035, 23.9035}, {0.0964559, 17.9035}, {8.09646, 7.90354}, {14.0965, -4.09646}, {16.0965, -24.0965}}, color = {255, 0, 0}, arrow = {Arrow.None, Arrow.Filled}, arrowSize = 21), Text(origin = {-1, -68}, extent = {{-77, 18}, {77, -18}}, textString = "vtrack"), Text(origin = {2, -250}, lineColor = {0, 0, 255}, extent = {{-150, 150}, {150, 110}}, textString = "%name")}));
 end AccelerationRollRateControl;

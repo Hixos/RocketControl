@@ -181,5 +181,5 @@ model FlatWorld
       Icon(coordinateSystem(grid = {2, 0})));
   end altitude_agl;
 equation
-
+annotation(defaultComponentPrefixes="inner", defaultComponentName = "world");
 end FlatWorld;
