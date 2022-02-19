@@ -1,3 +1,4 @@
-GenericMotor
-SolidMotorAndTank
 Inertia
+GenericThrust
+SolidMotor
+PartialRocketMotor

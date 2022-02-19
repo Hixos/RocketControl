@@ -1,6 +1,7 @@
 within RocketControl.Interfaces;
 
 expandable connector AvionicsBus
+  extends Modelica.Icons.SignalBus;
   //  SI.Velocity v;
   Boolean liftoff;
   Boolean roll_guidance;
@@ -22,5 +23,5 @@ expandable connector AvionicsBus
   SI.Angle control_position_meas[4];
   Real q_est[4];
   annotation(
-    Icon(graphics = {Ellipse(fillColor = {0, 85, 255}, fillPattern = FillPattern.Solid, extent = {{-100, 100}, {100, -100}}), Ellipse(fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid, extent = {{-60, 60}, {60, -60}}), Ellipse(fillColor = {255, 255, 0}, fillPattern = FillPattern.Solid, extent = {{-40, 40}, {40, -40}})}));
+    Icon);
 end AvionicsBus;

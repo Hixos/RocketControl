@@ -96,12 +96,12 @@ equation
     Line(points = {{80, 50}, {52, 50}, {52, 0}, {20, 0}, {20, 20}}, color = {95, 95, 95}));
   connect(enable, parachuteAerodynamics.deployed) annotation(
     Line(points = {{0, 106}, {0, 76}, {84, 76}, {84, 60}}, color = {255, 0, 255}));
-  connect(parachuteLine2.stretched, parachuteAerodynamics.open) annotation(
-    Line(points = {{-39, 3}, {46, 3}, {46, 60}, {94, 60}}, color = {255, 0, 255}));
   connect(aeroStateSensor.aeroStateOutput, parachuteAerodynamics.aeroStateInput) annotation(
     Line(points = {{72, 28}, {72, 44}, {80, 44}}));
   connect(body.frame_a, aeroStateSensor.frame_a) annotation(
     Line(points = {{20, 20}, {20, 0}, {72, 0}, {72, 8}}, color = {95, 95, 95}));
+  connect(parachuteLine2.stretched, parachuteAerodynamics.open) annotation(
+    Line(points = {{-38, 4}, {46, 4}, {46, 68}, {94, 68}, {94, 60}}, color = {255, 0, 255}));
   annotation(
     Icon(graphics = {Ellipse(origin = {-89, -75}, fillPattern = FillPattern.Solid, extent = {{-7, 7}, {7, -7}}), Polygon(origin = {32, 43}, fillColor = {255, 170, 0}, fillPattern = FillPattern.Sphere, points = {{-82, 31}, {-36, 17}, {-2, -13}, {18, -55}, {22, -101}, {60, -55}, {68, -3}, {46, 37}, {6, 55}, {-36, 55}, {-82, 31}}), Line(origin = {-41.9419, -46.9462}, points = {{92.6532, 35.7916}, {-47.3468, -28.2084}, {96.6532, -10.2084}}), Line(origin = {-100.514, -2.19848}, points = {{51.7615, 76.6624}, {9.7615, -73.3376}, {97.761, 62.6624}}), Text(origin = {0, 14}, lineColor = {0, 0, 255}, extent = {{-150, -150}, {150, -110}}, textString = "%name")}));
 end Parachute2;

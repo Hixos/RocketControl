@@ -25,7 +25,7 @@ model LynxParachute
   RocketControl.Rockets.Lynx.GNC.Sensors.SampledTrueSensors sampledTrueSensors annotation(
     Placement(visible = true, transformation(origin = {50, -50}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   RocketControl.Rockets.Lynx.GNC.Navigation.Navigation navigation annotation(
-    Placement(visible = true, transformation(origin = {88, 30}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+    Placement(visible = true, transformation(origin = {90, 10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   RocketControl.Rockets.Lynx.GNC.Sensors.RealSensors realSensors annotation(
     Placement(visible = true, transformation(origin = {50, -90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   inner World.SimOptions opt(launch_azimuth = from_deg(0), launch_elevation = from_deg(84)) annotation(
@@ -40,7 +40,7 @@ equation
   connect(fixed.frame_b, launchRail.frame_a) annotation(
     Line(points = {{-80, 10}, {-60, 10}}, color = {95, 95, 95}));
   connect(navigation.bus, realSensors.bus) annotation(
-    Line(points = {{98, 30}, {100, 30}, {100, -90}, {60, -90}}, thickness = 0.5));
+    Line(points = {{100, 10}, {100, -90}, {60, -90}}, thickness = 0.5));
   connect(lynxRocket.bus, continuousGNC.bus) annotation(
     Line(points = {{0, 18}, {66, 18}, {66, -10}, {60, -10}}, thickness = 0.5));
   connect(realSensors.frame_a, lynxRocket.ref_center) annotation(
