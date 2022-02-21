@@ -10,28 +10,29 @@ model ParachuteAerodynamics
   Modelica.Mechanics.MultiBody.Interfaces.Frame_b frame_b annotation(
     Placement(visible = true, transformation(origin = {-100, 0}, extent = {{-16, -16}, {16, 16}}, rotation = 0), iconTransformation(origin = {-100, 0}, extent = {{-16, -16}, {16, 16}}, rotation = 0)));
   
-  Modelica.Blocks.Interfaces.BooleanInput open annotation(
+  Modelica.Blocks.Interfaces.BooleanInput extended annotation(
     Placement(visible = true, transformation(origin = {50, 100}, extent = {{-20, -20}, {20, 20}}, rotation = -90), iconTransformation(origin = {42, 100}, extent = {{-20, -20}, {20, 20}}, rotation = -90)));
   Modelica.Blocks.Interfaces.BooleanInput deployed annotation(
     Placement(visible = true, transformation(origin = {-52, 100}, extent = {{-20, -20}, {20, 20}}, rotation = -90), iconTransformation(origin = {-60, 100}, extent = {{-20, -20}, {20, 20}}, rotation = -90)));
     
     SI.Density rho;
-  SI.Time t_open;
+  SI.Time t_0;
   SI.Area S;
   SI.Force drag[3];
   SI.Force drag_norm;
   RocketControl.Interfaces.AeroStateInput aeroStateInput annotation(
     Placement(visible = true, transformation(origin = {-102, -50}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-102, -68}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
 initial equation
-  t_open = 0;
+  t_0 = 0;
 equation
-  when open then
-    t_open = pre(time);
+  when extended then
+    t_0 = pre(time);
   end when;
-  if open and time > t_open + opening_transient_duration then
+  
+  if extended and time > t_0 + opening_transient_duration then
     S = max_area;
-  elseif open then
-    S = (time - t_open)/opening_transient_duration*(max_area - min_area) + min_area;
+  elseif extended then
+    S = (time - t_0)/opening_transient_duration*(max_area - min_area) + min_area;
    elseif deployed then
    S = min_area;
    else

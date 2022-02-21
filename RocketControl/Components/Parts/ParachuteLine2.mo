@@ -8,15 +8,15 @@ model ParachuteLine2
   parameter SI.TranslationalDampingConstant d(final min=0) = 0
     "Damping constant";
 
-  Modelica.Blocks.Interfaces.BooleanOutput stretched annotation(
+  Modelica.Blocks.Interfaces.BooleanOutput extended annotation(
     Placement(visible = true, transformation(origin = {106, 64}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {110, -70}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
 protected
   SI.Force f_d "Damping force";
 initial equation
-stretched = false;
+extended = false;
 equation
   when s > s_unstretched then
-  stretched =  true;
+    extended =  true;
   end when;
   
   if s > s_unstretched then
