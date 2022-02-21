@@ -3,3 +3,4 @@ RealAccelerometer
 RealMagnetometer
 RealBarometer
 RealGNSS
+RealFinPositionSensor

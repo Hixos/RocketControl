@@ -29,6 +29,8 @@ model AttitudeEstimation "Rocket attitude estimation from gyroscope and magnetom
   final parameter Real q0[4] = Quaternions.from_T(R0.T);
   final parameter Real x0[6] = {0, 0, 0, 0, 0, 0};
   final parameter Real R[3, 3] = identity(3) * sigma_b ^ 2;
+  
+protected
   Real q_prop[4](start = q0);
   Real q_prev[4];
   Real q_update[4];

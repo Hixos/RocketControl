@@ -36,7 +36,7 @@ model FlightModeManager
   Modelica.Blocks.Sources.BooleanExpression v_control_enable(y = met.y > 10)  annotation(
     Placement(visible = true, transformation(origin = {-10, 64}, extent = {{-10, -8}, {10, 8}}, rotation = 0)));
   Modelica.Blocks.Sources.BooleanExpression termina_ascent_expr(y = hold(bus.v_est[3]) > (-30)) annotation(
-    Placement(visible = true, transformation(origin = {61, 23}, extent = {{-19, -7}, {19, 7}}, rotation = 0)));
+    Placement(visible = true, transformation(origin = {59, 5}, extent = {{-19, -7}, {19, 7}}, rotation = 0)));
   Modelica.Blocks.Sources.BooleanExpression apogee_expr(y = hold(bus.v_est[3]) > 1) annotation(
     Placement(visible = true, transformation(origin = {35, -53}, extent = {{-19, -7}, {19, 7}}, rotation = 0)));
   Modelica.Blocks.Sources.BooleanExpression main_alt_expr(y = hold(world.altitude_agl(bus.x_est)) < 400) annotation(
@@ -44,9 +44,9 @@ model FlightModeManager
  inner Modelica.StateGraph.StateGraphRoot stateGraphRoot annotation(
     Placement(visible = true, transformation(origin = {-90, 90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
  Modelica.Blocks.Sources.BooleanExpression main_deploy(y = main_descent_state.active) annotation(
-    Placement(visible = true, transformation(origin = {-74, 3}, extent = {{-24, -7}, {24, 7}}, rotation = 0)));
+    Placement(visible = true, transformation(origin = {-74, -17}, extent = {{-24, -7}, {24, 7}}, rotation = 0)));
  Modelica.Blocks.Sources.BooleanExpression drogue_deploy(y = drogue_descent_state.active or main_descent_state.active) annotation(
-    Placement(visible = true, transformation(origin = {-74, -21}, extent = {{-24, -7}, {24, 7}}, rotation = 0)));
+    Placement(visible = true, transformation(origin = {-74, -29}, extent = {{-24, -7}, {24, 7}}, rotation = 0)));
  Modelica.StateGraph.Step terminal_ascent_state(nIn = 1, nOut = 1)  annotation(
     Placement(visible = true, transformation(origin = {90, -10}, extent = {{-10, -10}, {10, 10}}, rotation = -90)));
 equation
@@ -77,7 +77,7 @@ equation
   connect(ascent_state.outPort, terminal_ascent.inPort) annotation(
     Line(points = {{53, 58}, {76, 58}}));
   connect(termina_ascent_expr.y, terminal_ascent.condition) annotation(
-    Line(points = {{82, 23}, {82, 33.5}, {80, 33.5}, {80, 46}}, color = {255, 0, 255}));
+    Line(points = {{80, 5}, {80, 46}}, color = {255, 0, 255}));
   connect(stable_flight.condition, v_control_enable.y) annotation(
     Line(points = {{7, 80.6}, {5, 80.6}, {5, 64}, {1, 64}}, color = {255, 0, 255}));
   connect(main_alt_expr.y, main_altitude.condition) annotation(
@@ -93,9 +93,9 @@ equation
   connect(bus.liftoff, guidance_enable.condition) annotation(
     Line(points = {{0, -30}, {-36, -30}, {-36, 36}, {-50, 36}, {-50, 46}}, color = {255, 0, 255}));
   connect(drogue_deploy.y, bus.drogue_deploy) annotation(
-    Line(points = {{-48, -20}, {-36, -20}, {-36, -30}, {0, -30}}, color = {255, 0, 255}));
+    Line(points = {{-48, -29}, {-36, -29}, {-36, -30}, {0, -30}}, color = {255, 0, 255}));
   connect(main_deploy.y, bus.main_deploy) annotation(
-    Line(points = {{-48, 4}, {-36, 4}, {-36, -30}, {0, -30}}, color = {255, 0, 255}));
+    Line(points = {{-48, -17}, {-36, -17}, {-36, -30}, {0, -30}}, color = {255, 0, 255}));
   connect(v_control_state.active, bus.velocity_guidace) annotation(
     Line(points = {{-12, 76}, {-12, 72}, {26, 72}, {26, -30}, {0, -30}}, color = {255, 0, 255}));
   connect(apogee_control_state.active, bus.apogee_guidance) annotation(

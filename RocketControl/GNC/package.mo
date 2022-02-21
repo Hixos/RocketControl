@@ -17,10 +17,7 @@ block DiscreteKalmanFilter
     parameter Real Q[n, n] "Process covariance matrix";
     parameter Real R[p, p] "Output covariance matrix";
     parameter Real x0[n] "Initial state";
-    Real P[n, n](start = P0) "P(k|k)";
-    Real Pest[n, n](start = P0) "P(k|k-1)";
-    Real L[n, p];
-    Real x_pred[n](start = x0);
+
     Modelica.Blocks.Interfaces.RealInput y_meas[p] annotation(
       Placement(visible = true, transformation(origin = {-106, 40}, extent = {{-20, -20}, {20, 20}}, rotation = 0), iconTransformation(origin = {-100, 60}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
     Modelica.Blocks.Interfaces.RealOutput x_est[n](start = x0, each fixed = true) annotation(
@@ -33,6 +30,12 @@ block DiscreteKalmanFilter
       Placement(visible = true, transformation(origin = {0, 108}, extent = {{-20, -20}, {20, 20}}, rotation = -90), iconTransformation(origin = {0, 102}, extent = {{-20, -20}, {20, 20}}, rotation = -90)));
     Modelica.Blocks.Interfaces.BooleanInput correct annotation(
       Placement(visible = true, transformation(origin = {0, -120}, extent = {{-20, -20}, {20, 20}}, rotation = 90), iconTransformation(origin = {0, -100}, extent = {{-20, -20}, {20, 20}}, rotation = 90)));
+      
+ protected
+    Real P[n, n](start = P0) "P(k|k)";
+    Real Pest[n, n](start = P0) "P(k|k-1)";
+    Real L[n, p];
+    Real x_pred[n](start = x0);
   equation
     when Clock() then
       if m == 0 then

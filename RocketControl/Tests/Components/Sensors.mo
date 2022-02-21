@@ -48,6 +48,30 @@ package Sensors
     annotation(
       Icon(coordinateSystem(grid = {2, 0})));
   end ADEffect;
+
+  model FinPosSensorTest
+  RocketControl.Components.Sensors.SensorModels.RealFinPositionSensor realFinPositionSensor(angle_max = from_deg(10), bias = {0.000174532925199433, 0.000174532925199433, 0.000174532925199433, 0.000174532925199433}, biased = true, bits = 12, limited = true, noisy = true, quantized = true, samplePeriodMs = 10, sigma_noise = 0.00174532925199433)  annotation(
+      Placement(visible = true, transformation(origin = {0, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Blocks.Sources.Sine sine(amplitude = 10, f = 1) annotation(
+      Placement(visible = true, transformation(origin = {-58, 60}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Blocks.Sources.Sine sine1(amplitude = 10, f = 1) annotation(
+      Placement(visible = true, transformation(origin = {-58, 20}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Blocks.Sources.Sine sine2(amplitude = 10, f = 1) annotation(
+      Placement(visible = true, transformation(origin = {-58, -20}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Blocks.Sources.Sine sine3(amplitude = 10, f = 1) annotation(
+      Placement(visible = true, transformation(origin = {-58, -60}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  equation
+    connect(sine.y, realFinPositionSensor.fin_pos_true[1]) annotation(
+      Line(points = {{-46, 60}, {-30, 60}, {-30, 0}, {-12, 0}}, color = {0, 0, 127}));
+    connect(sine1.y, realFinPositionSensor.fin_pos_true[2]) annotation(
+      Line(points = {{-46, 20}, {-30, 20}, {-30, 0}, {-12, 0}}, color = {0, 0, 127}));
+  connect(sine2.y, realFinPositionSensor.fin_pos_true[3]) annotation(
+      Line(points = {{-46, -20}, {-30, -20}, {-30, 0}, {-12, 0}}, color = {0, 0, 127}));
+  connect(sine3.y, realFinPositionSensor.fin_pos_true[4]) annotation(
+      Line(points = {{-46, -60}, {-30, -60}, {-30, 0}, {-12, 0}}, color = {0, 0, 127}));
+    annotation(
+      Icon(coordinateSystem(grid = {2, 0})));
+  end FinPosSensorTest;
   annotation(
     Icon(coordinateSystem(grid = {2, 0})));
 end Sensors;
