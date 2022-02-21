@@ -14,5 +14,6 @@ package RocketControl
   import Modelica.Mechanics.MultiBody.Frames.Quaternions.resolve1;
   import Modelica.Mechanics.MultiBody.Frames.Quaternions.resolve2;
   annotation(
-    Icon(coordinateSystem(grid = {2, 0})));
+    Icon(coordinateSystem(grid = {2, 0})),
+    uses(Modelica(version = "4.0.0")));
 end RocketControl;

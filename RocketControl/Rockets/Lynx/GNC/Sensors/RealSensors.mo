@@ -16,6 +16,10 @@ model RealSensors
     Placement(visible = true, transformation(origin = {0, -10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   RocketControl.Components.Sensors.Sensors.GNSSUbloxM7N gNSSUbloxM7N(fixedLocalSeed = {2511, 20511, 200511},noisy = true, samplePeriodMs = opt.samplePeriodMs)  annotation(
     Placement(visible = true, transformation(origin = {0, -40}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  RocketControl.Components.Clocked.VectorSample vectorSample(n = 4)  annotation(
+    Placement(visible = true, transformation(origin = {-10, -70}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  RocketControl.GNC.Control.Deflection2Control deflection2Control annotation(
+    Placement(visible = true, transformation(origin = {30, -70}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
 equation
   connect(gyroBMX180.frame_a, frame_a) annotation(
     Line(points = {{-10, 80}, {-60, 80}, {-60, 0}, {-100, 0}}));
@@ -39,6 +43,12 @@ equation
     Line(points = {{12, -36}, {60, -36}, {60, 0}, {100, 0}}, color = {0, 0, 127}, thickness = 0.5));
   connect(gNSSUbloxM7N.v, bus.v_meas) annotation(
     Line(points = {{12, -44}, {60, -44}, {60, 0}, {100, 0}}, color = {0, 0, 127}, thickness = 0.5));
+  connect(frame_a, vectorSample.u) annotation(
+    Line(points = {{-100, 0}, {-60, 0}, {-60, -70}, {-22, -70}}));
+  connect(vectorSample.y, deflection2Control.u) annotation(
+    Line(points = {{2, -70}, {18, -70}}, color = {0, 0, 127}, thickness = 0.5));
+  connect(deflection2Control.control, bus.control_position_meas) annotation(
+    Line(points = {{42, -70}, {60, -70}, {60, 0}, {100, 0}}, color = {0, 0, 127}, thickness = 0.5));
   annotation(
     Icon(coordinateSystem(grid = {2, 0})));
 end RealSensors;

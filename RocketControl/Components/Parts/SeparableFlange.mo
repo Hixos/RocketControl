@@ -1,7 +1,7 @@
 within RocketControl.Components.Parts;
 
 model SeparableFlange
-extends Interfaces.PartialConditionalEnablePort(final useEnablePort=true);
+extends Interfaces.PartialConditionalEnablePort(useEnablePort=true);
 extends Modelica.Mechanics.MultiBody.Interfaces.PartialTwoFrames;
 
   parameter Modelica.Units.SI.ModulusOfElasticity c = 10000;

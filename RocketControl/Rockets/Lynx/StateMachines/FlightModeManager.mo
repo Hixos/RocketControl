@@ -35,12 +35,12 @@ model FlightModeManager
     Placement(visible = true, transformation(origin = {-14, -6}, extent = {{-4, -4}, {4, 4}}, rotation = 0)));
   Modelica.Blocks.Sources.BooleanExpression v_control_enable(y = met.y > 10)  annotation(
     Placement(visible = true, transformation(origin = {-10, 64}, extent = {{-10, -8}, {10, 8}}, rotation = 0)));
-  Modelica.Blocks.Sources.BooleanExpression termina_ascent_expr(y = bus.v_est[3] > (-30)) annotation(
+  Modelica.Blocks.Sources.BooleanExpression termina_ascent_expr(y = hold(bus.v_est[3]) > (-30)) annotation(
     Placement(visible = true, transformation(origin = {61, 23}, extent = {{-19, -7}, {19, 7}}, rotation = 0)));
-  Modelica.Blocks.Sources.BooleanExpression apogee_expr(y = bus.v_est[3] > 1) annotation(
+  Modelica.Blocks.Sources.BooleanExpression apogee_expr(y = hold(bus.v_est[3]) > 1) annotation(
     Placement(visible = true, transformation(origin = {35, -53}, extent = {{-19, -7}, {19, 7}}, rotation = 0)));
-  Modelica.Blocks.Sources.BooleanExpression main_alt_expr(y = world.altitude_agl(bus.x_est) < 400) annotation(
-    Placement(visible = true, transformation(origin = {-62, -61}, extent = {{-34, -7}, {34, 7}}, rotation = 0)));
+  Modelica.Blocks.Sources.BooleanExpression main_alt_expr(y = hold(world.altitude_agl(bus.x_est)) < 400) annotation(
+    Placement(visible = true, transformation(origin = {-62, -57}, extent = {{-34, -7}, {34, 7}}, rotation = 0)));
  inner Modelica.StateGraph.StateGraphRoot stateGraphRoot annotation(
     Placement(visible = true, transformation(origin = {-90, 90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
  Modelica.Blocks.Sources.BooleanExpression main_deploy(y = main_descent_state.active) annotation(
@@ -81,7 +81,7 @@ equation
   connect(stable_flight.condition, v_control_enable.y) annotation(
     Line(points = {{7, 80.6}, {5, 80.6}, {5, 64}, {1, 64}}, color = {255, 0, 255}));
   connect(main_alt_expr.y, main_altitude.condition) annotation(
-    Line(points = {{-25, -61}, {0, -61}, {0, -68}}, color = {255, 0, 255}));
+    Line(points = {{-25, -57}, {0, -57}, {0, -68}}, color = {255, 0, 255}));
   connect(apogee_expr.y, apogee.condition) annotation(
     Line(points = {{56, -53}, {56, -52.5}, {74, -52.5}, {74, -68}}, color = {255, 0, 255}));
   connect(landed.outPort, liftoff_state.inPort[1]) annotation(

@@ -174,7 +174,7 @@ model FlatWorld
   //      Icon(coordinateSystem(grid = {2, 0})));
   //  end Coordinates;
 
-  function extends altitude_agl
+  redeclare function extends altitude_agl
     algorithm
       altitude := (-x[3]);
     annotation(

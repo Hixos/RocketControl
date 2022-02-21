@@ -1,8 +1,5 @@
-LynxBody
-LynxLinearAeroDiscrete
-LynxFullAeroDiscrete
-LynxParachute
-LynxParachute2
+Lynx
+LynxSimpleAero
 Aerodynamics
 AerodynamicsWithCanards
 LinearAerodynamicsWithCanards
