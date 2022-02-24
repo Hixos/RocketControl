@@ -74,8 +74,8 @@ equation
   CN = CN_a * aeroState.alpha + CN_dp * cu.control[2];
   CY = CY_b * aeroState.beta + CY_dy * cu.control[1];
   CLL = CLL_dr * cu.control[3];
-  CLM = CLM_a * aeroState.alpha;
-  CLN = CLN_b * aeroState.beta;
+  CLM = CLM_a * aeroState.alpha + CLM_dp * cu.control[2];
+  CLN = CLN_b * aeroState.beta + CLN_dy * cu.control[1];
   
   fa[1] = -q * S * CA;
   fa[2] = q * S * CY + q_v*S*CY_r*aeroState.w[3]*d;

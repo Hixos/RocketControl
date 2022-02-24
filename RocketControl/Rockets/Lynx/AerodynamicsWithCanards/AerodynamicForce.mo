@@ -2,9 +2,13 @@ within RocketControl.Rockets.Lynx.AerodynamicsWithCanards;
 
 model AerodynamicForce
   extends RocketControl.Aerodynamics.PartialAerodynamicForce;
+  
   class AeroData = RocketControl.Aerodynamics.AeroData(redeclare type State = State);
+  
   AeroData.ExternalAeroData aerodata = AeroData.ExternalAeroData(states_file, coeffs_file);
-  Real state_arr[State];
+  
+  Real state_arr[State] "Aerodynamic state array";
+  
   Modelica.Blocks.Interfaces.RealInput finDeflection[4](each final unit = "rad", each final quantity="Angle", each displayUnit="deg") annotation(
     Placement(visible = true, transformation(origin = {-100, -70}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-100, -70}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
 protected
