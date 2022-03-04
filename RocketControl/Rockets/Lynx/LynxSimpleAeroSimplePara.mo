@@ -1,0 +1,70 @@
+within RocketControl.Rockets.Lynx;
+
+model LynxSimpleAeroSimplePara
+  extends Rockets.Internal.PartialRocket;
+  parameter SI.Duration start_delay = 0.5;
+  replaceable RocketControl.Rockets.Lynx.LinearAerodynamicsWithCanards.LinearAerodynamics aerodynamics annotation(
+    Placement(visible = true, transformation(origin = {70, 80}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Mechanics.MultiBody.Parts.FixedTranslation to_parachute_link(animation = false, r = {0.61, 0, 0}) annotation(
+    Placement(visible = true, transformation(origin = {10, -60}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Mechanics.MultiBody.Parts.FixedTranslation to_lug_aft(animation = false, r = {-0.408, 0, -0.075}) annotation(
+    Placement(visible = true, transformation(origin = {-70, -30}, extent = {{-10, -10}, {10, 10}}, rotation = 180)));
+  RocketControl.Components.Propulsion.M2000R m2000r(start_delay = start_delay) annotation(
+    Placement(visible = true, transformation(origin = {-40, -80}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Mechanics.MultiBody.Parts.FixedTranslation to_lug_bow(animation = false, r = {-0.009, 0, -0.075}) annotation(
+    Placement(visible = true, transformation(origin = {-70, -10}, extent = {{-10, -10}, {10, 10}}, rotation = 180)));
+  Modelica.Mechanics.MultiBody.Parts.Body fuselage(I_11 = 0.063814847, I_21 = 0, I_22 = 3.338741422, I_31 = 0, I_32 = 0, I_33 = 3.338741422, animation = false, enforceStates = false, m = 19.924, r_CM = {0, 0, 0}, sequence_angleStates = {3, 2, 1}, w_a(start = {0, 0, 0})) annotation(
+    Placement(visible = true, transformation(origin = {-40, 70}, extent = {{-10, -10}, {10, 10}}, rotation = 90)));
+  Modelica.Mechanics.MultiBody.Parts.FixedTranslation nozzle_trans(animation = false, r = {-1.150, 0, 0}) annotation(
+    Placement(visible = true, transformation(origin = {-40, -48}, extent = {{-10, -10}, {10, 10}}, rotation = -90)));
+  Modelica.Mechanics.MultiBody.Parts.FixedTranslation to_fuselage(animation = false, r = {0, 0, 0}) annotation(
+    Placement(visible = true, transformation(origin = {-40, 30}, extent = {{-10, -10}, {10, 10}}, rotation = 90)));
+
+  Interfaces.AvionicsBus bus annotation(
+    Placement(visible = true, transformation(origin = {100, 100}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
+  Components.Actuators.TFServoMotor fin_servo annotation(
+    Placement(visible = true, transformation(origin = {70, 50}, extent = {{-10, -10}, {10, 10}}, rotation = 180)));
+  Components.Parachutes.SimpleParachute simple_drogue(CLL_p = -5,Cd = 0.9, d = 0.15, initial_surface = 0.01, opening_delay = 0.5, opening_transient_duration = 0.2, surface = 0.6, useEnablePort = true) annotation(
+    Placement(visible = true, transformation(origin = {70, -30}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Components.Parachutes.SimpleParachute simple_main(CLL_p = -5,Cd = 0.9, d = 0.15, initial_surface = 0.1, opening_delay = 1, opening_transient_duration = 0.7, surface = 10.6, useEnablePort = true) annotation(
+    Placement(visible = true, transformation(origin = {70, -70}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+equation
+  connect(to_lug_bow.frame_b, frame_lug_bow) annotation(
+    Line(points = {{-80, -10}, {-100, -10}, {-100, 60}}, color = {95, 95, 95}));
+  connect(to_lug_aft.frame_a, to_fuselage.frame_a) annotation(
+    Line(points = {{-60, -30}, {-10, -30}, {-10, 0}, {-40, 0}, {-40, 20}}));
+  connect(fuselage.frame_a, to_fuselage.frame_b) annotation(
+    Line(points = {{-40, 60}, {-40, 40}}, color = {95, 95, 95}));
+  connect(ref_center, to_lug_aft.frame_a) annotation(
+    Line(points = {{100, 0}, {-10, 0}, {-10, -30}, {-60, -30}}));
+  connect(to_lug_aft.frame_b, frame_lug_aft) annotation(
+    Line(points = {{-80, -30}, {-100, -30}, {-100, -40}}, color = {95, 95, 95}));
+  connect(to_lug_aft.frame_a, to_lug_bow.frame_a) annotation(
+    Line(points = {{-60, -30}, {-50, -30}, {-50, -10}, {-60, -10}}, color = {95, 95, 95}));
+  connect(to_lug_aft.frame_a, nozzle_trans.frame_a) annotation(
+    Line(points = {{-60, -30}, {-40, -30}, {-40, -38}}, color = {95, 95, 95}));
+  connect(to_parachute_link.frame_a, to_lug_aft.frame_a) annotation(
+    Line(points = {{0, -60}, {-20, -60}, {-20, -30}, {-60, -30}}, color = {95, 95, 95}));
+  connect(nozzle_trans.frame_b, m2000r.frame_b) annotation(
+    Line(points = {{-40, -58}, {-40, -70}}));
+  connect(aerodynamics.frame_b, ref_center) annotation(
+    Line(points = {{60, 80}, {28, 80}, {28, 0}, {100, 0}}, color = {95, 95, 95}));
+  connect(aerodynamics.finDeflection, bus.fin_true_position) annotation(
+    Line(points = {{60, 73}, {32, 73}, {32, 100}, {100, 100}}, color = {0, 0, 127}, thickness = 0.5));
+  connect(fin_servo.setpoint, bus.fin_setpoint) annotation(
+    Line(points = {{82, 50}, {100, 50}, {100, 100}}, color = {0, 0, 127}, thickness = 0.5));
+  connect(fin_servo.servo_pos, aerodynamics.finDeflection) annotation(
+    Line(points = {{59, 50}, {32, 50}, {32, 73}, {60, 73}}, color = {0, 0, 127}, thickness = 0.5));
+  connect(bus.drogue_deploy, simple_drogue.enable) annotation(
+    Line(points = {{100, 100}, {100, 20}, {70, 20}, {70, -20}}, color = {255, 0, 255}));
+  connect(to_parachute_link.frame_b, simple_drogue.frame_a) annotation(
+    Line(points = {{20, -60}, {40, -60}, {40, -30}, {60, -30}}, color = {95, 95, 95}));
+  connect(to_parachute_link.frame_b, simple_main.frame_a) annotation(
+    Line(points = {{20, -60}, {40, -60}, {40, -70}, {60, -70}}, color = {95, 95, 95}));
+  connect(bus.main_deploy, simple_main.enable) annotation(
+    Line(points = {{100, 100}, {100, 20}, {70, 20}, {70, -60}}, color = {255, 0, 255}));
+  annotation(
+    Icon(coordinateSystem(grid = {2, 0})),
+    experiment(StartTime = 0, StopTime = 1, Tolerance = 1e-6, Interval = 0.002),
+    Diagram(graphics = {Text(origin = {-31, -21}, extent = {{-19, 7}, {19, -7}}, textString = "ref_center", textStyle = {TextStyle.Italic})}));
+end LynxSimpleAeroSimplePara;

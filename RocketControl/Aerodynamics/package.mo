@@ -14,7 +14,7 @@ extends Icons.AerodynamicsIcon;
   parameter Modelica.Units.SI.Angle max_beta = from_deg(20);
   parameter Modelica.Units.SI.Length d = 0.15;
   parameter Modelica.Units.SI.Area S = pi * (0.15 / 2) ^ 2;
-  parameter Real angular_damping_reverse = 0.006;
+  
   AeroCoefficient coeffs[Coefficients];
   SI.Angle alpha0;
   SI.Angle beta0;
@@ -64,7 +64,7 @@ equation
   frame_b.t = -ma;
   else
   frame_b.f = zeros(3);
-  frame_b.t = angular_damping_reverse*aeroState.w;
+  frame_b.t = zeros(3);
   end if;
   annotation(
     Icon(graphics = {Text(origin = {2, -178}, lineColor = {0, 0, 255}, extent = {{-132, 76}, {129, 124}}, textString = "%name")}));
