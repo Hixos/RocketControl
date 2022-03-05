@@ -2,6 +2,7 @@ within RocketControl.Rockets.Lynx;
 
 model LynxSimpleAeroSimplePara
   extends Rockets.Internal.PartialRocket;
+  outer RocketControl.World.SimOptions opt;
   parameter SI.Duration start_delay = 0.5;
   replaceable RocketControl.Rockets.Lynx.LinearAerodynamicsWithCanards.LinearAerodynamics aerodynamics annotation(
     Placement(visible = true, transformation(origin = {70, 80}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
@@ -17,24 +18,24 @@ model LynxSimpleAeroSimplePara
     Placement(visible = true, transformation(origin = {-40, 70}, extent = {{-10, -10}, {10, 10}}, rotation = 90)));
   Modelica.Mechanics.MultiBody.Parts.FixedTranslation nozzle_trans(animation = false, r = {-1.150, 0, 0}) annotation(
     Placement(visible = true, transformation(origin = {-40, -48}, extent = {{-10, -10}, {10, 10}}, rotation = -90)));
-  Modelica.Mechanics.MultiBody.Parts.FixedTranslation to_fuselage(animation = false, r = {0, 0, 0}) annotation(
-    Placement(visible = true, transformation(origin = {-40, 30}, extent = {{-10, -10}, {10, 10}}, rotation = 90)));
 
   Interfaces.AvionicsBus bus annotation(
     Placement(visible = true, transformation(origin = {100, 100}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
-  Components.Actuators.TFServoMotor fin_servo annotation(
-    Placement(visible = true, transformation(origin = {70, 50}, extent = {{-10, -10}, {10, 10}}, rotation = 180)));
   Components.Parachutes.SimpleParachute simple_drogue(CLL_p = -5,Cd = 0.9, d = 0.15, initial_surface = 0.01, opening_delay = 0.5, opening_transient_duration = 0.2, surface = 0.6, useEnablePort = true) annotation(
     Placement(visible = true, transformation(origin = {70, -30}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Components.Parachutes.SimpleParachute simple_main(CLL_p = -5,Cd = 0.9, d = 0.15, initial_surface = 0.1, opening_delay = 1, opening_transient_duration = 0.7, surface = 10.6, useEnablePort = true) annotation(
     Placement(visible = true, transformation(origin = {70, -70}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Components.Actuators.TFServoMotor fin_servo(a = {0.0769, 1}) annotation(
+    Placement(visible = true, transformation(origin = {70, 50}, extent = {{-10, -10}, {10, 10}}, rotation = 180)));
+  RocketControl.GNC.Control.Deflection2Control deflection2Control annotation(
+    Placement(visible = true, transformation(origin = {6, 128}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Clocked.RealSignals.Sampler.SampleVectorizedAndClocked sample1(n = 4)  annotation(
+    Placement(visible = true, transformation(origin = {52, 128}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
+  Modelica.Clocked.ClockSignals.Clocks.PeriodicExactClock periodicClock1(factor = opt.samplePeriodMs)  annotation(
+    Placement(visible = true, transformation(origin = {8, 94}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
 equation
   connect(to_lug_bow.frame_b, frame_lug_bow) annotation(
     Line(points = {{-80, -10}, {-100, -10}, {-100, 60}}, color = {95, 95, 95}));
-  connect(to_lug_aft.frame_a, to_fuselage.frame_a) annotation(
-    Line(points = {{-60, -30}, {-10, -30}, {-10, 0}, {-40, 0}, {-40, 20}}));
-  connect(fuselage.frame_a, to_fuselage.frame_b) annotation(
-    Line(points = {{-40, 60}, {-40, 40}}, color = {95, 95, 95}));
   connect(ref_center, to_lug_aft.frame_a) annotation(
     Line(points = {{100, 0}, {-10, 0}, {-10, -30}, {-60, -30}}));
   connect(to_lug_aft.frame_b, frame_lug_aft) annotation(
@@ -51,10 +52,6 @@ equation
     Line(points = {{60, 80}, {28, 80}, {28, 0}, {100, 0}}, color = {95, 95, 95}));
   connect(aerodynamics.finDeflection, bus.fin_true_position) annotation(
     Line(points = {{60, 73}, {32, 73}, {32, 100}, {100, 100}}, color = {0, 0, 127}, thickness = 0.5));
-  connect(fin_servo.setpoint, bus.fin_setpoint) annotation(
-    Line(points = {{82, 50}, {100, 50}, {100, 100}}, color = {0, 0, 127}, thickness = 0.5));
-  connect(fin_servo.servo_pos, aerodynamics.finDeflection) annotation(
-    Line(points = {{59, 50}, {32, 50}, {32, 73}, {60, 73}}, color = {0, 0, 127}, thickness = 0.5));
   connect(bus.drogue_deploy, simple_drogue.enable) annotation(
     Line(points = {{100, 100}, {100, 20}, {70, 20}, {70, -20}}, color = {255, 0, 255}));
   connect(to_parachute_link.frame_b, simple_drogue.frame_a) annotation(
@@ -63,6 +60,22 @@ equation
     Line(points = {{20, -60}, {40, -60}, {40, -70}, {60, -70}}, color = {95, 95, 95}));
   connect(bus.main_deploy, simple_main.enable) annotation(
     Line(points = {{100, 100}, {100, 20}, {70, 20}, {70, -60}}, color = {255, 0, 255}));
+  connect(nozzle_trans.frame_a, fuselage.frame_a) annotation(
+    Line(points = {{-40, -38}, {-40, 60}}));
+  connect(bus.fin_setpoint, fin_servo.setpoint) annotation(
+    Line(points = {{100, 100}, {100, 50}, {82, 50}}, thickness = 0.5));
+  connect(fin_servo.servo_pos, aerodynamics.finDeflection) annotation(
+    Line(points = {{60, 50}, {32, 50}, {32, 74}, {60, 74}}, color = {0, 0, 127}, thickness = 0.5));
+  connect(fin_servo.servo_pos, bus.fin_true_position) annotation(
+    Line(points = {{60, 50}, {32, 50}, {32, 100}, {100, 100}}, color = {0, 0, 127}, thickness = 0.5));
+  connect(deflection2Control.u, fin_servo.servo_pos) annotation(
+    Line(points = {{-6, 128}, {-16, 128}, {-16, 50}, {60, 50}}, color = {0, 0, 127}, thickness = 0.5));
+  connect(periodicClock1.y, sample1.clock) annotation(
+    Line(points = {{14, 94}, {52, 94}, {52, 120}}, color = {175, 175, 175}));
+  connect(deflection2Control.control, sample1.u) annotation(
+    Line(points = {{18, 128}, {44, 128}}, color = {0, 0, 127}, thickness = 0.5));
+  connect(sample1.y, bus.control_position_meas) annotation(
+    Line(points = {{58, 128}, {100, 128}, {100, 100}}, color = {0, 0, 127}, thickness = 0.5));  protected
   annotation(
     Icon(coordinateSystem(grid = {2, 0})),
     experiment(StartTime = 0, StopTime = 1, Tolerance = 1e-6, Interval = 0.002),

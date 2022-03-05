@@ -2,6 +2,7 @@ within RocketControl.Rockets.Lynx.StateMachines;
 
 model FlightModeManager
   outer RocketControl.World.Interfaces.WorldBase world;
+  outer RocketControl.World.SimOptions opt;
  
   RocketControl.Interfaces.AvionicsBus bus annotation(
     Placement(visible = true, transformation(origin = {0, -30}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
@@ -32,7 +33,7 @@ model FlightModeManager
   Modelica.StateGraph.TransitionWithSignal terminal_ascent annotation(
     Placement(visible = true, transformation(origin = {80, 58}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Blocks.Logical.Timer met annotation(
-    Placement(visible = true, transformation(origin = {-14, -6}, extent = {{-4, -4}, {4, 4}}, rotation = 0)));
+    Placement(visible = true, transformation(origin = {-16, -22}, extent = {{-4, -4}, {4, 4}}, rotation = 0)));
   Modelica.Blocks.Sources.BooleanExpression v_control_enable(y = met.y > 10)  annotation(
     Placement(visible = true, transformation(origin = {-10, 64}, extent = {{-10, -8}, {10, 8}}, rotation = 0)));
   Modelica.Blocks.Sources.BooleanExpression termina_ascent_expr(y = hold(bus.v_est[3]) > (-30)) annotation(
@@ -49,6 +50,14 @@ model FlightModeManager
     Placement(visible = true, transformation(origin = {-74, -29}, extent = {{-24, -7}, {24, 7}}, rotation = 0)));
  Modelica.StateGraph.Step terminal_ascent_state(nIn = 1, nOut = 1)  annotation(
     Placement(visible = true, transformation(origin = {90, -10}, extent = {{-10, -10}, {10, 10}}, rotation = -90)));
+ Modelica.Clocked.BooleanSignals.Sampler.SampleClocked sample1 annotation(
+    Placement(visible = true, transformation(origin = {0, 2.22045e-16}, extent = {{-4, -4}, {4, 4}}, rotation = -90)));
+ Modelica.Clocked.BooleanSignals.Sampler.SampleClocked sampleClocked annotation(
+    Placement(visible = true, transformation(origin = {16, 2.22045e-16}, extent = {{-4, -4}, {4, 4}}, rotation = -90)));
+ Modelica.Clocked.BooleanSignals.Sampler.SampleClocked sampleClocked1 annotation(
+    Placement(visible = true, transformation(origin = {30, 2.22045e-16}, extent = {{-4, -4}, {4, 4}}, rotation = -90)));
+ Modelica.Clocked.ClockSignals.Clocks.PeriodicExactClock periodicClock1(factor = opt.samplePeriodMs)  annotation(
+    Placement(visible = true, transformation(origin = {-22, 0}, extent = {{-2, -2}, {2, 2}}, rotation = 0)));
 equation
   connect(liftoff_state.outPort[1], guidance_enable.inPort) annotation(
     Line(points = {{-69.5, 58}, {-54, 58}}));
@@ -86,24 +95,36 @@ equation
     Line(points = {{56, -53}, {56, -52.5}, {74, -52.5}, {74, -68}}, color = {255, 0, 255}));
   connect(landed.outPort, liftoff_state.inPort[1]) annotation(
     Line(points = {{-82, -80}, {-100, -80}, {-100, 58}, {-90, 58}}));
-  connect(roll_control_state.active, bus.roll_guidance) annotation(
-    Line(points = {{0, 20}, {0, -30}}, color = {255, 0, 255}));
   connect(bus.liftoff, met.u) annotation(
-    Line(points = {{0, -30}, {-26, -30}, {-26, -6}, {-18, -6}}, color = {255, 0, 255}));
+    Line(points = {{0, -30}, {-26, -30}, {-26, -22}, {-21, -22}}, color = {255, 0, 255}));
   connect(bus.liftoff, guidance_enable.condition) annotation(
     Line(points = {{0, -30}, {-36, -30}, {-36, 36}, {-50, 36}, {-50, 46}}, color = {255, 0, 255}));
   connect(drogue_deploy.y, bus.drogue_deploy) annotation(
     Line(points = {{-48, -29}, {-36, -29}, {-36, -30}, {0, -30}}, color = {255, 0, 255}));
   connect(main_deploy.y, bus.main_deploy) annotation(
     Line(points = {{-48, -17}, {-36, -17}, {-36, -30}, {0, -30}}, color = {255, 0, 255}));
-  connect(v_control_state.active, bus.velocity_guidace) annotation(
-    Line(points = {{-12, 76}, {-12, 72}, {26, 72}, {26, -30}, {0, -30}}, color = {255, 0, 255}));
-  connect(apogee_control_state.active, bus.apogee_guidance) annotation(
-    Line(points = {{26, 76}, {26, -30}, {0, -30}}, color = {255, 0, 255}));
- connect(terminal_ascent.outPort, terminal_ascent_state.inPort[1]) annotation(
+  connect(terminal_ascent.outPort, terminal_ascent_state.inPort[1]) annotation(
     Line(points = {{82, 58}, {90, 58}, {90, 2}}));
- connect(terminal_ascent_state.outPort[1], apogee.inPort) annotation(
+  connect(terminal_ascent_state.outPort[1], apogee.inPort) annotation(
     Line(points = {{90, -20}, {90, -80}, {78, -80}}));
+ connect(roll_control_state.active, sample1.u) annotation(
+    Line(points = {{0, 20}, {0, 4}}, color = {255, 0, 255}));
+ connect(sample1.y, bus.roll_guidance) annotation(
+    Line(points = {{0, -4}, {0, -30}}, color = {255, 0, 255}));
+ connect(sampleClocked.y, bus.velocity_guidace) annotation(
+    Line(points = {{16, -4}, {16, -30}, {0, -30}}, color = {255, 0, 255}));
+ connect(sampleClocked1.y, bus.apogee_guidance) annotation(
+    Line(points = {{30, -4}, {30, -30}, {0, -30}}, color = {255, 0, 255}));
+ connect(apogee_control_state.active, sampleClocked1.u) annotation(
+    Line(points = {{26, 76}, {30, 76}, {30, 4}}, color = {255, 0, 255}));
+ connect(sampleClocked.u, v_control_state.active) annotation(
+    Line(points = {{16, 4}, {16, 72}, {-12, 72}, {-12, 76}}, color = {255, 0, 255}));
+ connect(periodicClock1.y, sample1.clock) annotation(
+    Line(points = {{-20, 0}, {-4, 0}}, color = {175, 175, 175}));
+ connect(periodicClock1.y, sampleClocked.clock) annotation(
+    Line(points = {{-20, 0}, {12, 0}}, color = {175, 175, 175}));
+ connect(periodicClock1.y, sampleClocked1.clock) annotation(
+    Line(points = {{-20, 0}, {26, 0}}, color = {175, 175, 175}));
   annotation(
     Icon(coordinateSystem(grid = {2, 0})));
 end FlightModeManager;

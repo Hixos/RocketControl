@@ -4,6 +4,9 @@ model VectorSample
 
 parameter Integer n(min = 1) annotation(Evaluate = true);
 parameter Real u_start[n] = zeros(n);
+parameter Boolean infer_clock = true;
+parameter Integer samplePeriodMs(min = 1) = 1;
+
   Modelica.Blocks.Interfaces.RealInput u[n](start = u_start) annotation(
     Placement(visible = true, transformation(origin = {-120, 0}, extent = {{-20, -20}, {20, 20}}, rotation = 0), iconTransformation(origin = {-120, 0}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
   Modelica.Blocks.Interfaces.RealOutput y[n] annotation(

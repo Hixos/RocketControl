@@ -18,14 +18,10 @@ within RocketControl.Simulations;
       Placement(visible = true, transformation(origin = {-90, 90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   inner World.FlatWorld world(altitude_0 = 100, animateGravity = false, animateGround = false, animateWorld = true, enableAnimation = true, latitude_0 = 45.691051, longitude_0 = 8.490499, n = {0, 0, 1}) annotation(
       Placement(visible = true, transformation(origin = {-90, -90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
- Modelica.Blocks.Sources.BooleanExpression control_enable(y = time > 1 and time < 15)  annotation(
-    Placement(visible = true, transformation(origin = {-54, 60}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
  Components.LaunchPad.LaunchRail launchRail(azimuth(displayUnit = "deg") = opt.launch_azimuth, c_x = c_x, c_y = c_y, c_z = c_z, d_x = d_x, d_y = d_y, d_z = d_z, elevation(displayUnit = "deg") = opt.launch_elevation, lug_length = 0.04, r_rel = {0, 0, 0.04}, rail_length = 4) annotation(
     Placement(visible = true, transformation(origin = {-50, 10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
- RocketControl.Rockets.Lynx.LynxLinearAeroDiscrete lynxLinearAeroDiscrete annotation(
-    Placement(visible = true, transformation(origin = {0, 10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
- Modelica.Clocked.BooleanSignals.Sampler.Sample sample1 annotation(
-    Placement(visible = true, transformation(origin = {-12, 60}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
+ RocketControl.Rockets.Lynx.LynxSimpleAeroSimplePara lynxLinearAeroDiscrete annotation(
+    Placement(visible = true, transformation(origin = {-10, 10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
  inner RocketControl.World.SimOptions opt(launch_azimuth = from_deg(20), launch_elevation = from_deg(84))  annotation(
     Placement(visible = true, transformation(origin = {-50, 90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
  Components.Visualizers.AssetVisualizer assetVisualizer annotation(
@@ -33,28 +29,30 @@ within RocketControl.Simulations;
  RocketControl.Rockets.Lynx.GNC.ContinuousGNC continuousGNC annotation(
     Placement(visible = true, transformation(origin = {90, 50}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
  RocketControl.Rockets.Lynx.GNC.RealGNC realGNC annotation(
-    Placement(visible = true, transformation(origin = {10, -50}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+    Placement(visible = true, transformation(origin = {70, -30}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+ RocketControl.Rockets.Lynx.StateMachines.FlightModeManager flightModeManager annotation(
+    Placement(visible = true, transformation(origin = {16, -52}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
 equation
   connect(fixed.frame_b, launchRail.frame_a) annotation(
     Line(points = {{-80, 10}, {-60, 10}}, color = {95, 95, 95}));
   connect(launchRail.frame_b_lug_bow, lynxLinearAeroDiscrete.frame_lug_bow) annotation(
-    Line(points = {{-40, 16}, {-10, 16}}));
+    Line(points = {{-40, 16}, {-20, 16}}));
   connect(launchRail.frame_b_lug_aft, lynxLinearAeroDiscrete.frame_lug_aft) annotation(
-    Line(points = {{-40, 4}, {-10, 4}}, color = {95, 95, 95}));
+    Line(points = {{-40, 4}, {-20, 4}}, color = {95, 95, 95}));
   connect(landDetector.frame_a, lynxLinearAeroDiscrete.ref_center) annotation(
-    Line(points = {{80, 90}, {30, 90}, {30, 10}, {10, 10}}));
-  connect(control_enable.y, sample1.u) annotation(
-    Line(points = {{-43, 60}, {-20, 60}}, color = {255, 0, 255}));
+    Line(points = {{80, 90}, {0, 90}, {0, 10}}));
   connect(assetVisualizer.frame_a, lynxLinearAeroDiscrete.ref_center) annotation(
-    Line(points = {{4, 88}, {-2, 88}, {-2, 24}, {16, 24}, {16, 10}, {10, 10}}, color = {95, 95, 95}));
+    Line(points = {{4, 88}, {0, 88}, {0, 10}}, color = {95, 95, 95}));
   connect(continuousGNC.frame_a, lynxLinearAeroDiscrete.ref_center) annotation(
-    Line(points = {{80, 50}, {48, 50}, {48, 10}, {10, 10}}, color = {95, 95, 95}));
- connect(lynxLinearAeroDiscrete.ref_center, realGNC.frame_a) annotation(
-    Line(points = {{10, 10}, {22, 10}, {22, -26}, {-20, -26}, {-20, -50}, {0, -50}}, color = {95, 95, 95}));
- connect(lynxLinearAeroDiscrete.bus, realGNC.bus) annotation(
-    Line(points = {{10, 18}, {62, 18}, {62, -50}, {20, -50}}, thickness = 0.5));
- connect(sample1.y, lynxLinearAeroDiscrete.bus.velocity_guidace) annotation(
-    Line(points = {{-6, 60}, {10, 60}, {10, 18}}, color = {255, 0, 255}));
+    Line(points = {{80, 50}, {48, 50}, {48, 10}, {0, 10}}, color = {95, 95, 95}));
+  connect(lynxLinearAeroDiscrete.bus, realGNC.bus) annotation(
+    Line(points = {{0, 20}, {80, 20}, {80, -30}}, thickness = 0.5));
+  connect(lynxLinearAeroDiscrete.ref_center, realGNC.frame_a) annotation(
+    Line(points = {{0, 10}, {38, 10}, {38, -30}, {60, -30}}));
+ connect(lynxLinearAeroDiscrete.bus, flightModeManager.bus) annotation(
+    Line(points = {{0, 20}, {6, 20}, {6, -52}}, color = {255, 204, 51}, thickness = 0.5));
+ connect(launchRail.liftoff, flightModeManager.bus.liftoff) annotation(
+    Line(points = {{-44, 0}, {-42, 0}, {-42, -52}, {6, -52}}, color = {255, 0, 255}));
 protected
   annotation(
       Icon(coordinateSystem(grid = {2, 0})),

@@ -7,3 +7,4 @@ LinearOutputMatrices
 Internal
 AccelerationRollRateControl
 BodyVelocityControlDiscrete
+AccelerationRollRateControlVel

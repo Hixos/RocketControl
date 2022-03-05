@@ -49,7 +49,7 @@ model LynxSimpleAero
     Placement(visible = true, transformation(origin = {70, -70}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Components.Parts.Parachute2 drogue(Cd = 0.9, I_x = 0.000241539, I_y = 0.002009527, c_flange = 2000, c_line = 10000, d_flange = 30, d_line = 3, flange_radius = 0.075, initial_surface = 0.02, line_length = 3, mass = 0.1, opening_transient_duration = 0.2, surface = 0.6) annotation(
     Placement(visible = true, transformation(origin = {70, -40}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Components.Actuators.TFServoMotor fin_servo annotation(
+  Components.Actuators.TFServoMotor fin_servo(a = {0.0769, 1})  annotation(
     Placement(visible = true, transformation(origin = {70, 50}, extent = {{-10, -10}, {10, 10}}, rotation = 180)));
 equation
   total_mass = nosecone.m + fuselage.m + main.mass + drogue.mass + m2000r.m2000r.propellant.m;
