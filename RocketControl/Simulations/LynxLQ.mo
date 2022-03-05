@@ -22,7 +22,7 @@ within RocketControl.Simulations;
     Placement(visible = true, transformation(origin = {-50, 10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
  RocketControl.Rockets.Lynx.LynxSimpleAeroSimplePara lynxLinearAeroDiscrete annotation(
     Placement(visible = true, transformation(origin = {-10, 10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
- inner RocketControl.World.SimOptions opt(launch_azimuth = from_deg(20), launch_elevation = from_deg(84))  annotation(
+ inner RocketControl.World.SimOptions opt(drogue_enable = true, guidance_disable = true,launch_azimuth = from_deg(20), launch_elevation = from_deg(84))  annotation(
     Placement(visible = true, transformation(origin = {-50, 90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
  Components.Visualizers.AssetVisualizer assetVisualizer annotation(
     Placement(visible = true, transformation(origin = {14, 88}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));

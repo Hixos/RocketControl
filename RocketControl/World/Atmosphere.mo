@@ -51,20 +51,25 @@ model Atmosphere
 
   function windSpeed
     input SI.Position h;
+    
+    input SI.Angle[:] vec_angles = wind_direction;
+    input SI.Velocity[:] vec_magnitudes = wind_magnitude;
+    input SI.Length[:] vec_heights = wind_layer_height;
+    
     output SI.Velocity[3] windSpeed;
   protected
    SI.Length cum_height = 0;
   algorithm
-   for i in 1:num_wind_layers loop
-    cum_height := cum_height + wind_layer_height[i];
+   for i in 1:size(vec_angles,1) loop
+    cum_height := cum_height + vec_heights[i];
     if h <= cum_height then
-      windSpeed := wind_magnitude[i]*{cos(wind_direction[i]), sin(wind_direction[i]), 0};
+      windSpeed := vec_magnitudes[i]*{cos(vec_angles[i]), sin(vec_angles[i]), 0};
       break;
     end if;
    end for;
    
    if h > cum_height then
-     windSpeed := wind_magnitude[end]*{cos(wind_direction[end]), sin(wind_direction[end]), 0};
+     windSpeed := vec_magnitudes[end]*{cos(vec_angles[end]), sin(vec_angles[end]), 0};
    end if;
   end windSpeed;
 
