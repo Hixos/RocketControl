@@ -14,7 +14,7 @@ within RocketControl.Simulations;
       Placement(visible = true, transformation(origin = {-90, 10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Components.Parts.LandDetector landDetector annotation(
       Placement(visible = true, transformation(origin = {90, 90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  inner RocketControl.World.Atmosphere atmosphere(wind_speed = {8, 5, 0})  annotation(
+  inner RocketControl.World.Atmosphere atmosphere(num_wind_layers = 3, wind_direction = from_deg({-180, 45, 0}), wind_layer_height = {1000, 100, 10}, wind_magnitude = {2, 20, 5})   annotation(
       Placement(visible = true, transformation(origin = {-90, 90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   inner World.FlatWorld world(altitude_0 = 100, animateGravity = false, animateGround = false, animateWorld = true, enableAnimation = true, latitude_0 = 45.691051, longitude_0 = 8.490499, n = {0, 0, 1}) annotation(
       Placement(visible = true, transformation(origin = {-90, -90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));

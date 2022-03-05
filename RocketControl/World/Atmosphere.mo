@@ -9,7 +9,12 @@ model Atmosphere
   parameter SI.Density rho0 = 1.2250;
   parameter SI.MolarMass M = 0.0289644;
   parameter SI.Acceleration g0 = 9.80665;
-  parameter SI.Velocity[3] wind_speed = {0,0,0};
+  
+  parameter Integer num_wind_layers(min = 1) = 1;
+  
+  parameter SI.Length wind_layer_height[num_wind_layers] = {100000};
+  parameter SI.Angle wind_direction[num_wind_layers](each displayUnit = "deg") = {0};
+  parameter SI.Velocity wind_magnitude[num_wind_layers] = {0};
 
   function density
     input SI.Position h;
@@ -47,12 +52,20 @@ model Atmosphere
   function windSpeed
     input SI.Position h;
     output SI.Velocity[3] windSpeed;
+  protected
+   SI.Length cum_height = 0;
   algorithm
-//if r_0[3] < -1000 then
-//windSpeed := {0, 30, 0};
-//else
-    windSpeed := wind_speed;
-//  end if;
+   for i in 1:num_wind_layers loop
+    cum_height := cum_height + wind_layer_height[i];
+    if h <= cum_height then
+      windSpeed := wind_magnitude[i]*{cos(wind_direction[i]), sin(wind_direction[i]), 0};
+      break;
+    end if;
+   end for;
+   
+   if h > cum_height then
+     windSpeed := wind_magnitude[end]*{cos(wind_direction[end]), sin(wind_direction[end]), 0};
+   end if;
   end windSpeed;
 
   package Blocks
