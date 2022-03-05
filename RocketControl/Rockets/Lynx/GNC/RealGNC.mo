@@ -13,7 +13,7 @@ outer World.SimOptions opt;
   RocketControl.GNC.Guidance.ConstantFlightPathGuidanceDiscrete constantFlightPathGuidanceDiscrete(dt = opt.samplePeriodMs / 1000, flightpathangle (displayUnit = "deg") = 1.396263401595464, heading = 0, int_lim = 60, k = 0.3, kint = 4)  annotation(
     Placement(visible = true, transformation(origin = {-40, -8}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   RocketControl.GNC.Control.AccelerationRollRateControl accelerationRollRateControl(Qvec = {0, 40, 40, 0, 0, 0, 0, 0, 0, 10} * 0.01, Rvec = {1, 1, 0.4} * 300)  annotation(
-    Placement(visible = true, transformation(origin = {50, -10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+    Placement(visible = true, transformation(origin = {50, -14}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   RocketControl.GNC.FeedbackIntegrator feedbackIntegrator(kint = 1,ts = opt.samplePeriodMs / 1000, useEnablePort = true)  annotation(
     Placement(visible = true, transformation(origin = {-12, -50}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   RocketControl.GNC.Guidance.RollDirectionGuidance rollDirectionGuidance(k = 0.5, rollrate_max = from_deg(10))  annotation(
@@ -26,11 +26,11 @@ equation
   connect(bus.w_est[1], feedbackIntegrator.feedback[1]) annotation(
     Line(points = {{100, 0}, {100, -100}, {-12, -100}, {-12, -62}}, thickness = 0.5));
   connect(accelerationRollRateControl.bus, bus) annotation(
-    Line(points = {{60, -10}, {100, -10}, {100, 0}}, thickness = 0.5));
+    Line(points = {{60, -14}, {100, -14}, {100, 0}}, thickness = 0.5));
   connect(constantFlightPathGuidanceDiscrete.acc_err_int, accelerationRollRateControl.acc_err_int) annotation(
-    Line(points = {{-28, -8}, {38, -8}, {38, -4}}, color = {0, 0, 127}, thickness = 0.5));
+    Line(points = {{-28, -8}, {38, -8}}, color = {0, 0, 127}, thickness = 0.5));
   connect(feedbackIntegrator.err_int[1], accelerationRollRateControl.rollrate_err_int) annotation(
-    Line(points = {{0, -50}, {18, -50}, {18, -16}, {38, -16}}, color = {0, 0, 127}));
+    Line(points = {{0, -50}, {18, -50}, {18, -20}, {38, -20}}, color = {0, 0, 127}));
   connect(rollDirectionGuidance.rollrate_ref, feedbackIntegrator.ref[1]) annotation(
     Line(points = {{-40, -50}, {-24, -50}}, color = {0, 0, 127}));
   connect(rollDirectionGuidance.bus, constantFlightPathGuidanceDiscrete.bus) annotation(

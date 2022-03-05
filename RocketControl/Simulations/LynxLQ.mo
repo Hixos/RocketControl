@@ -24,8 +24,6 @@ within RocketControl.Simulations;
     Placement(visible = true, transformation(origin = {-10, 10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
  inner RocketControl.World.SimOptions opt(drogue_enable = true, guidance_disable = true,launch_azimuth = from_deg(20), launch_elevation = from_deg(84))  annotation(
     Placement(visible = true, transformation(origin = {-50, 90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
- Components.Visualizers.AssetVisualizer assetVisualizer annotation(
-    Placement(visible = true, transformation(origin = {14, 88}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
  RocketControl.Rockets.Lynx.GNC.ContinuousGNC continuousGNC annotation(
     Placement(visible = true, transformation(origin = {90, 50}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
  RocketControl.Rockets.Lynx.GNC.RealGNC realGNC annotation(
@@ -41,17 +39,15 @@ equation
     Line(points = {{-40, 4}, {-20, 4}}, color = {95, 95, 95}));
   connect(landDetector.frame_a, lynxLinearAeroDiscrete.ref_center) annotation(
     Line(points = {{80, 90}, {0, 90}, {0, 10}}));
-  connect(assetVisualizer.frame_a, lynxLinearAeroDiscrete.ref_center) annotation(
-    Line(points = {{4, 88}, {0, 88}, {0, 10}}, color = {95, 95, 95}));
   connect(continuousGNC.frame_a, lynxLinearAeroDiscrete.ref_center) annotation(
     Line(points = {{80, 50}, {48, 50}, {48, 10}, {0, 10}}, color = {95, 95, 95}));
   connect(lynxLinearAeroDiscrete.bus, realGNC.bus) annotation(
     Line(points = {{0, 20}, {80, 20}, {80, -30}}, thickness = 0.5));
   connect(lynxLinearAeroDiscrete.ref_center, realGNC.frame_a) annotation(
     Line(points = {{0, 10}, {38, 10}, {38, -30}, {60, -30}}));
- connect(lynxLinearAeroDiscrete.bus, flightModeManager.bus) annotation(
+  connect(lynxLinearAeroDiscrete.bus, flightModeManager.bus) annotation(
     Line(points = {{0, 20}, {6, 20}, {6, -52}}, color = {255, 204, 51}, thickness = 0.5));
- connect(launchRail.liftoff, flightModeManager.bus.liftoff) annotation(
+  connect(launchRail.liftoff, flightModeManager.bus.liftoff) annotation(
     Line(points = {{-44, 0}, {-42, 0}, {-42, -52}, {6, -52}}, color = {255, 0, 255}));
 protected
   annotation(
