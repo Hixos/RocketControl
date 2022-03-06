@@ -8,14 +8,18 @@ model ConstantFlightPathGuidanceDiscrete
   parameter Real int_lim = 10;
   parameter Real dt;
   
+  parameter Modelica.Units.SI.Height target_apogee = 3000;
+  parameter SI.Angle flightpathangle_0(displayUnit = "deg") = from_deg(84);
   parameter SI.Angle heading(displayUnit = "deg") = 0;
-  parameter SI.Angle flightpathangle(displayUnit = "deg") = from_deg(84);
-  final parameter Real V_dir_target_ned[3] = {cos(heading) * cos(flightpathangle), sin(heading) * cos(flightpathangle), -sin(flightpathangle)};
   
   RocketControl.Interfaces.AvionicsBus bus annotation(
     Placement(visible = true, transformation(origin = {-100, 100}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Blocks.Interfaces.RealOutput acc_err_int[3](start = {0, 0, 0}) annotation(
     Placement(visible = true, transformation(origin = {110, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {110, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+    
+  SI.Angle flightpathangle(displayUnit = "deg");
+    
+    
   SI.Velocity V_body[3];
   SI.Velocity V_target_body[3];
   SI.Velocity V_err_body[3];
@@ -27,7 +31,13 @@ model ConstantFlightPathGuidanceDiscrete
   SI.Acceleration g[3];
   
   SI.Velocity acc_err_int_prev[3];
+  
+  final parameter Real c1 = sqrt(2*9.80665*target_apogee);
+  final parameter SI.Velocity vx_parab =  sqrt(2*9.80665*target_apogee)/tan(flightpathangle_0);
+  Real V_dir_target_ned[3];
 equation
+  flightpathangle = atan((-9.80665*(time - 0.5)+c1)/vx_parab);
+  V_dir_target_ned = {cos(heading) * cos(flightpathangle), sin(heading) * cos(flightpathangle), -sin(flightpathangle)};
   g = Modelica.Mechanics.MultiBody.Frames.Quaternions.resolve2(bus.q_est, {0, 0, 9.80665});
   
   V_body = Modelica.Mechanics.MultiBody.Frames.Quaternions.resolve2(bus.q_est, bus.v_est);

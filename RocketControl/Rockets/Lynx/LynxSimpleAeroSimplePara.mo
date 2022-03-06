@@ -10,11 +10,9 @@ model LynxSimpleAeroSimplePara
     Placement(visible = true, transformation(origin = {10, -60}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Mechanics.MultiBody.Parts.FixedTranslation to_lug_aft(animation = false, r = {-0.408, 0, -0.075}) annotation(
     Placement(visible = true, transformation(origin = {-70, -30}, extent = {{-10, -10}, {10, 10}}, rotation = 180)));
-  RocketControl.Components.Propulsion.M2000R m2000r(start_delay = start_delay) annotation(
-    Placement(visible = true, transformation(origin = {-40, -80}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Mechanics.MultiBody.Parts.FixedTranslation to_lug_bow(animation = false, r = {-0.009, 0, -0.075}) annotation(
     Placement(visible = true, transformation(origin = {-70, -10}, extent = {{-10, -10}, {10, 10}}, rotation = 180)));
-  Modelica.Mechanics.MultiBody.Parts.Body fuselage(I_11 = 0.063814847, I_21 = 0, I_22 = 3.338741422, I_31 = 0, I_32 = 0, I_33 = 3.338741422, animation = false, enforceStates = false, m = 19.924, r_CM = {0, 0, 0}, sequence_angleStates = {3, 2, 1}, w_a(start = {0, 0, 0})) annotation(
+  Modelica.Mechanics.MultiBody.Parts.Body fuselage(I_11 = 0.063814847, I_21 = 0, I_22 = 3.338741422, I_31 = 0, I_32 = 0, I_33 = 3.338741422, animation = false, enforceStates = false, m = 17.924, r_CM = {0, 0, 0}, sequence_angleStates = {3, 2, 1}, w_a(start = {0, 0, 0})) annotation(
     Placement(visible = true, transformation(origin = {-40, 70}, extent = {{-10, -10}, {10, 10}}, rotation = 90)));
   Modelica.Mechanics.MultiBody.Parts.FixedTranslation nozzle_trans(animation = false, r = {-1.150, 0, 0}) annotation(
     Placement(visible = true, transformation(origin = {-40, -48}, extent = {{-10, -10}, {10, 10}}, rotation = -90)));
@@ -30,10 +28,17 @@ model LynxSimpleAeroSimplePara
   RocketControl.GNC.Control.Deflection2Control deflection2Control annotation(
     Placement(visible = true, transformation(origin = {6, 128}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Clocked.RealSignals.Sampler.SampleVectorizedAndClocked sample1(n = 4)  annotation(
-    Placement(visible = true, transformation(origin = {52, 128}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
+    Placement(visible = true, transformation(origin = {66, 128}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
   Modelica.Clocked.ClockSignals.Clocks.PeriodicExactClock periodicClock1(factor = opt.samplePeriodMs)  annotation(
     Placement(visible = true, transformation(origin = {8, 94}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
+  Modelica.Clocked.RealSignals.Sampler.SampleVectorizedAndClocked sample2(n = 4) annotation(
+    Placement(visible = true, transformation(origin = {64, 146}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
+  RocketControl.Components.Propulsion.L1350 l1350(start_delay = 0.5)  annotation(
+    Placement(visible = true, transformation(origin = {-40, -82}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
 equation
+  for i in 1:4 loop
+    sample2.u[i] = der(deflection2Control.control[i]);
+  end for;
   connect(to_lug_bow.frame_b, frame_lug_bow) annotation(
     Line(points = {{-80, -10}, {-100, -10}, {-100, 60}}, color = {95, 95, 95}));
   connect(ref_center, to_lug_aft.frame_a) annotation(
@@ -46,8 +51,6 @@ equation
     Line(points = {{-60, -30}, {-40, -30}, {-40, -38}}, color = {95, 95, 95}));
   connect(to_parachute_link.frame_a, to_lug_aft.frame_a) annotation(
     Line(points = {{0, -60}, {-20, -60}, {-20, -30}, {-60, -30}}, color = {95, 95, 95}));
-  connect(nozzle_trans.frame_b, m2000r.frame_b) annotation(
-    Line(points = {{-40, -58}, {-40, -70}}));
   connect(aerodynamics.frame_b, ref_center) annotation(
     Line(points = {{60, 80}, {28, 80}, {28, 0}, {100, 0}}, color = {95, 95, 95}));
   connect(aerodynamics.finDeflection, bus.fin_true_position) annotation(
@@ -71,11 +74,18 @@ equation
   connect(deflection2Control.u, fin_servo.servo_pos) annotation(
     Line(points = {{-6, 128}, {-16, 128}, {-16, 50}, {60, 50}}, color = {0, 0, 127}, thickness = 0.5));
   connect(periodicClock1.y, sample1.clock) annotation(
-    Line(points = {{14, 94}, {52, 94}, {52, 120}}, color = {175, 175, 175}));
+    Line(points = {{14, 94}, {66, 94}, {66, 121}}, color = {175, 175, 175}));
   connect(deflection2Control.control, sample1.u) annotation(
-    Line(points = {{18, 128}, {44, 128}}, color = {0, 0, 127}, thickness = 0.5));
+    Line(points = {{18, 128}, {59, 128}}, color = {0, 0, 127}, thickness = 0.5));
   connect(sample1.y, bus.control_position_meas) annotation(
-    Line(points = {{58, 128}, {100, 128}, {100, 100}}, color = {0, 0, 127}, thickness = 0.5));  protected
+    Line(points = {{73, 128}, {100, 128}, {100, 100}}, color = {0, 0, 127}, thickness = 0.5));
+  connect(sample2.y, bus.cpos_dot) annotation(
+    Line(points = {{70, 146}, {100, 146}, {100, 100}}, color = {0, 0, 127}, thickness = 0.5));
+  connect(sample2.clock, periodicClock1.y) annotation(
+    Line(points = {{64, 138}, {64, 94}, {14, 94}}, color = {175, 175, 175}));
+  connect(nozzle_trans.frame_b, l1350.frame_b) annotation(
+    Line(points = {{-40, -58}, {-40, -72}}));
+protected
   annotation(
     Icon(coordinateSystem(grid = {2, 0})),
     experiment(StartTime = 0, StopTime = 1, Tolerance = 1e-6, Interval = 0.002),

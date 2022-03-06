@@ -119,6 +119,7 @@ block DiscreteKalmanFilter
     parameter Integer p(min = 1) = 1 annotation(
       Evaluate = true);
     parameter Boolean use_D = false;
+    parameter Real kint = 1;
     Modelica.Blocks.Interfaces.RealInput B[n, m] annotation(
       Placement(visible = true, transformation(origin = {-120, 20}, extent = {{-20, -20}, {20, 20}}, rotation = 0), iconTransformation(origin = {-120, 30}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
     Modelica.Blocks.Interfaces.RealInput A[n, n] annotation(
@@ -137,7 +138,7 @@ block DiscreteKalmanFilter
     if not use_D then
       D = zeros(p, m);
     end if;
-    Aaug = [A, zeros(n, p); -C, zeros(p, p)];
+    Aaug = [A, zeros(n, p); -kint*C, zeros(p, p)];
     Baug = [B; -D];
     Caug = [C, zeros(p, p)];
     annotation(

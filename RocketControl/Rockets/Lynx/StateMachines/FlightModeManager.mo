@@ -35,7 +35,7 @@ model FlightModeManager
     Placement(visible = true, transformation(origin = {68, 70}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Blocks.Logical.Timer met annotation(
     Placement(visible = true, transformation(origin = {-16, -22}, extent = {{-4, -4}, {4, 4}}, rotation = 0)));
-  Modelica.Blocks.Sources.BooleanExpression v_control_enable(y = met.y > 15)  annotation(
+  Modelica.Blocks.Sources.BooleanExpression v_control_enable(y = met.y > opt.guidance_disable_met)  annotation(
     Placement(visible = true, transformation(origin = {-10, 74}, extent = {{-10, -8}, {10, 8}}, rotation = 0)));
   Modelica.Blocks.Sources.BooleanExpression termina_ascent_expr(y = hold(bus.v_est[3]) > (-30)) annotation(
     Placement(visible = true, transformation(origin = {107, 15}, extent = {{-27, -7}, {27, 7}}, rotation = 180)));
@@ -67,8 +67,6 @@ model FlightModeManager
     Placement(visible = true, transformation(origin = {10, 138}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
  Modelica.StateGraph.Step liftoff_state(nIn = 1, nOut = 1) annotation(
     Placement(visible = true, transformation(origin = {-110, 84}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
- Modelica.StateGraph.Transition guidance_enable(waitTime = 1)  annotation(
-    Placement(visible = true, transformation(origin = {-46, 68}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
  Modelica.StateGraph.TransitionWithSignal guidance_disable(waitTime = 0) annotation(
     Placement(visible = true, transformation(origin = {-38, 138}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
  Modelica.Blocks.Sources.BooleanExpression booleanExpression(y = opt.guidance_disable) annotation(
@@ -79,6 +77,10 @@ model FlightModeManager
     Placement(visible = true, transformation(origin = {36, -55}, extent = {{-24, -7}, {24, 7}}, rotation = 0)));
  Modelica.StateGraph.TransitionWithSignal terminal_ascent_2 annotation(
     Placement(visible = true, transformation(origin = {68, 138}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+ Modelica.StateGraph.TransitionWithSignal guidance_enable(waitTime = 0) annotation(
+    Placement(visible = true, transformation(origin = {-50, 70}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+ Modelica.Blocks.Sources.BooleanExpression booleanExpression3(y = met.y >= opt.guidance_enable_met) annotation(
+    Placement(visible = true, transformation(origin = {-104, 23}, extent = {{-24, -7}, {24, 7}}, rotation = 0)));
 equation
   connect(on_ramp_state.outPort[1], liftoff.inPort) annotation(
     Line(points = {{-159.5, 84}, {-146, 84}}));
@@ -146,34 +148,36 @@ equation
     Line(points = {{77, 15}, {68, 15}, {68, 58}}, color = {255, 0, 255}));
   connect(liftoff.outPort, liftoff_state.inPort[1]) annotation(
     Line(points = {{-140.5, 84}, {-121, 84}}));
- connect(liftoff_state.outPort[1], alternative.inPort) annotation(
+  connect(liftoff_state.outPort[1], alternative.inPort) annotation(
     Line(points = {{-99.5, 84}, {-91.25, 84}, {-91.25, 92}, {-91, 92}}));
- connect(guidance_enable.inPort, alternative.split[2]) annotation(
-    Line(points = {{-50, 68}, {-67, 68}, {-67, 92}}));
-  connect(ascent_state.inPort, guidance_enable.outPort) annotation(
-    Line(points = {{-39, 70}, {-41.75, 70}, {-41.75, 68}, {-44.5, 68}}));
- connect(guidance_disable.inPort, alternative.split[1]) annotation(
+  connect(guidance_disable.inPort, alternative.split[1]) annotation(
     Line(points = {{-42, 138}, {-67, 138}, {-67, 92}}));
- connect(booleanExpression.y, guidance_disable.condition) annotation(
+  connect(booleanExpression.y, guidance_disable.condition) annotation(
     Line(points = {{-72, 113}, {-38, 113}, {-38, 126}}, color = {255, 0, 255}));
- connect(booleanExpression1.y, and1.u2) annotation(
+  connect(booleanExpression1.y, and1.u2) annotation(
     Line(points = {{-92, -58}, {-54, -58}, {-54, -54}}, color = {255, 0, 255}));
- connect(booleanExpression2.y, and2.u2) annotation(
+  connect(booleanExpression2.y, and2.u2) annotation(
     Line(points = {{62, -54}, {86, -54}, {86, -48}}, color = {255, 0, 255}));
- connect(guidance_disable.outPort, no_guidance_state.inPort[1]) annotation(
+  connect(guidance_disable.outPort, no_guidance_state.inPort[1]) annotation(
     Line(points = {{-36.5, 138}, {-1, 138}}));
- connect(ascent_state.outPort, terminal_ascent_1.inPort) annotation(
+  connect(ascent_state.outPort, terminal_ascent_1.inPort) annotation(
     Line(points = {{54, 70}, {64, 70}}));
- connect(terminal_ascent_1.outPort, alternative.join[2]) annotation(
+  connect(terminal_ascent_1.outPort, alternative.join[2]) annotation(
     Line(points = {{70, 70}, {95, 70}, {95, 92}}));
- connect(terminal_ascent_2.condition, terminal_ascent_1.condition) annotation(
+  connect(terminal_ascent_2.condition, terminal_ascent_1.condition) annotation(
     Line(points = {{68, 126}, {68, 58}}, color = {255, 0, 255}));
- connect(no_guidance_state.outPort[1], terminal_ascent_2.inPort) annotation(
+  connect(no_guidance_state.outPort[1], terminal_ascent_2.inPort) annotation(
     Line(points = {{20, 138}, {64, 138}}));
- connect(terminal_ascent_2.outPort, alternative.join[1]) annotation(
+  connect(terminal_ascent_2.outPort, alternative.join[1]) annotation(
     Line(points = {{70, 138}, {95, 138}, {95, 92}}));
- connect(alternative.outPort, terminal_ascent_state.inPort[1]) annotation(
+  connect(alternative.outPort, terminal_ascent_state.inPort[1]) annotation(
     Line(points = {{118, 92}, {128, 92}, {128, 2}}));
+ connect(ascent_state.inPort, guidance_enable.outPort) annotation(
+    Line(points = {{-40, 70}, {-48.5, 70}}));
+ connect(guidance_enable.inPort, alternative.split[2]) annotation(
+    Line(points = {{-54, 70}, {-66, 70}, {-66, 92}}));
+ connect(booleanExpression3.y, guidance_enable.condition) annotation(
+    Line(points = {{-78, 24}, {-50, 24}, {-50, 58}}, color = {255, 0, 255}));
   annotation(
     Icon(coordinateSystem(grid = {2, 0})),
     Diagram(coordinateSystem(extent = {{-200, 160}, {140, -100}})));

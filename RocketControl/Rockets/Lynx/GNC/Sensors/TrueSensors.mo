@@ -2,6 +2,7 @@ within RocketControl.Rockets.Lynx.GNC.Sensors;
 
 model TrueSensors
   extends Rockets.Internal.PartialSensorsPackage;
+
   parameter Boolean are_fins_present = true;
   RocketControl.Interfaces.AvionicsBus bus annotation(
     Placement(visible = true, transformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {102, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
@@ -19,6 +20,8 @@ model TrueSensors
     Placement(visible = true, transformation(origin = {0, -60}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   RocketControl.Components.Sensors.TrueSensors.TrueAsset trueAsset annotation(
     Placement(visible = true, transformation(origin = {0, -18}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Blocks.Sources.RealExpression altitude_agl(y = -trueGNSS.x[3]) annotation(
+    Placement(visible = true, transformation(origin = {-6, -82}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
 equation
   connect(frame_a, trueGyroscope.frame_a) annotation(
     Line(points = {{-100, 0}, {-40, 0}, {-40, 80}, {-10, 80}}));

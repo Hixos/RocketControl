@@ -9,17 +9,19 @@ outer World.SimOptions opt;
   Interfaces.AvionicsBus bus annotation(
     Placement(visible = true, transformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {102, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   RocketControl.Rockets.Lynx.GNC.Navigation.Navigation navigation annotation(
-    Placement(visible = true, transformation(origin = {-10, 60}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  RocketControl.GNC.Guidance.ConstantFlightPathGuidanceDiscrete constantFlightPathGuidanceDiscrete(dt = opt.samplePeriodMs / 1000, flightpathangle (displayUnit = "deg") = 1.396263401595464, heading = 0, int_lim = 60, k = 0.3, kint = 4)  annotation(
+    Placement(visible = true, transformation(origin = {-10, 30}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  RocketControl.GNC.Guidance.ConstantFlightPathGuidanceDiscrete constantFlightPathGuidanceDiscrete(dt = opt.samplePeriodMs / 1000, flightpathangle_0 (displayUnit = "deg") = 1.466076571675237, heading = opt.launch_azimuth, int_lim = 60, k = 1, kint = 4)  annotation(
     Placement(visible = true, transformation(origin = {-40, -8}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  RocketControl.GNC.Control.AccelerationRollRateControl accelerationRollRateControl(Qvec = {0, 40, 40, 0, 0, 0, 0, 0, 0, 10} * 0.01, Rvec = {1, 1, 0.4} * 300)  annotation(
+  RocketControl.GNC.Control.AccelerationRollRateControl accelerationRollRateControl(Qvec = {0, 100, 100, 0, 0, 0, 0, 0, 0, 400} * 0.01, Rvec = {1, 1, 1} * 300)  annotation(
     Placement(visible = true, transformation(origin = {50, -14}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   RocketControl.GNC.FeedbackIntegrator feedbackIntegrator(kint = 1,ts = opt.samplePeriodMs / 1000, useEnablePort = true)  annotation(
     Placement(visible = true, transformation(origin = {-12, -50}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  RocketControl.GNC.Guidance.RollDirectionGuidance rollDirectionGuidance(k = 0.5, rollrate_max = from_deg(10))  annotation(
+  RocketControl.GNC.Guidance.RollDirectionGuidance rollDirectionGuidance(k = 0.5, rollrate_max = from_deg(10), target_heading = 2.268928027592628)  annotation(
     Placement(visible = true, transformation(origin = {-52, -50}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   RocketControl.Rockets.Lynx.GNC.Sensors.RealSensors realSensors annotation(
     Placement(visible = true, transformation(origin = {-10, 90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  RocketControl.Rockets.Lynx.GNC.Sensors.SampledTrueSensors sampledTrueSensors annotation(
+    Placement(visible = true, transformation(origin = {-10, 58}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
 equation
   connect(bus, constantFlightPathGuidanceDiscrete.bus) annotation(
     Line(points = {{100, 0}, {100, -100}, {-70, -100}, {-70, -8}, {-50, -8}}, thickness = 0.5));
@@ -39,10 +41,12 @@ equation
     Line(points = {{100, 0}, {-12, 0}, {-12, -40}}, color = {255, 0, 255}));
   connect(frame_a, realSensors.frame_a) annotation(
     Line(points = {{-100, 0}, {-88, 0}, {-88, 90}, {-20, 90}}));
-  connect(realSensors.bus, bus) annotation(
-    Line(points = {{0, 90}, {100, 90}, {100, 0}}, thickness = 0.5));
   connect(navigation.bus, bus) annotation(
-    Line(points = {{0, 60}, {100, 60}, {100, 0}}, thickness = 0.5));
+    Line(points = {{0, 30}, {100, 30}, {100, 0}}, thickness = 0.5));
+  connect(sampledTrueSensors.bus, bus) annotation(
+    Line(points = {{0, 58}, {100, 58}, {100, 0}}, color = {255, 204, 51}, thickness = 0.5));
+  connect(frame_a, sampledTrueSensors.frame_a) annotation(
+    Line(points = {{-100, 0}, {-88, 0}, {-88, 58}, {-20, 58}}));
   annotation(
     Icon(coordinateSystem(grid = {2, 0})));
 end RealGNC;

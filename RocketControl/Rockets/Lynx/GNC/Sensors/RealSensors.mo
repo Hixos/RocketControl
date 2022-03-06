@@ -10,7 +10,7 @@ model RealSensors
     Placement(visible = true, transformation(origin = {0, 80}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   RocketControl.Components.Sensors.Sensors.AccBMX180 accBMX180(biased = true, fixedLocalSeed = {22, 202, 2002}, limited = true, noisy = true, quantized = true, samplePeriodMs = opt.samplePeriodMs)  annotation(
     Placement(visible = true, transformation(origin = {0, 50}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  RocketControl.Components.Sensors.Sensors.MagBMX160 magBMX160(biased = true, fixedLocalSeed = {23, 203, 2003}, limited = true, noisy = true, quantized = true, samplePeriodMs = opt.samplePeriodMs, sigmaNoise(displayUnit = "T"))  annotation(
+  RocketControl.Components.Sensors.Sensors.MagBMX160 magBMX180(biased = true, fixedLocalSeed = {23, 203, 2003}, limited = true, noisy = true, quantized = true, samplePeriodMs = opt.samplePeriodMs, sigmaNoise(displayUnit = "T"))  annotation(
     Placement(visible = true, transformation(origin = {0, 20}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   RocketControl.Components.Sensors.Sensors.BaroMS5803 baroMS5803(biased = true, fixedLocalSeed = 24, limited = true, noisy = true, quantized = true, samplePeriodMs = opt.samplePeriodMs)  annotation(
     Placement(visible = true, transformation(origin = {0, -10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
@@ -21,7 +21,7 @@ equation
     Line(points = {{-10, 80}, {-60, 80}, {-60, 0}, {-100, 0}}));
   connect(accBMX180.frame_a, frame_a) annotation(
     Line(points = {{-10, 50}, {-60, 50}, {-60, 0}, {-100, 0}}, color = {95, 95, 95}));
-  connect(magBMX160.frame_a, frame_a) annotation(
+  connect(magBMX180.frame_a, frame_a) annotation(
     Line(points = {{-10, 20}, {-60, 20}, {-60, 0}, {-100, 0}}, color = {95, 95, 95}));
   connect(baroMS5803.frame_a, frame_a) annotation(
     Line(points = {{-10, -10}, {-60, -10}, {-60, 0}, {-100, 0}}, color = {95, 95, 95}));
@@ -31,7 +31,7 @@ equation
     Line(points = {{10, 80}, {60, 80}, {60, 0}, {100, 0}}, color = {0, 0, 127}, thickness = 0.5));
   connect(accBMX180.a, bus.a_meas) annotation(
     Line(points = {{10, 50}, {60, 50}, {60, 0}, {100, 0}}, color = {0, 0, 127}, thickness = 0.5));
-  connect(magBMX160.b, bus.b_meas) annotation(
+  connect(magBMX180.b, bus.b_meas) annotation(
     Line(points = {{10, 20}, {60, 20}, {60, 0}, {100, 0}}, color = {0, 0, 127}, thickness = 0.5));
   connect(baroMS5803.p, bus.p_meas) annotation(
     Line(points = {{10, -10}, {60, -10}, {60, 0}, {100, 0}}, color = {0, 0, 127}));

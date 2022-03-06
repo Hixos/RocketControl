@@ -15,12 +15,14 @@ model Navigation
     Placement(visible = true, transformation(origin = {30, -30}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   RocketControl.Blocks.Math.Quaternions.Quaternion2Euler quaternion2Euler annotation(
     Placement(visible = true, transformation(origin = {30, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
- Blocks.Flight.ClimbAngle climbAngle annotation(
+ Blocks.Flight.ClimbAngle flightpathangle annotation(
     Placement(visible = true, transformation(origin = {30, -60}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   RocketControl.Blocks.Trasformations.ned2body v_body annotation(
     Placement(visible = true, transformation(origin = {-70, -50}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
  RocketControl.Blocks.Flight.AeroAngles aeroAngles annotation(
     Placement(visible = true, transformation(origin = {-30, -50}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+ RocketControl.Blocks.Math.UnwrapAngle track_unwrapped annotation(
+    Placement(visible = true, transformation(origin = {70, -30}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
 equation
   connect(bus.w_meas, attitudeEstimation.w_meas) annotation(
     Line(points = {{100, 0}, {100, 100}, {-100, 100}, {-100, 58}, {-62, 58}}, thickness = 0.5));
@@ -48,9 +50,9 @@ equation
     Line(points = {{100, 0}, {100, 100}, {-100, 100}, {-100, -16}, {0, -16}, {0, 0}, {18, 0}}, thickness = 0.5));
   connect(bus.v_est, track.v) annotation(
     Line(points = {{100, 0}, {100, 100}, {-100, 100}, {-100, -30}, {18, -30}}, thickness = 0.5));
-  connect(track.v, climbAngle.v) annotation(
+ connect(track.v, flightpathangle.v) annotation(
     Line(points = {{18, -30}, {0, -30}, {0, -60}, {18, -60}}, color = {0, 0, 127}, thickness = 0.5));
-  connect(climbAngle.v, downrange.x) annotation(
+ connect(flightpathangle.v, downrange.x) annotation(
     Line(points = {{18, -60}, {0, -60}, {0, -90}, {18, -90}}, color = {0, 0, 127}, thickness = 0.5));
  connect(bus.v_est, v_body.x_w) annotation(
     Line(points = {{100, 0}, {100, 100}, {-100, 100}, {-100, -44}, {-82, -44}}, thickness = 0.5));
@@ -58,6 +60,8 @@ equation
     Line(points = {{100, 0}, {100, 100}, {-100, 100}, {-100, -56}, {-82, -56}}, thickness = 0.5));
  connect(v_body.x_b, aeroAngles.v_body) annotation(
     Line(points = {{-58, -50}, {-42, -50}}, color = {0, 0, 127}));
+ connect(track.track, track_unwrapped.angle[1]) annotation(
+    Line(points = {{42, -30}, {58, -30}}, color = {0, 0, 127}));
   annotation(
     Icon(graphics = {Text(origin = {-10, -254}, lineColor = {0, 0, 255}, extent = {{-115, 155}, {115, 105}}, textString = "%name")}));
 end Navigation;

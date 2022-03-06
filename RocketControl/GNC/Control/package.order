@@ -8,3 +8,4 @@ Internal
 AccelerationRollRateControl
 BodyVelocityControlDiscrete
 AccelerationRollRateControlVel
+AngularRateControl

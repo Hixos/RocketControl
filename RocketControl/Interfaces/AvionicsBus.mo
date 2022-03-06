@@ -22,7 +22,8 @@ expandable connector AvionicsBus
   SI.Angle fin_setpoint[4];
   SI.Angle fin_true_position[4];
   SI.Angle control_position_meas[4];
-  
+  SI.AngularAcceleration w_dot[3];
+   RocketControl.Types.AngularVelocity[4] cpos_dot;
   Real q_est[4];
   annotation(
     Icon);
