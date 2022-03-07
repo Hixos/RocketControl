@@ -14,7 +14,7 @@ model LynxLQ
     Placement(visible = true, transformation(origin = {-90, 10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Components.Parts.LandDetector landDetector annotation(
     Placement(visible = true, transformation(origin = {90, 90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  inner RocketControl.World.Atmosphere atmosphere(num_wind_layers = 3, wind_direction = from_deg({60, 0, 0}), wind_layer_height = {1000, 100, 10}, wind_magnitude = {10, 40, 10})   annotation(
+  inner RocketControl.World.Atmosphere atmosphere(num_wind_layers = 3, wind_direction (each displayUnit = "rad") = {5.38233176786291, 5.90021470225668, 3.465609689696089}, wind_layer_height = {1453.24736345515, 262.172859745665, 8904.79987782573}, wind_magnitude = {11.8327939214104, 34.0285313930502, 7.95664906329783})   annotation(
       Placement(visible = true, transformation(origin = {-90, 90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   inner World.FlatWorld world(altitude_0 = 1420, animateGravity = false, animateGround = false, animateWorld = true, enableAnimation = true, latitude_0 = 45.691051, longitude_0 = 8.490499, n = {0, 0, 1}) annotation(
     Placement(visible = true, transformation(origin = {-90, -90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
