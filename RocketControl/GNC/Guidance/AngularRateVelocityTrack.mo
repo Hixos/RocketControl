@@ -9,7 +9,7 @@ model AngularRateVelocityTrack
   Modelica.Blocks.Interfaces.RealInput v_ref[3](each final unit = "m/s", each final quantity = "Velocity") annotation(
     Placement(visible = true, transformation(origin = {-120, 0}, extent = {{-20, -20}, {20, 20}}, rotation = 0), iconTransformation(origin = {-120, 0}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
   RocketControl.Interfaces.AvionicsBus bus annotation(
-    Placement(visible = true, transformation(origin = {-100, 100}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-100, 100}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+    Placement(visible = true, transformation(origin = {-100, -98}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-100, -100}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
   SI.Angle angle_err;
   protected
   SI.AngularVelocity[3] w_body;
