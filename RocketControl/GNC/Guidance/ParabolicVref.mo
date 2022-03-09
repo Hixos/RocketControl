@@ -15,7 +15,10 @@ extends Icon;
     Placement(visible = true, transformation(origin = {110, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {110, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
     
     SI.Angle flightpathangle(displayUnit = "deg");
+    
+    Real z_ref;
 equation
+  z_ref = -0.5*9.80665*(time-0.5)^2+c1*(time-0.5);
   flightpathangle = atan((-9.80665*(time - 0.5)+c1)/vx_parab);
   V_ref = {cos(heading) * cos(flightpathangle), sin(heading) * cos(flightpathangle), -sin(flightpathangle)};
 annotation(

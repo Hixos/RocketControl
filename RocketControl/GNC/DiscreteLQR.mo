@@ -27,6 +27,7 @@ block DiscreteLQR
   Modelica.Blocks.Interfaces.RealOutput K[m, n](start = zeros(m,n)) annotation(
     Placement(visible = true, transformation(origin = {110, 62}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {110, 50}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
 
+protected
 Real Ad[n,n];
 Real Bd[n,m];
 

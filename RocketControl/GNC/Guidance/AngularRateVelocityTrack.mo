@@ -11,9 +11,10 @@ model AngularRateVelocityTrack
   RocketControl.Interfaces.AvionicsBus bus annotation(
     Placement(visible = true, transformation(origin = {-100, 100}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-100, 100}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   SI.Angle angle_err;
+  protected
+  SI.AngularVelocity[3] w_body;
   Real rotation_vector[3];
   Real rotation_versor[3];
-  SI.AngularVelocity[3] w_body;
 equation
   if norm(bus.v_est) > 1 and norm(v_ref) > 1e-4 then
     angle_err = acos(bus.v_est * v_ref / (norm(bus.v_est) * norm(v_ref)));

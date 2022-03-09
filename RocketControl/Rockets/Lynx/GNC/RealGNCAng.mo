@@ -18,14 +18,14 @@ outer World.SimOptions opt;
     Placement(visible = true, transformation(origin = {-10, 90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   RocketControl.Rockets.Lynx.GNC.Sensors.SampledTrueSensors sampledTrueSensors annotation(
     Placement(visible = true, transformation(origin = {-10, 58}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  RocketControl.GNC.Control.AngularRateControl angularRateControl(Qvec = {0, 1, 1, 0, 0, 0, 0, 0, 0, 1000, 1000, 1000}, Rvec = {1, 1, 1} * 500)  annotation(
+  RocketControl.GNC.Control.AngularRateControl angularRateControl(Qvec = {1, 1, 0, 0, 0, 0, 0, 0, 1000, 1000, 1000}, Rvec = {1, 1, 1} * 500)  annotation(
     Placement(visible = true, transformation(origin = {50, -50}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   RocketControl.GNC.FeedbackIntegrator feedbackIntegrator1(kint = 5, n = 2, ts = opt.samplePeriodMs / 1000, useEnablePort = true) annotation(
     Placement(visible = true, transformation(origin = {-20, -28}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   RocketControl.GNC.Guidance.AngularRateVelocityTrack angularRateVelocityTrack(k = 5, w_max = from_deg(20))  annotation(
     Placement(visible = true, transformation(origin = {-72, -28}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  RocketControl.GNC.Guidance.ParabolicVref parabolicVref(flightpathangle_0 = opt.launch_elevation, heading = opt.launch_azimuth, target_apogee = 1500)  annotation(
-    Placement(visible = true, transformation(origin = {-142, -28}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  RocketControl.GNC.Guidance.ParabolicVref parabolicVref(flightpathangle_0 = opt.launch_elevation, heading = opt.launch_azimuth, target_apogee = 1668)  annotation(
+    Placement(visible = true, transformation(origin = {-120, -28}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
 equation
   connect(bus.w_est[1], feedbackIntegrator.feedback[1]) annotation(
     Line(points = {{100, 0}, {100, -100}, {-10, -100}, {-10, -86}}, thickness = 0.5));
@@ -46,13 +46,13 @@ equation
   connect(bus.velocity_guidace, feedbackIntegrator1.enable) annotation(
     Line(points = {{100, 0}, {-20, 0}, {-20, -19}}, color = {255, 0, 255}));
   connect(bus, angularRateVelocityTrack.bus) annotation(
-    Line(points = {{100, 0}, {14, 0}, {14, -18}, {-82, -18}}, thickness = 0.5));
+    Line(points = {{100, 0}, {-35, 0}, {-35, -18}, {-82, -18}}, thickness = 0.5));
   connect(bus, rollDirectionGuidance.bus) annotation(
     Line(points = {{100, 0}, {100, -100}, {-72, -100}, {-72, -74}, {-60, -74}}, thickness = 0.5));
   connect(angularRateVelocityTrack.w_ref, feedbackIntegrator1.ref) annotation(
     Line(points = {{-61, -28}, {-32, -28}}, color = {0, 0, 127}, thickness = 0.5));
   connect(parabolicVref.V_ref, angularRateVelocityTrack.v_ref) annotation(
-    Line(points = {{-131, -28}, {-84, -28}}, color = {0, 0, 127}));
+    Line(points = {{-109, -28}, {-84, -28}}, color = {0, 0, 127}));
   connect(feedbackIntegrator.err_int[1], angularRateControl.p_err_int) annotation(
     Line(points = {{2, -74}, {28, -74}, {28, -56}, {38, -56}}, color = {0, 0, 127}));
   connect(bus.roll_guidance, feedbackIntegrator.enable) annotation(

@@ -23,14 +23,14 @@ model AttitudeEstimation "Rocket attitude estimation from gyroscope and magnetom
     Placement(visible = true, transformation(origin = {110, 30}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {110, 50}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Blocks.Interfaces.RealOutput w_est[3](each final quantity = "AngularVelocity", each final unit = "rad/s", each displayUnit = "deg/s") annotation(
     Placement(visible = true, transformation(origin = {110, -30}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {110, -50}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  //protected
+  protected
   final parameter SI.Duration T = samplingPeriodMs / 1000;
   final parameter Modelica.Mechanics.MultiBody.Frames.Orientation R0 = Modelica.Mechanics.MultiBody.Frames.axesRotations({3, 2, 1}, {heading0, elevation0, roll0}, {0, 0, 0});
   final parameter Real q0[4] = Quaternions.from_T(R0.T);
   final parameter Real x0[6] = {0, 0, 0, 0, 0, 0};
   final parameter Real R[3, 3] = identity(3) * sigma_b ^ 2;
   
-protected
+
   Real q_prop[4](start = q0);
   Real q_prev[4];
   Real q_update[4];
