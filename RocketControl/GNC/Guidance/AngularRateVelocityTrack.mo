@@ -10,8 +10,7 @@ model AngularRateVelocityTrack
     Placement(visible = true, transformation(origin = {-120, 0}, extent = {{-20, -20}, {20, 20}}, rotation = 0), iconTransformation(origin = {-120, 0}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
   RocketControl.Interfaces.AvionicsBus bus annotation(
     Placement(visible = true, transformation(origin = {-100, -98}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-100, -100}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
-  SI.Angle angle_err;
-  protected
+  SI.Angle angle_err;  protected
   SI.AngularVelocity[3] w_body;
   Real rotation_vector[3];
   Real rotation_versor[3];
@@ -31,11 +30,10 @@ equation
     rotation_versor = {0, 0, 0};
   end if;
   w_body = k * Modelica.Mechanics.MultiBody.Frames.Quaternions.resolve2(bus.q_est, rotation_versor) * angle_err;
-  
   if norm(w_body[2:3]) <= w_max then
     w_ref = w_body[2:3];
   else
-    w_ref = w_body[2:3]/norm(w_body[2:3])*w_max;
+    w_ref = w_body[2:3] / norm(w_body[2:3]) * w_max;
   end if;
   annotation(
     Icon(graphics = {Text(origin = {1, 6}, extent = {{-79, 52}, {79, -52}}, textString = "w_ref")}));

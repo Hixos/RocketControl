@@ -164,8 +164,8 @@ block DiscreteKalmanFilter
     err = ref - feedback;
     if enable then
       for i in 1:n loop
-        if saturation > 0 and abs(err_int_prev[i]) > saturation and err_int_prev[i]*err[i] > 0 then
-          err_int[i] = err_int_prev[i];
+        if saturation > 0 and abs(err_int_prev[i]) >= saturation and err_int_prev[i]*err[i] > 0 then
+          err_int[i] = saturation*sign(err_int_prev[i]);
         else
           err_int[i] = err_int_prev[i] + kint*err[i]*ts;
         end if;

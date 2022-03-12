@@ -5,9 +5,9 @@ extends RocketControl.Icons.Guidance;
 
 outer World.SimOptions opt;
   Modelica.Mechanics.MultiBody.Interfaces.Frame_a frame_a annotation(
-    Placement(visible = true, transformation(origin = {-100, 0}, extent = {{-16, -16}, {16, 16}}, rotation = 0), iconTransformation(origin = {-100, 2}, extent = {{-16, -16}, {16, 16}}, rotation = 0)));
-  Interfaces.AvionicsBus bus annotation(
-    Placement(visible = true, transformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {102, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+    Placement(visible = true, transformation(origin = {-100, 0}, extent = {{-16, -16}, {16, 16}}, rotation = 0), iconTransformation(origin = {-100, 44}, extent = {{-16, -16}, {16, 16}}, rotation = 0)));
+  RocketControl.Interfaces.AvionicsBus bus annotation(
+    Placement(visible = true, transformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-100, -40}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
   RocketControl.Rockets.Lynx.GNC.Navigation.Navigation navigation annotation(
     Placement(visible = true, transformation(origin = {-10, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   RocketControl.Rockets.Lynx.GNC.Sensors.RealSensors realSensors annotation(
@@ -24,5 +24,5 @@ equation
   connect(bus, realSensors.bus) annotation(
     Line(points = {{100, 0}, {100, 50}, {0, 50}}, thickness = 0.5));
   annotation(
-    Icon(coordinateSystem(grid = {2, 0})));
+    Icon(graphics = {Text(origin = {-10, -254}, lineColor = {0, 0, 255}, extent = {{-115, 155}, {115, 105}}, textString = "%name")}));
 end RealGNCAng;

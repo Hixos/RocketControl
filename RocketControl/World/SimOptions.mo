@@ -4,7 +4,7 @@ model SimOptions
   parameter Integer samplePeriodMs = 20;
   parameter SI.Angle launch_azimuth = from_deg(10);
   parameter SI.Angle launch_elevation = from_deg(84);
-  
+  parameter SI.Angle roll_target_heading = from_deg(90);
   parameter Boolean guidance_disable = false;
   parameter Boolean drogue_enable = false;
   parameter Boolean main_enable = false;

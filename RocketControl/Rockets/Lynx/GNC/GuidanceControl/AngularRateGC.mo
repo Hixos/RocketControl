@@ -3,17 +3,17 @@ within RocketControl.Rockets.Lynx.GNC.GuidanceControl;
 model AngularRateGC
 extends RocketControl.Icons.Guidance;
 outer RocketControl.World.SimOptions opt;
-  RocketControl.GNC.Guidance.ParabolicVref parabolic_traj(flightpathangle_0 = opt.launch_elevation, heading = opt.launch_azimuth, target_apogee = 1668) annotation(
+  RocketControl.GNC.Guidance.ParabolicVref parabolic_traj(flightpathangle_0 = opt.launch_elevation, heading = opt.launch_azimuth, t0 = 1.5, target_apogee = 1614) annotation(
     Placement(visible = true, transformation(origin = {-90, 30}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  RocketControl.GNC.Guidance.RollDirectionGuidance roll_guidance(k = 0.5, rollrate_max = from_deg(10), target_heading = 2.268928027592628) annotation(
+  RocketControl.GNC.Guidance.RollDirectionGuidance roll_guidance(k = 1, rollrate_max = from_deg(20), rollrate_ref(displayUnit = "rad/s"), target_heading = opt.roll_target_heading) annotation(
     Placement(visible = true, transformation(origin = {-50, -30}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   RocketControl.GNC.FeedbackIntegrator feedbackIntegrator(kint = 1, ts = opt.samplePeriodMs / 1000, useEnablePort = true) annotation(
     Placement(visible = true, transformation(origin = {10, -30}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  RocketControl.GNC.Control.AngularRateControl angularRateControl(Qvec = {1, 1, 0, 0, 0, 0, 0, 0, 1000, 1000, 1000}, Rvec = {1, 1, 1} * 500) annotation(
+  RocketControl.GNC.Control.AngularRateControl angularRateControl(Qvec = {0, 0, 0, 5, 5, 0, 0, 0, 10, 10, 10}, Rvec = {1, 1, 1} * 100) annotation(
     Placement(visible = true, transformation(origin = {70, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   RocketControl.GNC.Guidance.AngularRateVelocityTrack wref_guidance(k = 5, w_max = from_deg(20)) annotation(
     Placement(visible = true, transformation(origin = {-40, 30}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  RocketControl.GNC.FeedbackIntegrator feedbackIntegrator1(kint = 5, n = 2, ts = opt.samplePeriodMs / 1000, useEnablePort = true) annotation(
+  RocketControl.GNC.FeedbackIntegrator feedbackIntegrator1(kint = 12, n = 2, saturation = 0, ts = opt.samplePeriodMs / 1000, useEnablePort = true) annotation(
     Placement(visible = true, transformation(origin = {10, 30}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   RocketControl.Interfaces.AvionicsBus bus annotation(
     Placement(visible = true, transformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {100, 0}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
@@ -42,6 +42,8 @@ equation
     Line(points = {{100, 0}, {100, 60}, {10, 60}, {10, 40}}, color = {255, 0, 255}));
   connect(bus.roll_guidance, feedbackIntegrator.enable) annotation(
     Line(points = {{100, 0}, {100, 60}, {10, 60}, {10, -20}}, color = {255, 0, 255}));
+  connect(parabolic_traj.V_ref, bus.v_ref) annotation(
+    Line(points = {{-78, 30}, {-64, 30}, {-64, 82}, {100, 82}, {100, 0}}, color = {0, 0, 127}, thickness = 0.5));
   annotation(
     Icon(graphics = {Text(origin = {10, -250}, lineColor = {0, 0, 255}, extent = {{-150, 150}, {150, 110}}, textString = "%name")}));
 end AngularRateGC;

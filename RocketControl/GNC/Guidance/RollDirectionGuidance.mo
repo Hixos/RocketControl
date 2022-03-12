@@ -7,7 +7,7 @@ model RollDirectionGuidance
   parameter Real z_small = 1e-6;
   parameter Real ref_dir_body[3] = {0,0,1};
   final parameter Real target_dir[3] = {cos(target_heading), sin(target_heading), 0};
-  Modelica.Blocks.Interfaces.RealOutput rollrate_ref(start = 0) annotation(
+  Modelica.Blocks.Interfaces.RealOutput rollrate_ref(start = 0, displayUnit="deg/s", unit="rad/s", quantity="AngularVelocity") annotation(
     Placement(visible = true, transformation(origin = {110, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {110, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Interfaces.AvionicsBus bus annotation(
     Placement(visible = true, transformation(origin = {-100, 100}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));

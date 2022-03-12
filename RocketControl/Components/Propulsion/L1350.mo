@@ -22,5 +22,5 @@ equation
   connect(thrustCurve.y, mass_flow_rate.u) annotation(
     Line(points = {{-58, 0}, {-32, 0}}, color = {0, 0, 127}));
   annotation(
-    Icon(graphics = {Text(origin = {0, -210}, lineColor = {0, 0, 255}, extent = {{-150, 110}, {150, 70}}, textString = "%name"), Text(origin = {1, 38}, lineColor = {255, 255, 255}, extent = {{-59, 38}, {59, -38}}, textString = "M2000R"), Line(origin = {0, 85}, points = {{0, 9}, {0, -9}})}));
+    Icon(graphics = {Text(origin = {0, -210}, lineColor = {0, 0, 255}, extent = {{-150, 110}, {150, 70}}, textString = "%name"), Text(origin = {1, 38}, lineColor = {255, 255, 255}, extent = {{-59, 38}, {59, -38}}, textString = "L1350"), Line(origin = {0, 85}, points = {{0, 9}, {0, -9}})}));
 end L1350;

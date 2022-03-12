@@ -41,7 +41,7 @@ model FlightModeManager
     Placement(visible = true, transformation(origin = {107, 15}, extent = {{-27, -7}, {27, 7}}, rotation = 180)));
   Modelica.Blocks.Sources.BooleanExpression apogee_expr(y = hold(bus.v_est[3]) > 1) annotation(
     Placement(visible = true, transformation(origin = {55, -39}, extent = {{-19, -7}, {19, 7}}, rotation = 0)));
-  Modelica.Blocks.Sources.BooleanExpression main_alt_expr(y = hold(world.altitude_agl(bus.x_est)) < 400) annotation(
+  Modelica.Blocks.Sources.BooleanExpression main_alt_expr(y = hold(world.altitude_agl(bus.x_est)) < 350) annotation(
     Placement(visible = true, transformation(origin = {-100, -45}, extent = {{-34, -7}, {34, 7}}, rotation = 0)));
  inner Modelica.StateGraph.StateGraphRoot stateGraphRoot annotation(
     Placement(visible = true, transformation(origin = {-136, 136}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
@@ -179,6 +179,6 @@ equation
  connect(booleanExpression3.y, guidance_enable.condition) annotation(
     Line(points = {{-78, 24}, {-50, 24}, {-50, 58}}, color = {255, 0, 255}));
   annotation(
-    Icon(coordinateSystem(grid = {2, 0})),
+    Icon(graphics = {Rectangle(fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid, extent = {{-100, 100}, {100, -100}}), Rectangle(origin = {-30, 61}, extent = {{-30, 19}, {30, -19}}), Rectangle(origin = {50, 1}, extent = {{-30, 19}, {30, -19}}), Rectangle(origin = {-30, -59}, extent = {{-30, 19}, {30, -19}}), Line(origin = {25, 40}, points = {{-25, 20}, {25, 20}, {25, -20}}), Line(origin = {25, -39}, points = {{25, 21}, {25, -21}, {-25, -21}}), Rectangle(origin = {-30, 61}, extent = {{-28, 17}, {28, -17}}), Rectangle(origin = {50, 1}, extent = {{-28, 17}, {28, -17}}), Rectangle(origin = {-30, -59}, extent = {{-28, 17}, {28, -17}}), Text(origin = {-10, -254}, lineColor = {0, 0, 255}, extent = {{-115, 155}, {115, 105}}, textString = "%name")}),
     Diagram(coordinateSystem(extent = {{-200, 160}, {140, -100}})));
 end FlightModeManager;

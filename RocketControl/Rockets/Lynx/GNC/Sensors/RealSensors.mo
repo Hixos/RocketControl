@@ -5,7 +5,7 @@ model RealSensors
   
   outer World.SimOptions opt;
   RocketControl.Interfaces.AvionicsBus bus annotation(
-    Placement(visible = true, transformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {102, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+    Placement(visible = true, transformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {100, 1.9984e-15}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
   RocketControl.Components.Sensors.Sensors.GyroBMX180 gyroBMX180(biased = true, fixedLocalSeed = {21, 201, 2001}, limited = true, noisy = true, quantized = true, rate_max(displayUnit = "rad/s"), samplePeriodMs = opt.samplePeriodMs, sigmaARW(displayUnit = "rad/s"), sigmaRRW(displayUnit = ""))  annotation(
     Placement(visible = true, transformation(origin = {0, 80}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   RocketControl.Components.Sensors.Sensors.AccBMX180 accBMX180(biased = true, fixedLocalSeed = {22, 202, 2002}, limited = true, noisy = true, quantized = true, samplePeriodMs = opt.samplePeriodMs)  annotation(

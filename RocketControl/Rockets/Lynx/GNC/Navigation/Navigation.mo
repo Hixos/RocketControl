@@ -4,7 +4,7 @@ model Navigation
   outer World.SimOptions opt;
   extends RocketControl.Rockets.Internal.PartialNavigationSystem;
   RocketControl.Interfaces.AvionicsBus bus annotation(
-    Placement(visible = true, transformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {102, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+    Placement(visible = true, transformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {100, 1.77636e-15}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
   RocketControl.GNC.Navigation.AttitudeEstimation attitudeEstimation(elevation0 (displayUnit = "rad") = opt.launch_elevation, heading0 = opt.launch_azimuth, samplingPeriodMs = opt.samplePeriodMs, sigma_b = 2, sigma_u = from_deg(10), sigma_v = from_deg(60)) annotation(
     Placement(visible = true, transformation(origin = {-50, 50}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   RocketControl.GNC.Navigation.PositionEstimation positionEstimation(samplingPeriodMs = opt.samplePeriodMs, sigma_gps = {1000, 1000, 1000, 100, 100, 100}, sigma_pos = 2, sigma_vel = 1) annotation(

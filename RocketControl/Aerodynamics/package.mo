@@ -14,7 +14,7 @@ extends Icons.AerodynamicsIcon;
   parameter Modelica.Units.SI.Angle max_beta = from_deg(20);
   parameter Modelica.Units.SI.Length d = 0.15;
   parameter Modelica.Units.SI.Area S = pi * (0.15 / 2) ^ 2;
-  
+  parameter Real CLL_0 = 0;
   AeroCoefficient coeffs[Coefficients];
   SI.Angle alpha0;
   SI.Angle beta0;
@@ -34,6 +34,11 @@ extends Icons.AerodynamicsIcon;
     Placement(visible = true, transformation(origin = {100, 0}, extent = {{-16, -16}, {16, 16}}, rotation = 0), iconTransformation(origin = {100, -2}, extent = {{-16, -16}, {16, 16}}, rotation = 0)));
   Interfaces.AeroStateInput aeroState annotation(
     Placement(visible = true, transformation(origin = {-102, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(extent = {{-110, -10}, {-90, 10}}, rotation = 0)));
+  Modelica.Blocks.Sources.TimeTable ttca_rocca(shiftTime = 0.5, table = [0, 0; 3.5, 0; 4, 0.62; 6.5, 0.62; 7, 0.362; 9.5, 0.365; 10, 0; 1000, 0])  annotation(
+      Placement(visible = true, transformation(origin = {-40, 22}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Blocks.Sources.TimeTable ttca_euroc(shiftTime = 0.5, table = [0, 0; 6.43, 0; 6.65, 0.365; 7.55, 0.365; 7.9, 0.52; 22.1, 0.52; 22.3, 0; 1000, 0]) annotation(
+      Placement(visible = true, transformation(origin = {-40, -40}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+
 equation
 //  assert(aeroState.alpha <= max_alpha and aeroState.alpha >= min_alpha, "Angle of attack out of range");
 //  assert(aeroState.beta <= max_beta and aeroState.beta >= min_beta, "Sideslip angle out of range");
@@ -45,11 +50,13 @@ equation
   q_v = 0.5 * atmosphere.density(world.altitude(frame_b.r_0)) * v_norm;
   q = q_v * v_norm;
   
-  CA = coeffs[C.CA];
+
+  CA = coeffs[C.CA];// + ttca_euroc.y;
+
   CY = coeffs[C.CY] + coeffs[C.CYB] * (aeroState.beta - beta0);
 // Second term is always zero in case of linear interpoaltion of the coefficients
     CN = coeffs[C.CN] + coeffs[C.CNA] * (aeroState.alpha - alpha0);
-  CLL = coeffs[C.CLL] + coeffs[C.CLLB] * (aeroState.beta - beta0);
+  CLL = coeffs[C.CLL] + coeffs[C.CLLB] * (aeroState.beta - beta0) + CLL_0;
   CLM = coeffs[C.CM] + coeffs[C.CMA] * (aeroState.alpha - alpha0);
   CLN = coeffs[C.CLN] + coeffs[C.CLNB] * (aeroState.beta - beta0);
   fa[1] = (-q * S * CA) - q_v * S * coeffs[C.CAQ] * aeroState.w[2] * d;
@@ -67,7 +74,8 @@ equation
   frame_b.t = zeros(3);
   end if;
   annotation(
-    Icon(graphics = {Text(origin = {2, -178}, lineColor = {0, 0, 255}, extent = {{-132, 76}, {129, 124}}, textString = "%name")}));
+    Icon(graphics = {Text(origin = {2, -178}, lineColor = {0, 0, 255}, extent = {{-132, 76}, {129, 124}}, textString = "%name")}),
+      Diagram(graphics = {Rectangle(extent = {{-30, 22}, {-30, 22}})}));
 
 end PartialAerodynamicForce;
 
@@ -237,6 +245,9 @@ end PartialAerodynamicForce;
     annotation(
       Icon);
   end AeroData;
+
+
+
   annotation(
     Icon(coordinateSystem(grid = {2, 0})));
 end Aerodynamics;

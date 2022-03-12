@@ -79,5 +79,5 @@ equation
     Line(points = {{-120, 0}, {-62, 0}}, color = {0, 0, 127}, thickness = 0.5));
 
 annotation(
-    Icon(graphics = {Line(origin = {85, 0}, points = {{-15, 0}, {15, 0}}), Line(origin = {-85, 0}, points = {{-15, 0}, {15, 0}}), Text(origin = {-2, -200}, lineColor = {0, 0, 255}, extent = {{-130, 72}, {131, 120}}, textString = "%name")}));
+    Icon(graphics = {Line(origin = {85, 0}, points = {{-15, 0}, {15, 0}}), Line(origin = {-85, 0}, points = {{-15, 0}, {15, 0}}), Text(origin = {-2, -200}, lineColor = {0, 0, 255}, extent = {{-130, 72}, {131, 120}}, textString = "%name"), Text(origin = {1, -38}, extent = {{-43, 18}, {43, -18}}, textString = "delta")}));
 end RealFinPositionSensor;

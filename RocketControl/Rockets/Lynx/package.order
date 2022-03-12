@@ -1,5 +1,7 @@
 Lynx
 LynxSimpleAero
+LynxL1350NoFins
+LynxM200RNoFins
 LynxSimpleAeroSimplePara
 LynxL1350
 LynxL1350FullAero
@@ -8,3 +10,4 @@ AerodynamicsWithCanards
 LinearAerodynamicsWithCanards
 GNC
 StateMachines
+LynxSimpleAeroNoloopback

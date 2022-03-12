@@ -3,6 +3,8 @@ within RocketControl.World;
 model Atmosphere
   import Modelica.Constants.R;
   import RocketControl.Types.LapseRate;
+  
+  outer RocketControl.World.FlatWorld world;
   parameter SI.Temperature T0 = 288.15;
   parameter SI.Pressure P0 = 101325;
   parameter LapseRate lapse_rate = -0.0065;
@@ -62,13 +64,13 @@ model Atmosphere
   algorithm
    for i in 1:size(vec_angles,1) loop
     cum_height := cum_height + vec_heights[i];
-    if h <= cum_height then
+    if h - world.altitude_0 <= cum_height then
       windSpeed := vec_magnitudes[i]*{cos(vec_angles[i]), sin(vec_angles[i]), 0};
-      break;
+      return;
     end if;
    end for;
    
-   if h > cum_height then
+   if h - world.altitude_0 > cum_height then
      windSpeed := vec_magnitudes[end]*{cos(vec_angles[end]), sin(vec_angles[end]), 0};
    end if;
   end windSpeed;
