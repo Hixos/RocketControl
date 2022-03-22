@@ -43,8 +43,8 @@ equation
 //  assert(aeroState.alpha <= max_alpha and aeroState.alpha >= min_alpha, "Angle of attack out of range");
 //  assert(aeroState.beta <= max_beta and aeroState.beta >= min_beta, "Sideslip angle out of range");
 // TODO: alpha0 / beta0 should be the nearest grid points in the case of nearest neighbour interpolation
-    alpha0 = max(min(aeroState.alpha, max_alpha), -max_alpha);
-  beta0 = max(min(aeroState.beta,max_beta), -max_beta);
+    alpha0 = noEvent(max(min(aeroState.alpha, max_alpha), -max_alpha));
+  beta0 = noEvent(max(min(aeroState.beta,max_beta), -max_beta));
   
   v_norm = norm(aeroState.v);
   q_v = 0.5 * atmosphere.density(world.altitude(frame_b.r_0)) * v_norm;
@@ -66,13 +66,13 @@ equation
   ma[2] = q_v * S * d * (v_norm * CLM + (coeffs[C.CMAD] * der(aeroState.alpha) + coeffs[C.CMQ] * aeroState.w[2]) * d / 2);
   ma[3] = q_v * S * d * (v_norm * CLN + (coeffs[C.CLNR] * aeroState.w[3] + coeffs[C.CLNP] * aeroState.w[1]) * d / 2);
   
-  if abs(aeroState.alpha) < max_alpha and abs(aeroState.beta) < max_beta then
+//  if noEvent(abs(aeroState.alpha) < max_alpha) and noEvent(abs(aeroState.beta) < max_beta) then
   frame_b.f = -fa;
   frame_b.t = -ma;
-  else
-  frame_b.f = zeros(3);
-  frame_b.t = zeros(3);
-  end if;
+//  else
+//  frame_b.f = zeros(3);
+//  frame_b.t = zeros(3);
+//  end if;
   annotation(
     Icon(graphics = {Text(origin = {2, -178}, lineColor = {0, 0, 255}, extent = {{-132, 76}, {129, 124}}, textString = "%name")}),
       Diagram(graphics = {Rectangle(extent = {{-30, 22}, {-30, 22}})}));
@@ -108,21 +108,25 @@ end PartialAerodynamicForce;
     outer RocketControl.World.Interfaces.WorldBase world;
     Modelica.Units.SI.Angle beta2;
     SI.Velocity[3] v_w;
+    SI.AngularVelocity[3] w_w;
     SI.Velocity[3] v;
+    SI.AngularVelocity[3] w;
     Interfaces.AeroStateOutput aeroStateOutput annotation(
       Placement(visible = true, transformation(origin = {98, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {98, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
     Modelica.Mechanics.MultiBody.Sensors.AbsoluteAngularVelocity absoluteAngularVelocity(resolveInFrame = Modelica.Mechanics.MultiBody.Types.ResolveInFrameA.frame_a) annotation(
       Placement(visible = true, transformation(origin = {0, -40}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   equation
-    v_w = atmosphere.windSpeed(world.altitude(frame_a.r_0));
+    v_w = atmosphere.turb_wind_speed.v_wind;
+    w_w = atmosphere.turb_wind_speed.w_wind;
     aeroStateOutput.alpha = aeroAnglesSensor.alpha;
     aeroStateOutput.alpha_dot = aeroAnglesSensor.alpha_dot;
     aeroStateOutput.beta = aeroAnglesSensor.beta;
     aeroStateOutput.mach = norm(v) / atmosphere.speedOfSound(world.altitude(frame_a.r_0));
     aeroStateOutput.altitude = world.altitude(frame_a.r_0);
-    v = Frames.resolve2(frame_a.R, der(frame_a.r_0) - v_w);
+    v = Frames.resolve2(frame_a.R, der(frame_a.r_0)) - v_w;
+    w = absoluteAngularVelocity.w - w_w;
     aeroStateOutput.v = v;
-    aeroStateOutput.w = absoluteAngularVelocity.w;
+    aeroStateOutput.w = w;
     beta2 = atan2(v[2], v[1]);
     connect(aeroAnglesSensor.frame_a, frame_a) annotation(
       Line(points = {{-10, 40}, {-55, 40}, {-55, 0}, {-100, 0}}));
@@ -153,8 +157,8 @@ end PartialAerodynamicForce;
   Modelica.Blocks.Interfaces.RealOutput alpha_dot(displayUnit = "deg", quantity = "Angle", unit = "rad") annotation(
       Placement(visible = true, transformation(origin = {110, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {110, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   equation
-    v_w = atmosphere.windSpeed(world.altitude(frame_a.r_0));
-    v_b = Frames.resolve2(frame_a.R, der(frame_a.r_0) - v_w);
+    v_w = atmosphere.turb_wind_speed.v_wind;
+    v_b = Frames.resolve2(frame_a.R, der(frame_a.r_0)) - v_w;
     v_norm = Vectors.norm(v_b);
     if noEvent(abs(v_b[1]) > v_small) then
       alpha = atan2(v_b[3], v_b[1]);

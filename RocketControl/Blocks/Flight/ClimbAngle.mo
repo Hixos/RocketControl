@@ -2,7 +2,7 @@ within RocketControl.Blocks.Flight;
 
 model ClimbAngle
   extends Icon;
-  parameter SI.Velocity v_small = 1e-5;
+  parameter SI.Velocity v_small = 1e-2;
   Modelica.Blocks.Interfaces.RealInput v[3] annotation(
     Placement(visible = true, transformation(origin = {-120, 0}, extent = {{-20, -20}, {20, 20}}, rotation = 0), iconTransformation(origin = {-120, 0}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
   Modelica.Blocks.Interfaces.RealOutput angle(displayUnit = "deg", quantity = "Angle", unit = "rad") annotation(

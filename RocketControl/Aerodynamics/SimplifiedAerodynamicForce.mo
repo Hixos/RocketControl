@@ -10,7 +10,7 @@ extends Icons.AerodynamicsIcon;
   parameter SI.Length d = 0.15;
   parameter Modelica.Units.SI.Angle max_alpha = from_deg(20);
   parameter Modelica.Units.SI.Angle max_beta = from_deg(20);
-  parameter Real angular_damping_reverse = 0.006;
+  parameter Real angular_damping_reverse = 2;
   parameter Integer nCAO(min = 1) annotation(Evaluate = true);
   
   parameter Real machCA0[nCAO];
@@ -61,6 +61,8 @@ extends Icons.AerodynamicsIcon;
     Placement(visible = true, transformation(origin = {-50, -70}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Blocks.Interfaces.RealInput finDeflection[4](each displayUnit = "deg", each final quantity = "Angle", each final unit = "rad") annotation(
     Placement(visible = true, transformation(origin = {-100, -70}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-100, -70}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Blocks.Interfaces.BooleanInput chute_open annotation(
+    Placement(visible = true, transformation(origin = {-100, 70}, extent = {{-20, -20}, {20, 20}}, rotation = 0), iconTransformation(origin = {-98, 70}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
 equation
   v_norm = norm(aeroState.v);
   q_v = 0.5 * atmosphere.density(world.altitude(frame_b.r_0)) * v_norm;
@@ -85,12 +87,15 @@ equation
   ma[2] = q * S * d * CLM + q_v*S*d*CLM_q*aeroState.w[2]*d/2;
   ma[3] = q * S * d * CLN + q_v*S*d*CLN_r*aeroState.w[3]*d/2;
   
-  if abs(aeroState.alpha) < max_alpha and abs(aeroState.beta) < max_beta then
+//  if abs(aeroState.alpha) < max_alpha and abs(aeroState.beta) < max_beta then
+if not chute_open then
   frame_b.f = -fa;
   frame_b.t = -ma;
   else
   frame_b.f = zeros(3);
-  frame_b.t = angular_damping_reverse*aeroState.w;
+  frame_b.t[1] = -q_v*S*d*CLL_p*aeroState.w[1]*d/2;
+  frame_b.t[2] = -q_v*S*d*CLM_q*aeroState.w[2]*d/2;
+  frame_b.t[3] = -q_v*S*d*CLN_r*aeroState.w[3]*d/2;
   end if;
   connect(finDeflection, cu.u) annotation(
     Line(points = {{-100, -70}, {-62, -70}}, color = {0, 0, 127}, thickness = 0.5));

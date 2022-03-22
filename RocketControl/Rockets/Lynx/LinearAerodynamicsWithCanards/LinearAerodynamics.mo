@@ -32,7 +32,10 @@ model LinearAerodynamics
   
   Modelica.Blocks.Interfaces.RealInput finDeflection[4] annotation(
     Placement(visible = true, transformation(origin = {-100, -70}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-100, -70}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Blocks.Interfaces.BooleanInput chute_open annotation(
+    Placement(visible = true, transformation(origin = {-100, 70}, extent = {{-20, -20}, {20, 20}}, rotation = 0), iconTransformation(origin = {-98, 70}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
 equation
   connect(finDeflection, aerodynamicForce.finDeflection) annotation(
     Icon(coordinateSystem(grid = {2, 0})));
+  connect(aerodynamicForce.chute_open, chute_open);
 end LinearAerodynamics;

@@ -6,8 +6,6 @@ model TrueSensors
   parameter Boolean are_fins_present = true;
   RocketControl.Interfaces.AvionicsBus bus annotation(
     Placement(visible = true, transformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {102, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  RocketControl.Aerodynamics.AeroStateSensor aeroStateSensor annotation(
-    Placement(visible = true, transformation(origin = {-58, 90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   RocketControl.Components.Sensors.TrueSensors.TrueGyroscope trueGyroscope annotation(
     Placement(visible = true, transformation(origin = {0, 80}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   RocketControl.Components.Sensors.TrueSensors.TrueAccelerometer trueAccelerometer annotation(
@@ -49,8 +47,6 @@ equation
     Line(points = {{-100, 0}, {-40, 0}, {-40, -18}, {-10, -18}}));
   connect(trueAsset.q, bus.q_est) annotation(
     Line(points = {{12, -18}, {60, -18}, {60, 0}, {100, 0}}, color = {0, 0, 127}, thickness = 0.5));
-  connect(aeroStateSensor.frame_a, frame_a) annotation(
-    Line(points = {{-68, 90}, {-80, 90}, {-80, 0}, {-100, 0}}, color = {95, 95, 95}));
   annotation(
     Icon(graphics = {Text(origin = {-1, -69}, extent = {{-69, 27}, {69, -27}}, textString = "true")}));
 end TrueSensors;

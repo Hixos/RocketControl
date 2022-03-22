@@ -18,13 +18,15 @@ partial block PartialClockedNoise "Partial noise generator"
   parameter Integer fixedLocalSeed = 1 "Local seed (any Integer number)" annotation(
     Dialog(tab = "Advanced", group = "Initialization", enable = enableNoise and not useAutomaticLocalSeed));
   final parameter Integer localSeed(fixed = false) "The actual localSeed";
+  
+  Real r "Random number according to the desired distribution";
 protected
   outer Modelica.Blocks.Noise.GlobalSeed globalSeed "Definition of global seed via inner/outer";
   parameter Integer actualGlobalSeed = if useGlobalSeed then globalSeed.seed else 0 "The global seed, which is actually used";
   parameter Boolean generateNoise = enableNoise and globalSeed.enableNoise "= true, if noise shall be generated, otherwise no noise";
   // Declare state and random number variables
   Integer state[generator.nState](start = generator.initialState(localSeed, actualGlobalSeed)) "Internal state of random number generator";
-  Real r "Random number according to the desired distribution";
+  
   Real r_raw "Uniform random number in the range (0,1]";
 initial equation
   localSeed = if useAutomaticLocalSeed then automaticLocalSeed(getInstanceName()) else fixedLocalSeed;

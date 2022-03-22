@@ -67,6 +67,8 @@ equation
     Line(points = {{12, 84}, {12, 100}, {100, 100}}, color = {0, 0, 127}, thickness = 0.5));
   connect(fin_servo.servo_pos, aerodynamics.finDeflection) annotation(
     Line(points = {{60, 50}, {36, 50}, {36, 74}, {60, 74}}, color = {0, 0, 127}, thickness = 0.5));
+  connect(bus.drogue_deploy, aerodynamics.chute_open) annotation(
+    Line(points = {{100, 100}, {60, 100}, {60, 88}}, color = {255, 0, 255}));
 protected
   annotation(
     Icon(coordinateSystem(grid = {2, 0})),

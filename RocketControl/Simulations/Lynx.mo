@@ -21,7 +21,7 @@ model Lynx
       Placement(visible = true, transformation(origin = {-90, -90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Components.LaunchPad.LaunchRail launchRail(azimuth(displayUnit = "deg") = opt.launch_azimuth, c_x = c_x, c_y = c_y, c_z = c_z, d_x = d_x, d_y = d_y, d_z = d_z, elevation(displayUnit = "deg") = opt.launch_elevation, lug_length = 0.04, r_rel = {0, 0, 0.04}, rail_length = 4) annotation(
       Placement(visible = true, transformation(origin = {-50, 10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  inner World.Atmosphere atmosphere(wind_direction = from_deg({130}), wind_magnitude = {0})  annotation(
+  inner World.Atmosphere atmosphere(wind_direction = from_deg({130}), wind_magnitude = {5})  annotation(
     Placement(visible = true, transformation(origin = {-90, 88}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   RocketControl.Rockets.Lynx.GNC.ContinuousGNC continuousGNC annotation(
     Placement(visible = true, transformation(origin = {70, 50}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
@@ -54,6 +54,8 @@ equation
     Line(points = {{-44, 0}, {-44, -80}, {60, -80}}, color = {255, 0, 255}));
   connect(lynxRocket.bus, realSensors.bus) annotation(
     Line(points = {{0, 20}, {100, 20}, {100, 0}, {80, 0}}, color = {255, 204, 51}, thickness = 0.5));
+  connect(atmosphere.frame_a, lynxRocket.ref_center) annotation(
+    Line(points = {{-100, 88}, {-100, 10}, {0, 10}}));
   annotation(
       Icon(coordinateSystem(grid = {2, 0})),
       experiment(StartTime = 0, StopTime = 60, Tolerance = 1e-6, Interval = 0.01));

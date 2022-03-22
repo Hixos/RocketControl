@@ -8,6 +8,7 @@ model SimOptions
   parameter Boolean guidance_disable = false;
   parameter Boolean drogue_enable = false;
   parameter Boolean main_enable = false;
+  parameter Integer global_seed = 1234;
   
   parameter SI.Duration guidance_enable_met = 1;
   parameter SI.Time guidance_disable_met = 10;

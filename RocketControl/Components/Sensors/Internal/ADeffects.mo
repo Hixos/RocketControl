@@ -28,7 +28,8 @@ block ADeffects "Sample with (simulated) Analog-Digital converter effects includ
     Dialog(enable = limited and quantized, group = "Limiting and quantization"));
   parameter Real bias "Signal bias" annotation(
     Dialog(enable = biased, group = "Bias"));
-  replaceable RocketControl.Components.Sensors.Internal.Noise.ClockedNormalNoise noise if noisy constrainedby Modelica.Clocked.RealSignals.Interfaces.PartialNoise "Noise model" annotation(
+  replaceable RocketControl.Components.Sensors.Internal.Noise.ClockedNormalNoise noise if noisy annotation(
+    Placement(visible = true, transformation(extent = {{-54, -6}, {-42, 6}}, rotation = 0))) constrainedby Modelica.Clocked.RealSignals.Interfaces.PartialNoise "Noise model" annotation(
      Dialog(enable = noisy, group = "Sampling and noise"),
      Placement(transformation(extent = {{-54, -6}, {-42, 6}})));
   Modelica.Clocked.RealSignals.Sampler.Utilities.Internal.Limiter limiter(uMax = yMax, uMin = yMin) if limited annotation(
@@ -66,7 +67,7 @@ equation
   connect(y1, uFeedthrough1) annotation(
     Line(points = {{-50, 20}, {-58, 20}, {-58, 0}, {-60, 0}}, color = {0, 0, 127}));
   connect(y1, noise.u) annotation(
-    Line(points = {{-60, 0}, {-55.2, 0}}, color = {0, 0, 127}));
+    Line(points = {{-60, 0}, {-55, 0}}, color = {0, 0, 127}));
   connect(sample1.y, y1) annotation(
     Line(points = {{-74, 0}, {-60, 0}}, color = {0, 0, 127}));
   connect(y3, limiter.u) annotation(
@@ -88,7 +89,7 @@ equation
   connect(y5, y) annotation(
     Line(points = {{88, 0}, {110, 0}}, color = {0, 0, 127}));
   connect(noise.y, y2) annotation(
-    Line(points = {{-42, 0}, {-30, 0}}, color = {0, 0, 127}));
+    Line(points = {{-41, 0}, {-30, 0}}, color = {0, 0, 127}));
   connect(uFeedthrough1, y2) annotation(
     Line(points = {{-50, 20}, {-36, 20}, {-36, 0}, {-30, 0}}, color = {0, 0, 127}));
   connect(y2, uFeedthrough2) annotation(

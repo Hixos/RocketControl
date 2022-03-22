@@ -57,6 +57,8 @@ equation
     Line(points = {{-1, -102}, {36, -102}, {36, 20}, {0, 20}}, color = {0, 0, 127}, thickness = 0.5));
   connect(periodicClock1.y, sample1.clock) annotation(
     Line(points = {{-28, -140}, {-8, -140}, {-8, -109}}, color = {175, 175, 175}));
+  connect(rocket.ref_center, atmosphere.frame_a) annotation(
+    Line(points = {{0, 10}, {0, 58}, {-100, 58}, {-100, 90}}, color = {95, 95, 95}));
 protected
   annotation(
     Icon(coordinateSystem(grid = {2, 0})),
