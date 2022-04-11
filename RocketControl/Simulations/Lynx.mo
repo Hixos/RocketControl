@@ -21,11 +21,11 @@ model Lynx
       Placement(visible = true, transformation(origin = {-90, -90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Components.LaunchPad.LaunchRail launchRail(azimuth(displayUnit = "deg") = opt.launch_azimuth, c_x = c_x, c_y = c_y, c_z = c_z, d_x = d_x, d_y = d_y, d_z = d_z, elevation(displayUnit = "deg") = opt.launch_elevation, lug_length = 0.04, r_rel = {0, 0, 0.04}, rail_length = 4) annotation(
       Placement(visible = true, transformation(origin = {-50, 10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  inner World.Atmosphere atmosphere(wind_direction = from_deg({130}), wind_magnitude = {5})  annotation(
+  inner World.Atmosphere atmosphere(wind_direction = from_deg({90}), wind_magnitude = {5}, wing_span = 0.3)  annotation(
     Placement(visible = true, transformation(origin = {-90, 88}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   RocketControl.Rockets.Lynx.GNC.ContinuousGNC continuousGNC annotation(
     Placement(visible = true, transformation(origin = {70, 50}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  inner RocketControl.World.SimOptions opt(drogue_enable = true, main_enable = true)  annotation(
+  inner RocketControl.World.SimOptions opt(drogue_enable = false, launch_azimuth = from_deg(130), main_enable = false)  annotation(
     Placement(visible = true, transformation(origin = {-50, 90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   RocketControl.Rockets.Lynx.StateMachines.FlightModeManager state_machine annotation(
     Placement(visible = true, transformation(origin = {70, -80}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));

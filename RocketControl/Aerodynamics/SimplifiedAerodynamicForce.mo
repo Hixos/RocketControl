@@ -22,8 +22,9 @@ extends Icons.AerodynamicsIcon;
   parameter Real CA_dr;
   parameter Real CA_ds;
   parameter Real CA_dy;
+  parameter Real CLL0 = 0;
   parameter Real CLL_dr;
-  parameter Real CLL_p ;
+  parameter Real CLL_p;
   parameter Real CLM_a;
   parameter Real CLM_q;
   parameter Real CLM_dp;
@@ -75,7 +76,7 @@ equation
   CA = CA0_int + CA_dy * cu.control[1] ^ 2 + CA_dp * cu.control[2] ^ 2 + CA_dr * cu.control[3] ^ 2 + CA_ds * cu.control[4] ^ 2;
   CN = CN_a * aeroState.alpha + CN_dp * cu.control[2];
   CY = CY_b * aeroState.beta + CY_dy * cu.control[1];
-  CLL = CLL_dr * cu.control[3];
+  CLL = CLL0 + CLL_dr * cu.control[3];
   CLM = CLM_a * aeroState.alpha + CLM_dp * cu.control[2];
   CLN = CLN_b * aeroState.beta + CLN_dy * cu.control[1];
   

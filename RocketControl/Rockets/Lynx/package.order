@@ -11,3 +11,4 @@ LinearAerodynamicsWithCanards
 GNC
 StateMachines
 LynxSimpleAeroNoloopback
+LynxOpenLoop

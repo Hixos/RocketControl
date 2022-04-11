@@ -30,8 +30,8 @@ model PositionEstimation
     Placement(visible = true, transformation(origin = {110, -20}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {110, -40}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Blocks.Sources.BooleanConstant enable annotation(
     Placement(visible = true, transformation(origin = {26, 78}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Blocks.Sources.BooleanConstant booleanConstant(k = true) annotation(
-    Placement(visible = true, transformation(origin = {20, -62}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Blocks.Interfaces.BooleanInput gps_fix annotation(
+    Placement(visible = true, transformation(origin = {50, -100}, extent = {{-20, -20}, {20, 20}}, rotation = 90), iconTransformation(origin = {-40, -120}, extent = {{-20, -20}, {20, 20}}, rotation = 90)));
 equation
   connect(q, acc_ned.q) annotation(
     Line(points = {{-120, 80}, {-76, 80}, {-76, 56}, {-62, 56}}, color = {0, 0, 127}, thickness = 0.5));
@@ -53,8 +53,8 @@ equation
     Line(points = {{-120, -30}, {-20, -30}, {-20, 6}, {40, 6}}, color = {0, 0, 127}, thickness = 0.5));
   connect(vel_ned, discreteKalmanFilter.y_meas[4:6]) annotation(
     Line(points = {{-120, -80}, {-20, -80}, {-20, 6}, {40, 6}}, color = {0, 0, 127}, thickness = 0.5));
-  connect(booleanConstant.y, discreteKalmanFilter.correct) annotation(
-    Line(points = {{32, -62}, {50, -62}, {50, -10}}, color = {255, 0, 255}));
+  connect(gps_fix, discreteKalmanFilter.correct) annotation(
+    Line(points = {{50, -100}, {50, -10}}, color = {255, 0, 255}));
   annotation(
     Icon(graphics = {Text(origin = {-130, 70}, lineColor = {102, 102, 102}, extent = {{-30, 20}, {30, -20}}, textString = "q"), Text(origin = {-126, 6}, lineColor = {102, 102, 102}, extent = {{-30, 20}, {30, -20}}, textString = "acc"), Text(origin = {-126, -62}, lineColor = {102, 102, 102}, extent = {{-30, 20}, {30, -20}}, textString = "pos"), Text(origin = {-130, -128}, lineColor = {102, 102, 102}, extent = {{-30, 20}, {30, -20}}, textString = "vel"), Text(origin = {110, 18}, lineColor = {102, 102, 102}, extent = {{-30, 20}, {30, -20}}, textString = "pos_est"), Text(origin = {110, -64}, lineColor = {102, 102, 102}, extent = {{-30, 20}, {30, -20}}, textString = "vel_est"), Text(origin = {0, -76}, fillColor = {102, 102, 102}, extent = {{-100, 18}, {100, -18}}, textString = "pos/vel")}));
 end PositionEstimation;

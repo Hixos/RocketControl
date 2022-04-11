@@ -7,7 +7,7 @@ model Navigation
     Placement(visible = true, transformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {100, 1.77636e-15}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
   RocketControl.GNC.Navigation.AttitudeEstimation attitudeEstimation(elevation0 (displayUnit = "rad") = opt.launch_elevation, heading0 = opt.launch_azimuth, samplingPeriodMs = opt.samplePeriodMs, sigma_b = 2, sigma_u = from_deg(10), sigma_v = from_deg(60)) annotation(
     Placement(visible = true, transformation(origin = {-50, 50}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  RocketControl.GNC.Navigation.PositionEstimation positionEstimation(samplingPeriodMs = opt.samplePeriodMs, sigma_gps = {1000, 1000, 1000, 100, 100, 100}, sigma_pos = 2, sigma_vel = 1) annotation(
+  RocketControl.GNC.Navigation.PositionEstimation positionEstimation(samplingPeriodMs = opt.samplePeriodMs, sigma_gps = {500, 500, 700, 50, 50, 70}, sigma_pos = 2, sigma_vel = 1, x0 = {0, 0, -1.6, 0, 0, 0}) annotation(
     Placement(visible = true, transformation(origin = {-48, 10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
  Blocks.Flight.Downrange downrange annotation(
     Placement(visible = true, transformation(origin = {30, -90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
@@ -62,6 +62,8 @@ equation
     Line(points = {{-58, -50}, {-42, -50}}, color = {0, 0, 127}));
  connect(track.track, track_unwrapped.angle[1]) annotation(
     Line(points = {{42, -30}, {58, -30}}, color = {0, 0, 127}));
-  annotation(
+ connect(positionEstimation.gps_fix, bus.gps_fix) annotation(
+    Line(points = {{-52, -2}, {-52, -8}, {-100, -8}, {-100, 100}, {100, 100}, {100, 0}}, color = {255, 0, 255}));
+ annotation(
     Icon(graphics = {Text(origin = {-10, -254}, lineColor = {0, 0, 255}, extent = {{-115, 155}, {115, 105}}, textString = "%name")}));
 end Navigation;

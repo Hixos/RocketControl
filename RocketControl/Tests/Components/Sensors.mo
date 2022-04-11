@@ -72,6 +72,32 @@ package Sensors
     annotation(
       Icon(coordinateSystem(grid = {2, 0})));
   end FinPosSensorTest;
+
+  model Acc
+  Modelica.Mechanics.MultiBody.Joints.FreeMotionScalarInit freeMotionScalarInit(angle_1(fixed = true), angle_2(fixed = true, start = 0), angle_3(fixed = true), sequence_start = {3, 2, 1}, use_w = true, w_rel_b_1(fixed = true, start = 0), w_rel_b_2(fixed = true, start = from_deg(45)), w_rel_b_3(fixed = true, start = 0)) annotation(
+      Placement(visible = true, transformation(origin = {-52, -30}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Mechanics.MultiBody.Parts.Body body(m = 1, r_CM = {0, 0, 0}) annotation(
+      Placement(visible = true, transformation(origin = {-2, -28}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Mechanics.MultiBody.Parts.Fixed fixed annotation(
+      Placement(visible = true, transformation(origin = {-90, -30}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Mechanics.MultiBody.Parts.FixedTranslation fixedTranslation(r = {1, 0, 0})  annotation(
+      Placement(visible = true, transformation(origin = {2, 16}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  RocketControl.Components.Sensors.TrueSensors.TrueAccelerometer trueAccelerometer annotation(
+      Placement(visible = true, transformation(origin = {46, 16}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  inner RocketControl.World.FlatWorld world(n = {0, 0, 1})  annotation(
+      Placement(visible = true, transformation(origin = {-90, -90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  equation
+  connect(fixed.frame_b, freeMotionScalarInit.frame_a) annotation(
+      Line(points = {{-80, -30}, {-62, -30}}, color = {95, 95, 95}));
+  connect(freeMotionScalarInit.frame_b, body.frame_a) annotation(
+      Line(points = {{-42, -30}, {-24, -30}, {-24, -28}, {-12, -28}}));
+  connect(fixedTranslation.frame_a, body.frame_a) annotation(
+      Line(points = {{-8, 16}, {-12, 16}, {-12, -28}}));
+  connect(fixedTranslation.frame_b, trueAccelerometer.frame_a) annotation(
+      Line(points = {{12, 16}, {36, 16}}, color = {95, 95, 95}));
+    annotation(
+      Icon(coordinateSystem(grid = {2, 0})));
+  end Acc;
   annotation(
     Icon(coordinateSystem(grid = {2, 0})));
 end Sensors;

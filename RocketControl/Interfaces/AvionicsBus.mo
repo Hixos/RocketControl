@@ -9,6 +9,7 @@ expandable connector AvionicsBus
   Boolean apogee_guidance;
   Boolean drogue_deploy;
   Boolean main_deploy;
+  Boolean gps_fix;
   SI.Position x_meas[3];
   SI.Velocity v_meas[3];
   SI.Velocity x_est[3];
