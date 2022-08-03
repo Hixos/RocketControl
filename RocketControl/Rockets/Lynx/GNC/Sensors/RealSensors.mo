@@ -40,5 +40,6 @@ equation
   connect(gNSSUbloxM7N.v, bus.v_meas) annotation(
     Line(points = {{12, -44}, {60, -44}, {60, 0}, {100, 0}}, color = {0, 0, 127}, thickness = 0.5));
   annotation(
-    Icon(coordinateSystem(grid = {2, 0})));
+    Icon(coordinateSystem(grid = {2, 0})),
+    Diagram(coordinateSystem(extent = {{-120, 100}, {120, -60}})));
 end RealSensors;

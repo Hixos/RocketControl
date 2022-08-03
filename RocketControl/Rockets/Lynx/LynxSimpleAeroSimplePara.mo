@@ -73,5 +73,5 @@ protected
   annotation(
     Icon(coordinateSystem(grid = {2, 0})),
     experiment(StartTime = 0, StopTime = 1, Tolerance = 1e-6, Interval = 0.002),
-    Diagram(graphics = {Text(origin = {-31, -21}, extent = {{-19, 7}, {19, -7}}, textString = "ref_center", textStyle = {TextStyle.Italic})}));
+    Diagram(graphics = {Text(origin = {-31, -21}, extent = {{-19, 7}, {19, -7}}, textString = "ref_center", textStyle = {TextStyle.Italic})}, coordinateSystem(extent = {{-120, 120}, {140, -100}})));
 end LynxSimpleAeroSimplePara;

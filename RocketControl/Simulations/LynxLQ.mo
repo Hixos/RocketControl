@@ -12,11 +12,11 @@ model LynxLQ
   parameter SI.ModulusOfElasticity d_z = 2 * sqrt(c_z * m) * 4;
   Modelica.Mechanics.MultiBody.Parts.Fixed fixed(animation = false, r = {0, 0, -1.2}) annotation(
     Placement(visible = true, transformation(origin = {-90, 10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Components.Parts.LandDetector landDetector annotation(
-    Placement(visible = true, transformation(origin = {90, 90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  RocketControl.Components.Parts.LandDetector landDetector annotation(
+    Placement(visible = true, transformation(origin = {90, 70}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   // ATMOSPHERE
   inner RocketControl.World.Atmosphere atmosphere(num_wind_layers = 1, wind_direction = from_deg({200}), wind_layer_height = {1000000}, wind_magnitude = {5}, wind_noise_sample_period = 0.1001, wind_severity_high = 1, wind_turbolence_enable = true, wing_span = 0.30)   annotation(
-      Placement(visible = true, transformation(origin = {-90, 88}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      Placement(visible = true, transformation(origin = {-90, 70}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   inner RocketControl.World.FlatWorld world(altitude_0 = 1414, animateGravity = false, animateGround = false, animateWorld = true, enableAnimation = true, latitude_0 = 45.691051, longitude_0 = 8.490499, n = {0, 0, 1}) annotation(
     Placement(visible = true, transformation(origin = {-90, -50}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Components.LaunchPad.LaunchRail launchRail(azimuth(displayUnit = "deg") = opt.launch_azimuth, c_x = c_x, c_y = c_y, c_z = c_z, d_x = d_x, d_y = d_y, d_z = d_z, elevation(displayUnit = "deg") = opt.launch_elevation, lug_length = 0.04, r_rel = {0, 0, 0.04}, rail_length = 4) annotation(
@@ -24,7 +24,7 @@ model LynxLQ
   RocketControl.Rockets.Lynx.LynxSimpleAeroSimplePara rocket annotation(
     Placement(visible = true, transformation(origin = {-10, 10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   inner RocketControl.World.SimOptions opt(drogue_enable = false, gps_first_fix_met = 10, guidance_disable = false, guidance_disable_met = 10, guidance_enable_met = 1, launch_azimuth(displayUnit = "deg") = 2.268928027592628, launch_elevation = from_deg(84), main_enable = false, roll_target_heading = from_deg(90)) annotation(
-    Placement(visible = true, transformation(origin = {-50, 90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+    Placement(visible = true, transformation(origin = {66, -50}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   RocketControl.Rockets.Lynx.GNC.ContinuousGNC true_navigation annotation(
     Placement(visible = true, transformation(origin = {70, 30}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   RocketControl.Rockets.Lynx.StateMachines.FlightModeManager state_machine annotation(
@@ -32,11 +32,7 @@ model LynxLQ
   Rockets.Lynx.GNC.RealGNCAng gnc annotation(
     Placement(visible = true, transformation(origin = {70, -10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   inner Modelica.Blocks.Noise.GlobalSeed globalSeed(enableNoise = true, fixedSeed = 432532, useAutomaticSeed = false)  annotation(
-    Placement(visible = true, transformation(origin = {-90, -90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  RocketControl.Rockets.Lynx.GNC.Errors errors annotation(
-    Placement(visible = true, transformation(origin = {110, 10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Blocks.Sources.BooleanExpression gps_fix(y = time > opt.gps_first_fix_met + 0.5) annotation(
-    Placement(visible = true, transformation(origin = {12.8571, -95.1579}, extent = {{-13.1429, -4.84211}, {13.1429, 4.84211}}, rotation = 0)));
+    Placement(visible = true, transformation(origin = {90, -50}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
 equation
   connect(fixed.frame_b, launchRail.frame_a) annotation(
     Line(points = {{-80, 10}, {-60, 10}}, color = {95, 95, 95}));
@@ -45,7 +41,7 @@ equation
   connect(launchRail.frame_b_lug_aft, rocket.frame_lug_aft) annotation(
     Line(points = {{-40, 4}, {-20, 4}}, color = {95, 95, 95}));
   connect(landDetector.frame_a, rocket.ref_center) annotation(
-    Line(points = {{80, 90}, {0, 90}, {0, 10}}));
+    Line(points = {{80, 70}, {0, 70}, {0, 10}}));
   connect(rocket.ref_center, true_navigation.frame_a) annotation(
     Line(points = {{0, 10}, {20, 10}, {20, 30}, {60, 30}}));
   connect(rocket.bus, state_machine.bus) annotation(
@@ -57,13 +53,7 @@ equation
   connect(rocket.bus, gnc.bus) annotation(
     Line(points = {{0, 20}, {40, 20}, {40, -14}, {60, -14}}, color = {255, 204, 51}, thickness = 0.5));
   connect(atmosphere.frame_a, rocket.ref_center) annotation(
-    Line(points = {{-100, 88}, {-100, 40}, {0, 40}, {0, 10}}));
-  connect(true_navigation.bus, errors.bus_true) annotation(
-    Line(points = {{80, 30}, {96, 30}, {96, 18}, {100, 18}}, color = {255, 204, 51}, thickness = 0.5));
-  connect(gnc.bus, errors.bus) annotation(
-    Line(points = {{60, -14}, {96, -14}, {96, 2}, {100, 2}}, color = {255, 204, 51}, thickness = 0.5));
-  connect(gps_fix.y, gnc.bus.gps_fix) annotation(
-    Line(points = {{27, -95}, {60, -95}, {60, -14}}, color = {255, 0, 255}));
+    Line(points = {{-100, 70}, {-100, 40}, {0, 40}, {0, 10}}));
 protected
   annotation(
     Icon(coordinateSystem(grid = {2, 0})),
